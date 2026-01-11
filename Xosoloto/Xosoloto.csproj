@@ -1,0 +1,98 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>Gemini_Generated_Image_j8e92tj8e92tj8e9.ico</ApplicationIcon>
+    <AssemblyName>LotoFun</AssemblyName>
+    <RootNamespace>Xosoloto</RootNamespace>
+    <StartupObject>Xosoloto.App</StartupObject>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <Compile Remove="fonts-tay\**" />
+    <EmbeddedResource Remove="fonts-tay\**" />
+    <None Remove="fonts-tay\**" />
+    <Page Remove="fonts-tay\**" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Remove="Fonts\AlumniSansCollegiateOne-Italic.ttf" />
+    <None Remove="Fonts\AlumniSansCollegiateOne-Regular.ttf" />
+    <None Remove="Fonts\Faustina-Italic-VariableFont_wght.ttf" />
+    <None Remove="Fonts\Faustina-VariableFont_wght.ttf" />
+    <None Remove="Fonts\HL-thufap2-unicode.ttf" />
+    <None Remove="Images\a.png" />
+    <None Remove="Images\background.jpg" />
+    <None Remove="Images\HieuNguyenPhoto.png" />
+    <None Remove="Images\image1.png" />
+    <None Remove="Images\image2.png" />
+    <None Remove="Images\image3.png" />
+    <None Remove="Images\image5.gif" />
+    <None Remove="Images\image5.mp4" />
+    <None Remove="Images\image6.gif" />
+    <None Remove="Images\image6.mp4" />
+    <None Remove="Images\locxuan.jpg" />
+    <None Remove="Images\media1.mov" />
+    <None Remove="Images\media1.mp4" />
+    <None Remove="Images\nen-01.png" />
+    <None Remove="Images\nguphuc.jpg" />
+    <None Remove="Images\nguphuc.png" />
+    <None Remove="Images\Untitled-1.png" />
+    <None Remove="Images\Untitled-2.png" />
+    <None Remove="MainWindow.xaml~RF289e3170.TMP" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Resource Include="Fonts\AlumniSansCollegiateOne-Italic.ttf" />
+    <Resource Include="Fonts\AlumniSansCollegiateOne-Regular.ttf" />
+    <Resource Include="Fonts\Faustina-Italic-VariableFont_wght.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Fonts\Faustina-VariableFont_wght.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Fonts\HL-thufap2-unicode.ttf" />
+    <Resource Include="Images\HieuNguyenPhoto.png" />
+    <Resource Include="Images\image1.png" />
+    <Resource Include="Images\image2.png" />
+    <Resource Include="Images\image3.png" />
+    <Resource Include="Images\image5.gif" />
+    <Content Include="Gemini_Generated_Image_j8e92tj8e92tj8e9.ico" />
+    <Content Include="Images\a.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\image5.mp4">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\media1.mp4">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Resource Include="Images\image6.gif" />
+    <Resource Include="Images\image6.mp4" />
+    <Resource Include="Images\locxuan.jpg" />
+    <Resource Include="Images\nen-01.png" />
+    <Resource Include="Images\nguphuc.png" />
+    <Resource Include="Images\Untitled-2.png" />
+    <Content Include="Images\media1.mov">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="EPPlus" Version="8.4.0" />
+    <PackageReference Include="WpfAnimatedGif" Version="2.0.2" />
+  </ItemGroup>
+  
+  <PropertyGroup>
+    <PublishProtocol>ClickOnce</PublishProtocol>
+    <Install>true</Install>
+    <InstallFrom>Unc</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>0</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+  </PropertyGroup>
+</Project>
