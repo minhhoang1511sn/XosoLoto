@@ -1,20 +1,18 @@
 using System;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media.Animation;
 using System.Windows.Threading;
 
-namespace YourNamespace
+namespace Xosoloto
 {
-    public partial class LuckyDrawControl : UserControl
+    public partial class LuckyDrawWindow : Window
     {
         private DispatcherTimer _numberTimer;
         private Random _random;
         private bool _isRolling = false;
 
-        public LuckyDrawControl()
+        public LuckyDrawWindow()
         {
-            //InitializeComponent();
+            InitializeComponent();
             _random = new Random();
             InitializeTimer();
         }
@@ -29,10 +27,8 @@ namespace YourNamespace
         private void NumberTimer_Tick(object sender, EventArgs e)
         {
             // Animation logic for rolling numbers
-            // You can implement number rolling effect here
         }
 
-        // Public methods to control the lucky draw
         public void StartRolling()
         {
             _isRolling = true;
@@ -48,10 +44,8 @@ namespace YourNamespace
         public void SetNumbers(int prize1, int prize2, int prize3, int prize4)
         {
             // Set the final numbers for each prize
-            // You can add TextBlock references and update them here
         }
 
-        // Property to enable/disable animations
         public bool EnableAnimations { get; set; } = true;
     }
 }

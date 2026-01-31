@@ -76,7 +76,7 @@ namespace Xosoloto {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/LotoFun;V1.0.0.0;component/gametypeselectionwindow.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/LotoFun;component/gametypeselectionwindow.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\GameTypeSelectionWindow.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

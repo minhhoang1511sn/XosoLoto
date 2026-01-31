@@ -1,4 +1,4 @@
-﻿using OfficeOpenXml;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -37,10 +37,17 @@ namespace Xosoloto
                 return;
             }
 
-            // Sau đó hiển thị cửa sổ setup vòng loại
-            ShowVongLoaiSetup();
-            mediaElement.Play();
-            SetNumber("");
+            // CHỈ hiển thị cửa sổ setup vòng loại nếu là LotoVuiXuan
+            if (CurrentGameType == GameType.LotoVuiXuan)
+            {
+                ShowVongLoaiSetup();
+                mediaElement.Play();
+                SetNumber("");
+            }
+            if (CurrentGameType == GameType.LocXuanDauNam)
+            {
+                ShowLocXuan();
+            }
         }
 
         private bool ShowGameTypeSelection()
@@ -50,28 +57,20 @@ namespace Xosoloto
             {
                 CurrentGameType = gameTypeWindow.SelectedGameType;
 
-                // Có thể thêm logic khác nhau tùy theo loại game được chọn
                 switch (CurrentGameType)
                 {
                     case GameType.LotoVuiXuan:
                         this.Title = "Xổ Số Loto - Loto Vui Xuân";
-                        break;
-                    // Comment tạm thời
+                        return true; // Tiếp tục với LotoVuiXuan
+
                     case GameType.LocXuanDauNam:
-                        this.Hide(); // Ẩn MainWindow
-
-                        LuckyDrawWindow luckyDrawWindow = new LuckyDrawWindow();
-                        luckyDrawWindow.Closed += (s, args) =>
-                        {
-                            this.Show(); // Hiện lại MainWindow khi đóng
-                        };
-                        luckyDrawWindow.Show();
-                        break;
+                        this.Title = "Xổ Số Loto - Lộc Xuân Đầu Năm";
+                        
+                        return true; 
                 }
-
                 return true;
             }
-            return false;
+            return false; // User cancel
         }
 
         private void ShowVongLoaiSetup()
@@ -103,6 +102,42 @@ namespace Xosoloto
                 {
                     VongLoaiComboBox.SelectedIndex = 0;
                 }
+            }
+            else
+            {
+                Application.Current.Shutdown();
+            }
+        }
+
+        private void ShowLocXuan()
+        {
+            LuckyDrawWindow setupWindow = new LuckyDrawWindow();
+            if (setupWindow.ShowDialog() == true)
+            {
+                //    VongLoaiConfig = setupWindow.VongLoaiData;
+                //    // Load vòng loại vào ComboBox
+                //    VongLoaiComboBox.Items.Clear();
+                //    foreach (var vong in VongLoaiConfig.Keys.OrderBy(k => k))
+                //    {
+                //        // Hiển thị 6 số thay vì chỉ số vòng
+                //        string displayText = string.Join(" ", VongLoaiConfig[vong].Numbers);
+                //        ComboBoxItem item = new ComboBoxItem
+                //        {
+                //            Content = displayText,  // Hiển thị: "1 2 3 4 5 6"
+                //            Tag = new
+                //            {
+                //                VongNumber = vong,
+                //                Numbers = VongLoaiConfig[vong].Numbers,
+                //                Color = VongLoaiConfig[vong].Color
+                //            }
+                //        };
+                //        VongLoaiComboBox.Items.Add(item);
+                //    }
+                //    // Chọn vòng đầu tiên
+                //    if (VongLoaiComboBox.Items.Count > 0)
+                //    {
+                //        VongLoaiComboBox.SelectedIndex = 0;
+                //    }
             }
             else
             {

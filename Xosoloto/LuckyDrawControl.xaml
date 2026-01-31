@@ -5,128 +5,16 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:Xosoloto"
         mc:Ignorable="d" 
-       
+        Title="Lucky Draw"
         Height="900" Width="1600"
         MinWidth="1200" MinHeight="700"
         WindowState="Maximized"
         WindowStyle="SingleBorderWindow"
         ResizeMode="CanResize">
 
-    <Window.Resources>
-        <!-- Gradient Background -->
-        <LinearGradientBrush x:Key="RedGradientBrush" StartPoint="0,0" EndPoint="1,1">
-            <GradientStop Color="#C41E3A" Offset="0"/>
-            <GradientStop Color="#8B0000" Offset="0.5"/>
-            <GradientStop Color="#C41E3A" Offset="1"/>
-        </LinearGradientBrush>
-
-        <!-- Gold Gradient -->
-        <LinearGradientBrush x:Key="GoldGradientBrush" StartPoint="0,0" EndPoint="0,1">
-            <GradientStop Color="#FFD700" Offset="0"/>
-            <GradientStop Color="#FFA500" Offset="0.5"/>
-            <GradientStop Color="#FFD700" Offset="1"/>
-        </LinearGradientBrush>
-
-        <!-- Number Box Style -->
-        <Style x:Key="NumberBoxStyle" TargetType="Border">
-            <Setter Property="Background" Value="#FFF8DC"/>
-            <Setter Property="BorderBrush" Value="#8B4513"/>
-            <Setter Property="BorderThickness" Value="4"/>
-            <Setter Property="CornerRadius" Value="15"/>
-            <Setter Property="Effect">
-                <Setter.Value>
-                    <DropShadowEffect Color="Black" BlurRadius="20" ShadowDepth="8" Opacity="0.6"/>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!-- Number Text Style -->
-        <Style x:Key="NumberTextStyle" TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="Arial Black"/>
-            <Setter Property="FontSize" Value="120"/>
-            <Setter Property="FontWeight" Value="Black"/>
-            <Setter Property="Foreground" Value="Black"/>
-            <Setter Property="HorizontalAlignment" Value="Center"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-        </Style>
-
-        <!-- Title Style -->
-        <Style x:Key="TitleStyle" TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="Arial Black"/>
-            <Setter Property="FontSize" Value="32"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="HorizontalAlignment" Value="Center"/>
-            <Setter Property="Effect">
-                <Setter.Value>
-                    <DropShadowEffect Color="Black" BlurRadius="10" ShadowDepth="3"/>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!-- Prize Number Style -->
-        <Style x:Key="PrizeNumberStyle" TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="Arial"/>
-            <Setter Property="FontSize" Value="28"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Foreground" Value="#8B0000"/>
-            <Setter Property="HorizontalAlignment" Value="Center"/>
-        </Style>
-
-        <!-- Rotation Animation -->
-        <Storyboard x:Key="RotateAnimation" RepeatBehavior="Forever">
-            <DoubleAnimation Storyboard.TargetName="DecorativeElement1"
-                           Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
-                           From="0" To="360" Duration="0:0:20"/>
-            <DoubleAnimation Storyboard.TargetName="DecorativeElement2"
-                           Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
-                           From="360" To="0" Duration="0:0:15"/>
-        </Storyboard>
-
-        <!-- Pulse Animation for Numbers -->
-        <Storyboard x:Key="PulseAnimation" RepeatBehavior="Forever" AutoReverse="True">
-            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
-                           From="1.0" To="1.05" Duration="0:0:0.8"/>
-            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
-                           From="1.0" To="1.05" Duration="0:0:0.8"/>
-        </Storyboard>
-    </Window.Resources>
-
-    <Window.Triggers>
-        <EventTrigger RoutedEvent="Loaded">
-            <BeginStoryboard Storyboard="{StaticResource RotateAnimation}"/>
-        </EventTrigger>
-    </Window.Triggers>
-
     <Grid>
         <Grid.Background>
             <ImageBrush ImageSource="Images/Gemini_Generated_Image_p7jj3ep7jj3ep7jj.png" Stretch="Fill" />
         </Grid.Background>
-
-        <!-- Decorative Elements -->
-        <Canvas Grid.ZIndex="-1">
-            <Path x:Name="DecorativeElement1" Data="M 50,50 L 100,100 L 50,150 Z" 
-                  Fill="#FFD700" Opacity="0.1" Canvas.Left="100" Canvas.Top="100"
-                  RenderTransformOrigin="0.5,0.5">
-                <Path.RenderTransform>
-                    <RotateTransform Angle="0"/>
-                </Path.RenderTransform>
-            </Path>
-            <Path x:Name="DecorativeElement2" Data="M 50,50 L 100,100 L 50,150 Z" 
-                  Fill="#FFD700" Opacity="0.1" Canvas.Right="100" Canvas.Top="100"
-                  RenderTransformOrigin="0.5,0.5">
-                <Path.RenderTransform>
-                    <RotateTransform Angle="0"/>
-                </Path.RenderTransform>
-            </Path>
-        </Canvas>
-
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="0.8*" />
-                <RowDefinition Height="2*" />
-                <RowDefinition Height="0.5*" />
-            </Grid.RowDefinitions>
-        </Grid>
     </Grid>
 </Window>

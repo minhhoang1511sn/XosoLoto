@@ -84,7 +84,7 @@ namespace Xosoloto {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/LotoFun;V1.0.0.0;component/vongloaisetupwindow.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/LotoFun;component/vongloaisetupwindow.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\VongLoaiSetupWindow.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);
