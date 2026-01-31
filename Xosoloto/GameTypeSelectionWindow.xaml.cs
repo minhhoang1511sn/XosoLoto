@@ -5,7 +5,7 @@ namespace Xosoloto
     public enum GameType
     {
         LotoVuiXuan,
-        LocXuanDauNam  // Comment tạm thời
+        LocXuanDauNam 
     }
 
     public partial class GameTypeSelectionWindow : Window

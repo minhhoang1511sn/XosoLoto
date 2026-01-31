@@ -20,7 +20,7 @@
     <Grid>
         <MediaElement x:Name="mediaElement"
                   Grid.ZIndex="-1"
-                 Source="Images/media1.mp4"
+                 Source="Images/media1.mov"
                   Stretch="UniformToFill"
                   LoadedBehavior="Manual"
                   IsMuted="True"

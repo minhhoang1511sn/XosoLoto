@@ -56,10 +56,17 @@ namespace Xosoloto
                     case GameType.LotoVuiXuan:
                         this.Title = "Xổ Số Loto - Loto Vui Xuân";
                         break;
-                        // Comment tạm thời
-                        // case GameType.LocXuanDauNam:
-                        //     this.Title = "Xổ Số Loto - Lộc Xuân Đầu Năm";
-                        //     break;
+                    // Comment tạm thời
+                    case GameType.LocXuanDauNam:
+                        this.Hide(); // Ẩn MainWindow
+
+                        LuckyDrawWindow luckyDrawWindow = new LuckyDrawWindow();
+                        luckyDrawWindow.Closed += (s, args) =>
+                        {
+                            this.Show(); // Hiện lại MainWindow khi đóng
+                        };
+                        luckyDrawWindow.Show();
+                        break;
                 }
 
                 return true;

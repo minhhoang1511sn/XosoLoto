@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-D:\Hoc\C#\Xosoloto\Xosoloto\obj\Debug\net8.0-windows\
+D:\DEV\XosoLoto\Xosoloto\obj\Debug\net8.0-windows\
 Xosoloto
 none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
-D:\Hoc\C#\Xosoloto\Xosoloto\App.xaml
-32025217262
+D:\DEV\XosoLoto\Xosoloto\App.xaml
+41404075592
 5-294569763
-91486806354
-2101598679410
-GameTypeSelectionWindow.xaml;MainWindow.xaml;VongLoaiSetupWindow.xaml;
+10-1142286014
+210-655775960
+GameTypeSelectionWindow.xaml;LuckyDrawControl.xaml;MainWindow.xaml;VongLoaiSetupWindow.xaml;
 
 False
 
