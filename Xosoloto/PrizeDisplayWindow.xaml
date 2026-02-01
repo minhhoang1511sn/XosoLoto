@@ -67,6 +67,53 @@
                 <Viewbox Grid.Column="1" Margin="0,0,100,100" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Image x:Name="imgPrize" Stretch="Uniform" MaxHeight="450" MaxWidth="450"/>
                 </Viewbox>
+
+                <Button x:Name="btnBack"
+                    Content="◄ Back"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Bottom"
+                    Margin="20,0,0,20"
+                    Padding="15,8"
+                    FontSize="24"
+                    FontWeight="Bold"
+                    Foreground="White"
+                    Background="#1E90FF"
+                    BorderBrush="#104E8B"
+                    BorderThickness="2"
+                    Cursor="Hand"
+                        Click="btnBack_Click"
+                    Grid.RowSpan="2"
+                        >
+                    <Button.Effect>
+                        <DropShadowEffect Color="Black" BlurRadius="8" ShadowDepth="3" Opacity="0.6"/>
+                    </Button.Effect>
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            CornerRadius="5">
+                                            <ContentPresenter HorizontalAlignment="Center" 
+                                                        VerticalAlignment="Center"
+                                                        Margin="{TemplateBinding Padding}"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#4169E1"/>
+                                            </Trigger>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter Property="Background" Value="#0047AB"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Style>
+                </Button>
             </Grid>
         </Grid>
     </Grid>

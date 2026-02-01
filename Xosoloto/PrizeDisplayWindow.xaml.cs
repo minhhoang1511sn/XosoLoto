@@ -12,10 +12,12 @@ namespace Xosoloto
         private string logoPath;
         private string[] prizePaths;
         private string eventTitle;
+        private string imagePath;
         private int prizeIndex;
+        private Window parentWindow;
 
 
-        public PrizeDisplayWindow(string title, string logoPath, string prizeName, int prizeIndex, string[] prizePaths, string backgroundPath = null)
+        public PrizeDisplayWindow(string title, string logoPath, string prizeName, int prizeIndex, string[] prizePaths, string backgroundPath = null, string imagePath = null)
         {
             InitializeComponent();
             this.eventTitle = title;
@@ -23,7 +25,6 @@ namespace Xosoloto
             this.prizeIndex = prizeIndex;
             this.prizePaths = prizePaths ?? new string[5];
             this.backgroundPath = backgroundPath;
-
             this.Loaded += (s, e) => LoadInitialData();
             this.KeyDown += (s, e) => {
                 if (e.Key == Key.Left) MovePrize(-1);
@@ -73,6 +74,21 @@ namespace Xosoloto
             int nextIndex = prizeIndex + direction;
             if (nextIndex >= 0 && nextIndex < prizePaths.Length)
                 DisplayPrize(nextIndex);
+        }
+
+        private void btnBack_Click(object sender, RoutedEventArgs e)
+        {
+            // Truyền dữ liệu sang LuckyDrawWindow
+            LuckyDrawWindow luc = new LuckyDrawWindow(imagePath, txtTitle.Text, logoPath, prizePaths);
+
+            // Ẩn cửa sổ hiện tại
+            this.Hide();
+
+            // Hiển thị LuckyDrawWindow
+            luc.ShowDialog();
+
+            // Đóng cửa sổ InitLocXuan sau khi LuckyDrawWindow đóng
+            this.Close();
         }
     }
 }

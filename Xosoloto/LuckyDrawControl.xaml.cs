@@ -103,7 +103,7 @@ namespace Xosoloto
                     prizeName: prizeNames[prizeIndex],    // Tên giải (Lộc Xuân 1-5)
                     prizeIndex: prizeIndex,               // Index của giải
                     prizePaths: this.PrizePaths,          // Mảng tất cả prize images
-                    backgroundPath: this.ImagePath        // Background path
+                    backgroundPath: this.ImagePath 
                 );
 
                 // Ẩn LuckyDrawWindow
