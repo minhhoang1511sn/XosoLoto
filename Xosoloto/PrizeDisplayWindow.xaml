@@ -4,117 +4,127 @@
         Title="Prize Display" 
         WindowState="Maximized"
         WindowStyle="None">
-    <Grid>
-        <Grid.Background>
-            <ImageBrush x:Name="imgBackground" Stretch="Fill" />
-        </Grid.Background>
-        <Grid Margin="0,0,0,0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="200"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <!-- Header: Logo + Title -->
-            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="80,180,0,-180" HorizontalAlignment="Left" VerticalAlignment="Top">
-                <Image x:Name="imgLogo"  Height="110" 
- Width="250" Margin="0,0,150,0" Stretch="Uniform"/>
-                <TextBlock x:Name="txtTitle" 
-                           Text="ĐẠI HỘI TẾT 2025"
-                           FontSize="80"
-                           FontWeight="Bold"
-                           Foreground="#FFD700"
-                           VerticalAlignment="Center">
-                    <TextBlock.RenderTransform>
-                        <SkewTransform AngleX="-5"/>
-                    </TextBlock.RenderTransform>
-                    <TextBlock.Effect>
-                        <DropShadowEffect Color="Black" BlurRadius="10" ShadowDepth="3"/>
-                    </TextBlock.Effect>
-                </TextBlock>
-            </StackPanel>
-            <!-- Content: Prize Info + Image -->
-            <Grid Grid.Row="1" Margin="180,30,0,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="6*"/>
-                    <ColumnDefinition Width="4*"/>
-                </Grid.ColumnDefinitions>
-                <!-- Left: Prize Name + Number -->
-                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="150,0,0,0">
-                    <TextBlock x:Name="txtPrizeName" 
-                               Text="LỘC XUÂN"
-                               FontSize="70" 
-                               FontWeight="ExtraBold"
-                               Foreground="White"
-                               Margin="0,0,0,30"
-                               HorizontalAlignment="Left">
+    <Viewbox Stretch="Fill">
+        <Grid>
+            <Grid.Background>
+                <ImageBrush x:Name="imgBackground" Stretch="Fill" />
+            </Grid.Background>
+            <Grid Margin="0,0,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="200"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <!-- Header: Logo + Title -->
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="80,180,0,-180" HorizontalAlignment="Left" VerticalAlignment="Top">
+                    <Image x:Name="imgLogo"  Height="110" 
+Width="250" Margin="0,0,150,0" Stretch="Uniform"/>
+                    <TextBlock x:Name="txtTitle" 
+                          Text="ĐẠI HỘI TẾT 2025"
+                          FontSize="80"
+                          FontWeight="Bold"
+                          Foreground="#FFD700"
+                          VerticalAlignment="Center">
+                        <TextBlock.RenderTransform>
+                            <SkewTransform AngleX="-5"/>
+                        </TextBlock.RenderTransform>
                         <TextBlock.Effect>
-                            <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="2"/>
+                            <DropShadowEffect Color="Black" BlurRadius="10" ShadowDepth="3"/>
                         </TextBlock.Effect>
                     </TextBlock>
-                    <TextBox x:Name="txtPrizeNumber" 
-                         Text="? ? ? ?"
-                         FontSize="180" 
-                         FontWeight="Black"
-                         Foreground="Black"
-                         HorizontalAlignment="Left"
-                         Margin="-100,0,0,0"
-                         Background="#80FFFFFF"
-                         BorderBrush="#FFD700"
-                         BorderThickness="3"
-                         TextAlignment="Center"
-                         VerticalContentAlignment="Center"/>
                 </StackPanel>
-                <!-- Right: Prize Image -->
-                <Viewbox Grid.Column="1" Margin="0,0,100,100" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <Image x:Name="imgPrize" Stretch="Uniform" MaxHeight="450" MaxWidth="450"/>
-                </Viewbox>
+                <!-- Content: Prize Info + Image -->
+                <Grid Grid.Row="1" Margin="180,30,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="6*"/>
+                        <ColumnDefinition Width="4*"/>
+                    </Grid.ColumnDefinitions>
+                    <!-- Left: Prize Name + Number -->
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="150,0,0,0">
+                        <TextBlock x:Name="txtPrizeName" 
+                              Text="LỘC XUÂN"
+                              FontSize="70" 
+                                     Width="600"
+                              FontWeight="ExtraBold"
+                              Foreground="White"
+                              Margin="-120,-50,0,30"
+                              HorizontalAlignment="Left">
+                            <TextBlock.Effect>
+                                <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="2"/>
+                            </TextBlock.Effect>
+                        </TextBlock>
+                        <TextBox x:Name="txtPrizeNumber"
+         Text="? ? ? ?"
+         FontSize="180"
+         FontWeight="Black"
 
-                <Button x:Name="btnBack"
-                    Content="◄ Back"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Bottom"
-                    Margin="20,0,0,20"
-                    Padding="15,8"
-                    FontSize="24"
-                    FontWeight="Bold"
-                    Foreground="White"
-                    Background="#1E90FF"
-                    BorderBrush="#104E8B"
-                    BorderThickness="2"
-                    Cursor="Hand"
-                        Click="btnBack_Click"
-                    Grid.RowSpan="2"
-                        >
-                    <Button.Effect>
-                        <DropShadowEffect Color="Black" BlurRadius="8" ShadowDepth="3" Opacity="0.6"/>
-                    </Button.Effect>
-                    <Button.Style>
-                        <Style TargetType="Button">
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}"
-                                            BorderBrush="{TemplateBinding BorderBrush}"
-                                            BorderThickness="{TemplateBinding BorderThickness}"
-                                            CornerRadius="5">
-                                            <ContentPresenter HorizontalAlignment="Center" 
-                                                        VerticalAlignment="Center"
-                                                        Margin="{TemplateBinding Padding}"/>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="#4169E1"/>
-                                            </Trigger>
-                                            <Trigger Property="IsPressed" Value="True">
-                                                <Setter Property="Background" Value="#0047AB"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </Button.Style>
-                </Button>
+         AcceptsReturn="True"
+         TextWrapping="Wrap"
+
+         FocusVisualStyle="{x:Null}"
+         SelectionBrush="Transparent"
+         CaretBrush="Black"
+
+         Background="Transparent"
+         BorderThickness="0"
+
+         HorizontalAlignment="Left"
+         Margin="-100,0,0,0"
+         TextAlignment="Center"
+         VerticalContentAlignment="Center"/>
+                    </StackPanel>
+                    <!-- Right: Prize Image -->
+                    <Viewbox Grid.Column="1" Margin="100,100,100,100" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Image x:Name="imgPrize" Stretch="Uniform" MaxHeight="350" MaxWidth="350"/>
+                    </Viewbox>
+
+                    <Button x:Name="btnBack"
+                   Content="◄ Back"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Bottom"
+                   Margin="-150,0,0,20"
+                   FontSize="24"
+                   FontWeight="Bold"
+                   Foreground="White"
+                   Background="#1E90FF"
+                   BorderBrush="#104E8B"
+                   BorderThickness="2"
+                   Cursor="Hand"
+                   Click="btnBack_Click"
+                   Grid.RowSpan="2"
+                       >
+                        <Button.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="8" ShadowDepth="3" Opacity="0.6"/>
+                        </Button.Effect>
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                           BorderBrush="{TemplateBinding BorderBrush}"
+                                           BorderThickness="{TemplateBinding BorderThickness}"
+                                           CornerRadius="5">
+                                                <ContentPresenter HorizontalAlignment="Center" 
+                                                       VerticalAlignment="Center"
+                                                       Margin="{TemplateBinding Padding}"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#4169E1"/>
+                                                </Trigger>
+                                                <Trigger Property="IsPressed" Value="True">
+                                                    <Setter Property="Background" Value="#0047AB"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </Grid>
             </Grid>
         </Grid>
-    </Grid>
-</Window> 
+    </Viewbox>
+
+</Window>

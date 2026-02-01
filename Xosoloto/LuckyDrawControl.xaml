@@ -180,18 +180,14 @@
             </StackPanel>
 
             <!-- Text Khuyến Khích 1 -->
-            <TextBlock x:Name="txtKK1" 
+            <TextBlock x:Name="txtKK" 
                        Text="1111-2222-3333-4444-5555" 
-                       FontSize="38" 
+                       FontSize="35" 
+                       Margin="45,0,0,0"
                        FontWeight="Bold"
                        Foreground="Black"/>
 
-            <!-- Text Khuyến Khích 2 -->
-            <TextBlock x:Name="txtKK2" 
-                       Text="6666-7777-8888-9999-0000" 
-                       FontSize="38" 
-                       FontWeight="Bold"
-                       Foreground="Black"/>
+          
         </Canvas>
     </Grid>
 </Window>
