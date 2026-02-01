@@ -111,33 +111,10 @@ namespace Xosoloto
 
         private void ShowLocXuan()
         {
-            LuckyDrawWindow setupWindow = new LuckyDrawWindow();
+            InitLocXuan setupWindow = new InitLocXuan();
             if (setupWindow.ShowDialog() == true)
             {
-                //    VongLoaiConfig = setupWindow.VongLoaiData;
-                //    // Load vòng loại vào ComboBox
-                //    VongLoaiComboBox.Items.Clear();
-                //    foreach (var vong in VongLoaiConfig.Keys.OrderBy(k => k))
-                //    {
-                //        // Hiển thị 6 số thay vì chỉ số vòng
-                //        string displayText = string.Join(" ", VongLoaiConfig[vong].Numbers);
-                //        ComboBoxItem item = new ComboBoxItem
-                //        {
-                //            Content = displayText,  // Hiển thị: "1 2 3 4 5 6"
-                //            Tag = new
-                //            {
-                //                VongNumber = vong,
-                //                Numbers = VongLoaiConfig[vong].Numbers,
-                //                Color = VongLoaiConfig[vong].Color
-                //            }
-                //        };
-                //        VongLoaiComboBox.Items.Add(item);
-                //    }
-                //    // Chọn vòng đầu tiên
-                //    if (VongLoaiComboBox.Items.Count > 0)
-                //    {
-                //        VongLoaiComboBox.SelectedIndex = 0;
-                //    }
+             
             }
             else
             {

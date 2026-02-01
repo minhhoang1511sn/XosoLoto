@@ -26,7 +26,7 @@
     <None Remove="Fonts\HL-thufap2-unicode.ttf" />
     <None Remove="Images\a.png" />
     <None Remove="Images\background.jpg" />
-    <None Remove="Images\Gemini_Generated_Image_p7jj3ep7jj3ep7jj.png" />
+    <None Remove="Images\backgroundlocxuan.png" />
     <None Remove="Images\HieuNguyenPhoto.png" />
     <None Remove="Images\image1.png" />
     <None Remove="Images\image2.png" />
@@ -56,9 +56,6 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Fonts\HL-thufap2-unicode.ttf" />
-    <Resource Include="Images\Gemini_Generated_Image_p7jj3ep7jj3ep7jj.png">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
     <Resource Include="Images\HieuNguyenPhoto.png" />
     <Resource Include="Images\image1.png" />
     <Resource Include="Images\image2.png" />
@@ -83,6 +80,10 @@
     <Content Include="Images\media1.mov">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Resource Include="Images\backgroundlocxuan.png" />
   </ItemGroup>
   
   <ItemGroup>
