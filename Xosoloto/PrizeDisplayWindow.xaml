@@ -6,7 +6,7 @@
         WindowStyle="None">
     <Grid>
         <Grid.Background>
-            <ImageBrush x:Name="imgBackground" Stretch="Fill" />
+            <ImageBrush x:Name="imgBackground" ImageSource="Images/DetailsPrize.png" Stretch="Fill" />
         </Grid.Background>
 
         <Grid>
