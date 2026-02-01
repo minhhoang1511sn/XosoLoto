@@ -183,7 +183,7 @@
             <TextBlock x:Name="txtKK" 
                        Text="1111-2222-3333-4444-5555" 
                        FontSize="35" 
-                       Margin="45,0,0,0"
+                       Margin="-55,0,0,0"
                        FontWeight="Bold"
                        Foreground="Black"/>
 

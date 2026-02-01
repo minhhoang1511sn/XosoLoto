@@ -260,7 +260,7 @@ namespace Xosoloto
 
             // Text KK1
             txtKK.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-            Canvas.SetLeft(txtKK, ((actualWidth - txtKK.DesiredSize.Width) / 2) + 100);
+            Canvas.SetLeft(txtKK, ((actualWidth - txtKK.DesiredSize.Width) / 2) + 60);
             Canvas.SetTop(txtKK, actualHeight - 160 * scaleY);
 
           
