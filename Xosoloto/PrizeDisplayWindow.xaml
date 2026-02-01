@@ -6,21 +6,20 @@
         WindowStyle="None">
     <Grid>
         <Grid.Background>
-            <ImageBrush x:Name="imgBackground" ImageSource="Images/DetailsPrize.png" Stretch="Fill" />
+            <ImageBrush x:Name="imgBackground" Stretch="Fill" />
         </Grid.Background>
-
-        <Grid>
+        <Grid Margin="0,0,0,0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="150"/>
+                <RowDefinition Height="200"/>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="100"/>
             </Grid.RowDefinitions>
-
-            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Image x:Name="imgLogo" Height="100" Width="220" Margin="20,0" Stretch="Uniform"/>
+            <!-- Header: Logo + Title -->
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="80,180,0,-180" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <Image x:Name="imgLogo"  Height="110" 
+ Width="250" Margin="0,0,150,0" Stretch="Uniform"/>
                 <TextBlock x:Name="txtTitle" 
                            Text="ĐẠI HỘI TẾT 2025"
-                           FontSize="60"
+                           FontSize="80"
                            FontWeight="Bold"
                            Foreground="#FFD700"
                            VerticalAlignment="Center">
@@ -32,41 +31,43 @@
                     </TextBlock.Effect>
                 </TextBlock>
             </StackPanel>
-
-            <Grid Grid.Row="1">
+            <!-- Content: Prize Info + Image -->
+            <Grid Grid.Row="1" Margin="180,30,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="6*"/>
                     <ColumnDefinition Width="4*"/>
                 </Grid.ColumnDefinitions>
-
-                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="100,0,50,0">
+                <!-- Left: Prize Name + Number -->
+                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="150,0,0,0">
                     <TextBlock x:Name="txtPrizeName" 
                                Text="LỘC XUÂN"
                                FontSize="70" 
                                FontWeight="ExtraBold"
                                Foreground="White"
-                               Margin="0,0,0,20">
+                               Margin="0,0,0,30"
+                               HorizontalAlignment="Left">
                         <TextBlock.Effect>
                             <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="2"/>
                         </TextBlock.Effect>
                     </TextBlock>
-
-                    <Border Background="#FFF8DC" CornerRadius="25" BorderBrush="#D2691E" BorderThickness="4">
-                        <TextBlock x:Name="txtPrizeNumber" 
-                                   Text="? ? ? ?"
-                                   FontSize="160" 
-                                   FontWeight="Black"
-                                   Foreground="Black"
-                                   HorizontalAlignment="Center"
-                                   TextAlignment="Center"
-                                   Padding="20"/>
-                    </Border>
+                    <TextBox x:Name="txtPrizeNumber" 
+                         Text="? ? ? ?"
+                         FontSize="180" 
+                         FontWeight="Black"
+                         Foreground="Black"
+                         HorizontalAlignment="Left"
+                         Margin="-100,0,0,0"
+                         Background="#80FFFFFF"
+                         BorderBrush="#FFD700"
+                         BorderThickness="3"
+                         TextAlignment="Center"
+                         VerticalContentAlignment="Center"/>
                 </StackPanel>
-
-                <Viewbox Grid.Column="1" Margin="20,50,100,50">
-                    <Image x:Name="imgPrize" Stretch="Uniform"/>
+                <!-- Right: Prize Image -->
+                <Viewbox Grid.Column="1" Margin="0,0,100,100" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Image x:Name="imgPrize" Stretch="Uniform" MaxHeight="450" MaxWidth="450"/>
                 </Viewbox>
             </Grid>
         </Grid>
     </Grid>
-</Window>
+</Window> 

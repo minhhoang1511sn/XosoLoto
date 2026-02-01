@@ -14,7 +14,6 @@ namespace Xosoloto
         private string eventTitle;
         private int prizeIndex;
 
-        public PrizeDisplayWindow() { InitializeComponent(); }
 
         public PrizeDisplayWindow(string title, string logoPath, string prizeName, int prizeIndex, string[] prizePaths, string backgroundPath = null)
         {
@@ -37,9 +36,7 @@ namespace Xosoloto
         {
             try
             {
-                // Nạp Background
-                //if (!string.IsNullOrEmpty(backgroundPath) && File.Exists(backgroundPath))
-                //    imgBackgroundBrush.ImageSource = new BitmapImage(new Uri(backgroundPath, UriKind.Absolute));
+                imgBackground.ImageSource = new BitmapImage(new Uri("pack://application:,,,/Images/DetailsPrize.png"));
 
                 // Nạp Title
                 txtTitle.Text = !string.IsNullOrEmpty(eventTitle) ? eventTitle : "ĐẠI HỘI TẾT";

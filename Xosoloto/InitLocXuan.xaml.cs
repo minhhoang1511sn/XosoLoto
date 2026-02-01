@@ -52,7 +52,6 @@ namespace Xosoloto
                 bitmap.EndInit();
                 imgBackgroundPreview.Source = bitmap;
                 
-                MessageBox.Show($"Background image selected!", "Add Image");
             }
         }
 
@@ -73,8 +72,6 @@ namespace Xosoloto
                 bitmap.CacheOption = BitmapCacheOption.OnLoad;
                 bitmap.EndInit();
                 imgLogoPreview.Source = bitmap;
-                
-                MessageBox.Show($"Logo selected!", "Add Logo");
             }
         }
 
@@ -120,7 +117,6 @@ namespace Xosoloto
                         break;
                 }
                 
-                MessageBox.Show($"Prize {prizeIndex + 1} image selected!", "Add Prize Image");
             }
         }
 
@@ -129,17 +125,15 @@ namespace Xosoloto
             // Kiểm tra xem đã nhập đủ dữ liệu chưa
             if (string.IsNullOrWhiteSpace(imagePath))
             {
-                MessageBox.Show("Please select a background image!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
             if (string.IsNullOrWhiteSpace(txtTitle.Text))
             {
-                MessageBox.Show("Please enter a title!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
             if (string.IsNullOrWhiteSpace(logoPath))
             {
-                MessageBox.Show("Please select a logo!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+               
                 return;
             }
             
@@ -148,7 +142,7 @@ namespace Xosoloto
             {
                 if (string.IsNullOrWhiteSpace(prizePaths[i]))
                 {
-                    MessageBox.Show($"Please select image for Prize {i + 1}!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                  
                     return;
                 }
             }
