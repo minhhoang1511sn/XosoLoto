@@ -11,10 +11,20 @@ namespace Xosoloto
         private const double BASE_WIDTH = 1600;
         private const double BASE_HEIGHT = 900;
 
+        private string[] prizeNames = new string[]
+        {
+            "LỘC XUÂN 1",
+            "LỘC XUÂN 2",
+            "LỘC XUÂN 3",
+            "LỘC XUÂN 4",
+            "LỘC XUÂN 5"
+        };
+
         public LuckyDrawWindow()
         {
             InitializeComponent();
             this.Loaded += Window_Loaded;
+            InitializeButtonEvents();
         }
 
         public LuckyDrawWindow(string imagePath, string title, string logoPath, string[] prizePaths)
@@ -27,7 +37,89 @@ namespace Xosoloto
             this.LogoPath = logoPath;
             this.PrizePaths = prizePaths;
 
+            InitializeButtonEvents();
             LoadData();
+        }
+
+        private void InitializeButtonEvents()
+        {
+            // Gắn sự kiện Click cho các buttons
+            btn1.Click += Btn1_Click;
+            btn2.Click += Btn2_Click;
+            btn3.Click += Btn3_Click;
+            btn4.Click += Btn4_Click;
+            btn5.Click += Btn5_Click;
+        }
+
+        private void Btn1_Click(object sender, RoutedEventArgs e)
+        {
+            OpenPrizeWindow(0); // Prize index 0 = Lộc Xuân 1
+        }
+
+        private void Btn2_Click(object sender, RoutedEventArgs e)
+        {
+            OpenPrizeWindow(1); // Prize index 1 = Lộc Xuân 2
+        }
+
+        private void Btn3_Click(object sender, RoutedEventArgs e)
+        {
+            OpenPrizeWindow(2); // Prize index 2 = Lộc Xuân 3
+        }
+
+        private void Btn4_Click(object sender, RoutedEventArgs e)
+        {
+            OpenPrizeWindow(3); // Prize index 3 = Lộc Xuân 4
+        }
+
+        private void Btn5_Click(object sender, RoutedEventArgs e)
+        {
+            OpenPrizeWindow(4); // Prize index 4 = Lộc Xuân 5
+        }
+
+        private void OpenPrizeWindow(int prizeIndex)
+        {
+            try
+            {
+                // Kiểm tra xem có prize images không
+                if (PrizePaths == null || PrizePaths.Length == 0)
+                {
+                    MessageBox.Show("Chưa có hình ảnh giải thưởng!", "Thông báo",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                // Kiểm tra index hợp lệ
+                if (prizeIndex < 0 || prizeIndex >= PrizePaths.Length)
+                {
+                    MessageBox.Show("Giải thưởng không hợp lệ!", "Lỗi",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                // Tạo và mở PrizeDisplayWindow
+                PrizeDisplayWindow prizeWindow = new PrizeDisplayWindow(
+                    title: this.Title,                    // Title từ LuckyDrawWindow
+                    logoPath: this.LogoPath,              // Logo path
+                    prizeName: prizeNames[prizeIndex],    // Tên giải (Lộc Xuân 1-5)
+                    prizeIndex: prizeIndex,               // Index của giải
+                    prizePaths: this.PrizePaths,          // Mảng tất cả prize images
+                    backgroundPath: this.ImagePath        // Background path
+                );
+
+                // Ẩn LuckyDrawWindow
+                this.Hide();
+
+                // Hiển thị PrizeDisplayWindow
+                prizeWindow.ShowDialog();
+
+                // Hiện lại LuckyDrawWindow sau khi đóng PrizeDisplayWindow
+                this.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi mở cửa sổ giải thưởng: {ex.Message}", "Lỗi",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -116,7 +208,7 @@ namespace Xosoloto
                 // Load background image
                 if (!string.IsNullOrEmpty(ImagePath))
                 {
-                    imgPrize.Source = new BitmapImage(new Uri(ImagePath));
+                    imgPrize.Source = new BitmapImage(new Uri(ImagePath, UriKind.Absolute));
                 }
 
                 // Load title
@@ -128,27 +220,47 @@ namespace Xosoloto
                 // Load logo
                 if (!string.IsNullOrEmpty(LogoPath))
                 {
-                    imgLogo.Source = new BitmapImage(new Uri(LogoPath));
-                }
-
-                // Load prize images (nếu có Image controls cho prizes trong XAML)
-                if (PrizePaths != null && PrizePaths.Length >= 5)
-                {
-                    // Giả sử bạn có các Image controls tên là imgPrize1, imgPrize2, etc.
-                    // Bạn cần thêm các controls này vào XAML của LuckyDrawWindow
-
-                    // Ví dụ:
-                    // if (!string.IsNullOrEmpty(PrizePaths[0]))
-                    //     imgPrize1.Source = new BitmapImage(new Uri(PrizePaths[0]));
-                    // if (!string.IsNullOrEmpty(PrizePaths[1]))
-                    //     imgPrize2.Source = new BitmapImage(new Uri(PrizePaths[1]));
-                    // ... và tiếp tục cho các prizes còn lại
+                    imgLogo.Source = new BitmapImage(new Uri(LogoPath, UriKind.Absolute));
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading data: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error loading data: {ex.Message}", "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        // Public method để cập nhật số hiển thị
+        public void UpdatePrizeNumbers(string loc1, string loc2, string loc3, string loc4)
+        {
+            if (!string.IsNullOrEmpty(loc1))
+                txtLoc1.Text = FormatNumber(loc1);
+            if (!string.IsNullOrEmpty(loc2))
+                txtLoc2.Text = FormatNumber(loc2);
+            if (!string.IsNullOrEmpty(loc3))
+                txtLoc3.Text = FormatNumber(loc3);
+            if (!string.IsNullOrEmpty(loc4))
+                txtLoc4.Text = FormatNumber(loc4);
+        }
+
+        // Public method để cập nhật text khuyến khích
+        public void UpdateIncentiveTexts(string kk1, string kk2)
+        {
+            if (!string.IsNullOrEmpty(kk1))
+                txtKK1.Text = kk1;
+            if (!string.IsNullOrEmpty(kk2))
+                txtKK2.Text = kk2;
+        }
+
+        // Helper method để format số với khoảng cách
+        private string FormatNumber(string number)
+        {
+            number = number.Replace(" ", "");
+            if (number.Length >= 4)
+            {
+                return $"{number[0]} {number[1]} {number[2]} {number[3]}";
+            }
+            return number;
         }
     }
 }

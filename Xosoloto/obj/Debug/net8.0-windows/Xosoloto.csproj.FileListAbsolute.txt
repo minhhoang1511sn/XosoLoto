@@ -97,3 +97,5 @@ D:\DEV\XosoLoto\Xosoloto\obj\Debug\net8.0-windows\LuckyDrawControl.g.cs
 D:\DEV\XosoLoto\Xosoloto\obj\Debug\net8.0-windows\LuckyDrawControl.baml
 D:\DEV\XosoLoto\Xosoloto\obj\Debug\net8.0-windows\InitLocXuan.g.cs
 D:\DEV\XosoLoto\Xosoloto\obj\Debug\net8.0-windows\InitLocXuan.baml
+D:\DEV\XosoLoto\Xosoloto\obj\Debug\net8.0-windows\PrizeDisplayWindow.g.cs
+D:\DEV\XosoLoto\Xosoloto\obj\Debug\net8.0-windows\PrizeDisplayWindow.baml
