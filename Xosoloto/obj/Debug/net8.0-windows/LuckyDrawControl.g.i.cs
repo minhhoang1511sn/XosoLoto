@@ -53,7 +53,7 @@ namespace Xosoloto {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/LotoFun;component/luckydrawcontrol.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/LotoFun;V1.0.0.0;component/luckydrawcontrol.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\LuckyDrawControl.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);
