@@ -1,28 +1,29 @@
 ﻿<Window x:Class="Xosoloto.VongLoaiSetupWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Cấu hình vòng loại" Height="550" Width="700"
+        Title="Cấu hình vòng loại" Height="550" Width="820"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize">
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" 
-                   Text="Nhập số vòng loại (mỗi vòng gồm 6 số) và chọn màu vé tương ứng"
+        <TextBlock Grid.Row="0"
+                   Text="Nhập số vòng loại và chọn màu vé tương ứng"
                    FontSize="14"
                    FontWeight="Bold"
                    Margin="0,0,0,10"
                    TextWrapping="Wrap"/>
 
         <!-- Import Excel Section -->
-        <Border Grid.Row="1" 
-                BorderBrush="LightGray" 
-                BorderThickness="1" 
+        <Border Grid.Row="1"
+                BorderBrush="LightGray"
+                BorderThickness="1"
                 Padding="10"
                 Margin="0,0,0,10"
                 Background="#F5F5F5">
@@ -54,44 +55,63 @@
             </Grid>
         </Border>
 
+        <!-- Column Header -->
+        <Grid Grid.Row="2" Margin="0,0,0,4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="65"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="155"/>
+                <ColumnDefinition Width="35"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="1" Text="Số vòng" FontSize="11" Foreground="Gray" HorizontalAlignment="Center"/>
+            <TextBlock Grid.Column="2" Text="Giá vé (VNĐ)" FontSize="11" Foreground="Gray" HorizontalAlignment="Center"/>
+            <TextBlock Grid.Column="3" Text="Màu vé" FontSize="11" Foreground="Gray" HorizontalAlignment="Center"/>
+        </Grid>
+
         <!-- Manual Input Section -->
-        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
             <StackPanel x:Name="VongLoaiStackPanel">
                 <!-- Vòng mặc định -->
-                <Grid Margin="0,5">
+                <Grid Margin="0,3">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="65"/>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="130"/>
+                        <ColumnDefinition Width="155"/>
+                        <ColumnDefinition Width="35"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Column="0" 
-                               Text="Vòng 1:" 
+                    <TextBlock Grid.Column="0"
+                               Text="Vòng 1:"
                                VerticalAlignment="Center"
-                               Margin="0,0,10,0"
-                               FontWeight="Bold"
-                               Width="60"/>
+                               FontWeight="Bold"/>
 
                     <TextBox Grid.Column="1"
                              x:Name="Vong1TextBox"
                              FontSize="14"
                              Padding="5"
                              VerticalAlignment="Center"
-                             Margin="0,0,10,0"/>
+                             Margin="0,0,8,0"/>
 
-                    <ComboBox Grid.Column="2"
+                    <TextBox Grid.Column="2"
+                             x:Name="Vong1GiaVeTextBox"
+                             FontSize="14"
+                             Padding="5"
+                             VerticalAlignment="Center"
+                             Margin="0,0,8,0"/>
+
+                    <ComboBox Grid.Column="3"
                               x:Name="Vong1ColorComboBox"
-                              Width="150"
-                              Height="30"
-                              Margin="0,0,5,0"
+                              Height="32"
+                              Margin="0,0,8,0"
                               SelectionChanged="ColorComboBox_SelectionChanged">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
-                                    <Rectangle Width="20" Height="20" 
-                                               Fill="{Binding Color}" 
-                                               Stroke="Gray" 
+                                    <Rectangle Width="16" Height="16"
+                                               Fill="{Binding Color}"
+                                               Stroke="Gray"
                                                StrokeThickness="1"
                                                Margin="0,0,5,0"/>
                                     <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
@@ -100,11 +120,10 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <Button Grid.Column="3"
+                    <Button Grid.Column="4"
                             Content="X"
                             Width="30"
                             Height="30"
-                            Margin="5,0,0,0"
                             Click="RemoveVong_Click"
                             Tag="1"
                             IsEnabled="False"/>
@@ -112,7 +131,7 @@
             </StackPanel>
         </ScrollViewer>
 
-        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
             <Button Content="Thêm vòng"
                     Padding="15,5"
                     Margin="0,0,10,0"

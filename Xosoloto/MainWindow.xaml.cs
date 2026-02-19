@@ -30,14 +30,12 @@ namespace Xosoloto
         {
             InitializeComponent();
 
-            // Hiển thị cửa sổ chọn loại game trước
             if (!ShowGameTypeSelection())
             {
                 Application.Current.Shutdown();
                 return;
             }
 
-            // CHỈ hiển thị cửa sổ setup vòng loại nếu là LotoVuiXuan
             if (CurrentGameType == GameType.LotoVuiXuan)
             {
                 ShowVongLoaiSetup();
@@ -61,16 +59,15 @@ namespace Xosoloto
                 {
                     case GameType.LotoVuiXuan:
                         this.Title = "Xổ Số Loto - Loto Vui Xuân";
-                        return true; // Tiếp tục với LotoVuiXuan
+                        return true;
 
                     case GameType.LocXuanDauNam:
                         this.Title = "Xổ Số Loto - Lộc Xuân Đầu Năm";
-                        
-                        return true; 
+                        return true;
                 }
                 return true;
             }
-            return false; // User cancel
+            return false;
         }
 
         private void ShowVongLoaiSetup()
@@ -79,15 +76,13 @@ namespace Xosoloto
             if (setupWindow.ShowDialog() == true)
             {
                 VongLoaiConfig = setupWindow.VongLoaiData;
-                // Load vòng loại vào ComboBox
                 VongLoaiComboBox.Items.Clear();
                 foreach (var vong in VongLoaiConfig.Keys.OrderBy(k => k))
                 {
-                    // Hiển thị 6 số thay vì chỉ số vòng
                     string displayText = string.Join(" ", VongLoaiConfig[vong].Numbers);
                     ComboBoxItem item = new ComboBoxItem
                     {
-                        Content = displayText,  // Hiển thị: "1 2 3 4 5 6"
+                        Content = displayText,
                         Tag = new
                         {
                             VongNumber = vong,
@@ -97,11 +92,8 @@ namespace Xosoloto
                     };
                     VongLoaiComboBox.Items.Add(item);
                 }
-                // Chọn vòng đầu tiên
                 if (VongLoaiComboBox.Items.Count > 0)
-                {
                     VongLoaiComboBox.SelectedIndex = 0;
-                }
             }
             else
             {
@@ -114,7 +106,6 @@ namespace Xosoloto
             InitLocXuan setupWindow = new InitLocXuan();
             if (setupWindow.ShowDialog() == true)
             {
-             
             }
             else
             {
@@ -124,7 +115,6 @@ namespace Xosoloto
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            // F11: bật / tắt fullscreen
             if (e.Key == Key.F11)
             {
                 if (isFullScreen)
@@ -133,7 +123,6 @@ namespace Xosoloto
                     EnterFullScreen();
                 e.Handled = true;
             }
-            // ESC: chỉ thoát fullscreen
             else if (e.Key == Key.Escape && isFullScreen)
             {
                 ExitFullScreen();
@@ -159,7 +148,6 @@ namespace Xosoloto
             isFullScreen = false;
         }
 
-        // ================= ENTER DÙNG CHUNG =================
         private void NumberInput_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key != Key.Enter) return;
@@ -181,7 +169,6 @@ namespace Xosoloto
             e.Handled = true;
         }
 
-        // ================= LOGIC =================
         private void AddNumberToHistory(string number)
         {
             _historyNumbers.Add(new HistoryItem
@@ -292,8 +279,7 @@ namespace Xosoloto
         private void SetMauVeComboBoxByColor(SolidColorBrush targetColor)
         {
             if (targetColor == null) return;
-            Color color = targetColor.Color;
-            string closestColorName = GetClosestColorName(color);
+            string closestColorName = GetClosestColorName(targetColor.Color);
             foreach (ComboBoxItem item in MauVeComboBox.Items)
             {
                 if (item.Content.ToString() == closestColorName)
@@ -306,22 +292,16 @@ namespace Xosoloto
 
         private string GetClosestColorName(Color color)
         {
-            var colorMap = new Dictionary<string, Color>
-            {
-                { "Xanh", Colors.Blue },
-                { "Đỏ", Colors.Red },
-                { "Vàng", Colors.Yellow },
-                { "Xanh lá", Colors.Green }
-            };
-            string closestName = "Đỏ";
+            string closestName = VongLoaiSetupWindow.AvailableColors[0].Name;
             double minDistance = double.MaxValue;
-            foreach (var kvp in colorMap)
+
+            foreach (var option in VongLoaiSetupWindow.AvailableColors)
             {
-                double distance = GetColorDistance(color, kvp.Value);
+                double distance = GetColorDistance(color, option.Color.Color);
                 if (distance < minDistance)
                 {
                     minDistance = distance;
-                    closestName = kvp.Key;
+                    closestName = option.Name;
                 }
             }
             return closestName;
@@ -340,21 +320,9 @@ namespace Xosoloto
             if (MauVeComboBox.SelectedItem is ComboBoxItem selectedItem)
             {
                 string mauVe = selectedItem.Content.ToString();
-                switch (mauVe)
-                {
-                    case "Xanh":
-                        MauVeBorder.Background = Brushes.Blue;
-                        break;
-                    case "Đỏ":
-                        MauVeBorder.Background = Brushes.Red;
-                        break;
-                    case "Vàng":
-                        MauVeBorder.Background = Brushes.Yellow;
-                        break;
-                    case "Xanh lá":
-                        MauVeBorder.Background = Brushes.Green;
-                        break;
-                }
+                var match = VongLoaiSetupWindow.AvailableColors.FirstOrDefault(c => c.Name == mauVe);
+                if (match != null)
+                    MauVeBorder.Background = match.Color;
             }
         }
 
@@ -502,13 +470,9 @@ namespace Xosoloto
             {
                 var child = VisualTreeHelper.GetChild(parent, i);
                 if (child is TextBlock textBlock)
-                {
                     textBlock.Foreground = isNumberColorRed ? Brushes.Red : Brushes.Black;
-                }
                 else if (child is Path path)
-                {
                     path.Fill = isNumberColorRed ? Brushes.Red : Brushes.Black;
-                }
                 ChangeColorRecursive(child);
             }
         }

@@ -65,11 +65,11 @@ namespace Xosoloto
             // Trả về số mặc định hiển thị ban đầu
             switch (index)
             {
-                case 0: return "1 1 1 1";
-                case 1: return "2 2 2 2";
-                case 2: return "3 3 3 3";
-                case 3: return "4 4 4 4";
-                default: return "? ? ? ?";
+                case 0: return "- - - -";
+                case 1: return "- - - -";
+                case 2: return "- - - -";
+                case 3: return "- - - -";
+                default: return "- - - -";
             }
         }
 
@@ -223,7 +223,7 @@ namespace Xosoloto
             // Title
             txtTitle.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
             Canvas.SetLeft(txtTitle, (actualWidth - txtTitle.DesiredSize.Width) / 2);
-            Canvas.SetTop(txtTitle, 170 * scaleY);
+            Canvas.SetTop(txtTitle, 130 * scaleY);
 
             // Lộc Xuân 1
             txtLoc1.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));

@@ -307,7 +307,7 @@
                                 </ComboBox.ItemTemplate>
 
                                 <ComboBoxItem Content="Xanh" Background="Blue" Foreground="White"/>
-                                <ComboBoxItem Content="Đỏ" Background="Red" Foreground="White"/>
+                                <ComboBoxItem Content="Hồng đậm" Background="#C7157F" Foreground="White"/>
                                 <ComboBoxItem Content="Vàng" Background="Yellow" Foreground="Black"/>
                                 <ComboBoxItem Content="Xanh lá" Background="Green" Foreground="White"/>
                             </ComboBox>

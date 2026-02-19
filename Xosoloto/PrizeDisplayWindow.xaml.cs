@@ -159,7 +159,7 @@ namespace Xosoloto
                 
                 txtPrizeNumber.FontSize = 35;
                 txtPrizeNumber.Padding = new Thickness(-100, 0, 0, 0);
-                txtPrizeName.Margin = new Thickness(-120, -80, 0, 0);
+                txtPrizeName.Margin = new Thickness(-150, -70, 0, 30);
                 txtPrizeName.FontSize = 50;
                 txtPrizeNumber.Height = 180;
             }

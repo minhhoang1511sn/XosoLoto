@@ -15,7 +15,7 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <!-- Header: Logo + Title -->
-                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="80,180,0,-180" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="80,130,0,-180" HorizontalAlignment="Left" VerticalAlignment="Top">
                     <Image x:Name="imgLogo"  Height="110" 
 Width="250" Margin="0,0,150,0" Stretch="Uniform"/>
                     <TextBlock x:Name="txtTitle" 
@@ -23,6 +23,7 @@ Width="250" Margin="0,0,150,0" Stretch="Uniform"/>
                           FontSize="80"
                           FontWeight="Bold"
                           Foreground="#FFD700"
+                               FontFamily="/Fonts/#HL-Thufap2-Unicode"
                           VerticalAlignment="Center">
                         <TextBlock.RenderTransform>
                             <SkewTransform AngleX="-5"/>
@@ -46,7 +47,8 @@ Width="250" Margin="0,0,150,0" Stretch="Uniform"/>
                                      Width="600"
                               FontWeight="ExtraBold"
                               Foreground="White"
-                              Margin="-120,-50,0,30"
+                              
+                               Margin="-70,-20,0,30"
                               HorizontalAlignment="Left">
                             <TextBlock.Effect>
                                 <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="2"/>

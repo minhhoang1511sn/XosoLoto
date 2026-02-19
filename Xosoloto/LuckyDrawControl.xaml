@@ -33,16 +33,18 @@
                    Height="110" 
                    Width="250"
                    Canvas.Left="90"
-                   Canvas.Top="200"
+                   Canvas.Top="180"
                    Stretch="Fill"/>
 
             <!-- Title - Giữa trên cùng -->
             <TextBlock x:Name="txtTitle" 
                        Text="ĐẠI HỘI TẾT 2025"
-                       FontSize="60"
+                       FontSize="80"
                        FontWeight="Bold"
                        Foreground="#FFD700"
-                       Canvas.Top="170"
+                       
+                               FontFamily="/Fonts/#HL-Thufap2-Unicode"
+                       Canvas.Top="100"
                        TextAlignment="Center"
                        Effect="{StaticResource TextShadow}">
                 <TextBlock.RenderTransform>
@@ -60,28 +62,28 @@
 
             <!-- Lộc Xuân 1 -->
             <TextBlock x:Name="txtLoc1" 
-                       Text="1 1 1 1" 
+                       Text="- - - -" 
                        FontSize="56" 
                        FontWeight="Bold"
                        Foreground="Black"/>
 
             <!-- Lộc Xuân 2 -->
             <TextBlock x:Name="txtLoc2" 
-                       Text="2 2 2 2" 
+                       Text="- - - -" 
                        FontSize="56" 
                        FontWeight="Bold"
                        Foreground="Black"/>
 
             <!-- Lộc Xuân 3 -->
             <TextBlock x:Name="txtLoc3" 
-                       Text="3 3 3 3" 
+                       Text="- - - -" 
                        FontSize="56" 
                        FontWeight="Bold"
                        Foreground="Black"/>
 
             <!-- Lộc Xuân 4 -->
             <TextBlock x:Name="txtLoc4" 
-                       Text="4 4 4 4" 
+                       Text="- - - -" 
                        FontSize="56" 
                        FontWeight="Bold"
                        Foreground="Black"/>
@@ -181,7 +183,7 @@
 
             <!-- Text Khuyến Khích 1 -->
             <TextBlock x:Name="txtKK" 
-                       Text="1111-2222-3333-4444-5555" 
+                       Text="- - - -" 
                        FontSize="35" 
                        Margin="-55,0,0,0"
                        FontWeight="Bold"

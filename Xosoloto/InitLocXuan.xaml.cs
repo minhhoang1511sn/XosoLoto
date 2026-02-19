@@ -147,13 +147,13 @@ namespace Xosoloto
                 }
             }
             
-            MessageBoxResult result = MessageBox.Show("Are you sure you want to finish?",
-                                                      "Confirm",
-                                                      MessageBoxButton.YesNo,
-                                                      MessageBoxImage.Question);
-            if (result == MessageBoxResult.Yes)
-            {
-                // Truyền dữ liệu sang LuckyDrawWindow
+            //MessageBoxResult result = MessageBox.Show("Are you sure you want to finish?",
+            //                                          "Confirm",
+            //                                          MessageBoxButton.YesNo,
+            //                                          MessageBoxImage.Question);
+            //if (result == MessageBoxResult.Yes)
+            //{
+            //    // Truyền dữ liệu sang LuckyDrawWindow
                 LuckyDrawWindow luc = new LuckyDrawWindow(imagePath, txtTitle.Text, logoPath, prizePaths);
                 
                 // Ẩn cửa sổ hiện tại
@@ -164,7 +164,7 @@ namespace Xosoloto
                 
                 // Đóng cửa sổ InitLocXuan sau khi LuckyDrawWindow đóng
                 this.Close();
-            }
+            //}
         }
     }
 }
