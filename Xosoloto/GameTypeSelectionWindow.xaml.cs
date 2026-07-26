@@ -15,6 +15,16 @@ namespace Xosoloto
         public GameTypeSelectionWindow()
         {
             InitializeComponent();
+
+            // Đảm bảo cửa sổ luôn vừa với màn hình, kể cả màn hình nhỏ
+            this.Loaded += (s, e) =>
+            {
+                var workArea = SystemParameters.WorkArea;
+                this.MaxWidth = workArea.Width;
+                this.MaxHeight = workArea.Height;
+                if (this.Width > workArea.Width) this.Width = workArea.Width;
+                if (this.Height > workArea.Height) this.Height = workArea.Height;
+            };
         }
 
         private void LotoVuiXuanButton_Click(object sender, RoutedEventArgs e)

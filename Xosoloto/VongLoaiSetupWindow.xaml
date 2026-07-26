@@ -2,9 +2,12 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Cấu hình vòng loại" Height="550" Width="820"
+        MinWidth="420" MinHeight="320"
         WindowStartupLocation="CenterScreen"
-        ResizeMode="NoResize">
-    <Grid Margin="10">
+        ResizeMode="CanResize"
+        SizeToContent="Manual">
+    <Viewbox Stretch="Uniform">
+    <Grid Margin="10" Width="800" Height="530">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -148,4 +151,5 @@
                     Click="Confirm_Click"/>
         </StackPanel>
     </Grid>
+    </Viewbox>
 </Window>

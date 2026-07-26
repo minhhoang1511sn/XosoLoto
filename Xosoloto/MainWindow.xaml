@@ -27,7 +27,8 @@
                   MediaEnded="MediaElement_MediaEnded"
                   MediaFailed="MediaElement_MediaFailed"/>
 
-        <Grid>
+        <Viewbox Stretch="Uniform">
+        <Grid Width="1920" Height="1080">
             <Grid.RowDefinitions>
                 <RowDefinition Height="0.5*" />
                 <RowDefinition Height="2*" />
@@ -394,20 +395,29 @@
                                     Click="ClearAllButton_Click"/>
                         </Grid>
 
-                        <!-- Button Bảng Giá nhỏ góc dưới phải -->
-                        <Button Grid.Column="1"
-                                Content="📊"
-                                Width="32" Height="32"
-                                Margin="0,5,8,10"
-                                FontSize="16"
-                                VerticalAlignment="Bottom"
-                                HorizontalAlignment="Right"
-                                ToolTip="Bảng Giá Vé"
-                                Click="BangGiaButton_Click"/>
+                        <!-- Buttons góc dưới phải: Bảng Giá + Đăng xuất -->
+                        <StackPanel Grid.Column="1"
+                                    Orientation="Horizontal"
+                                    Margin="0,5,8,10"
+                                    VerticalAlignment="Bottom"
+                                    HorizontalAlignment="Right">
+                            <Button Content="🚪"
+                                    Width="32" Height="32"
+                                    Margin="0,0,6,0"
+                                    FontSize="16"
+                                    ToolTip="Đăng xuất"
+                                    Click="LogoutButton_Click"/>
+                            <Button Content="📊"
+                                    Width="32" Height="32"
+                                    FontSize="16"
+                                    ToolTip="Bảng Giá Vé"
+                                    Click="BangGiaButton_Click"/>
+                        </StackPanel>
                     </Grid>
 
                 </Grid>
             </Border>
         </Grid>
+        </Viewbox>
     </Grid>
 </Window>

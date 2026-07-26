@@ -25,9 +25,7 @@
     <None Remove="Fonts\Faustina-VariableFont_wght.ttf" />
     <None Remove="Fonts\HL-thufap2-unicode.ttf" />
     <None Remove="Images\a.png" />
-    <None Remove="Images\background.avi" />
     <None Remove="Images\background.jpg" />
-    <None Remove="Images\background.mov" />
     <None Remove="Images\backgroundlocxuan.png" />
     <None Remove="Images\c.png" />
     <None Remove="Images\DetailsPrize.png" />
@@ -40,8 +38,6 @@
     <None Remove="Images\image6.gif" />
     <None Remove="Images\image6.mp4" />
     <None Remove="Images\locxuan.jpg" />
-    <None Remove="Images\media1.mov" />
-    <None Remove="Images\media1.mp4" />
     <None Remove="Images\nen-01.png" />
     <None Remove="Images\nguphuc.jpg" />
     <None Remove="Images\nguphuc.png" />
@@ -70,17 +66,8 @@
     <Content Include="Images\a.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Images\background.avi">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\background.mov">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Images\image5.mp4">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\media1.mp4">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Resource Include="Images\image6.gif" />
     <Resource Include="Images\image6.mp4" />

@@ -9,6 +9,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using Xosoloto.Models;
+using Xosoloto.Services;
 
 namespace Xosoloto
 {
@@ -27,10 +29,24 @@ namespace Xosoloto
         public GameType CurrentGameType { get; private set; }
         public string TieuDe { get; private set; }
         private BangGiaWindow _bangGiaWindow;
+        private string _currentUsername = "";
 
-        public MainWindow()
+        public MainWindow() : this("Khách") { }
+
+        public MainWindow(string username)
         {
             InitializeComponent();
+            _currentUsername = string.IsNullOrWhiteSpace(username) ? "Khách" : username.Trim();
+
+            if (TryLoadSavedSettings())
+            {
+                if (CurrentGameType == GameType.LotoVuiXuan)
+                {
+                    mediaElement.Play();
+                    SetNumber("");
+                }
+                return;
+            }
 
             if (!ShowGameTypeSelection())
             {
@@ -47,6 +63,128 @@ namespace Xosoloto
             if (CurrentGameType == GameType.LocXuanDauNam)
             {
                 ShowLocXuan();
+            }
+        }
+
+        /// <summary>
+        /// Kiểm tra tài khoản hiện tại đã có cấu hình (loại game, vòng loại, màu vé...) lưu từ
+        /// trước hay chưa. Nếu có, hỏi người dùng có muốn dùng lại không, và nạp trực tiếp
+        /// thay vì bắt cấu hình lại từ đầu.
+        /// </summary>
+        private bool TryLoadSavedSettings()
+        {
+            var saved = AccountService.LoadSettings(_currentUsername);
+            if (saved == null || saved.VongLoaiList.Count == 0) return false;
+
+            bool isLocXuan = saved.GameType == GameType.LocXuanDauNam.ToString();
+            // Lộc Xuân Đầu Năm cần chọn lại ảnh/logo (đường dẫn file có thể không còn tồn tại
+            // trên máy khác), nên chỉ khôi phục tự động cho Loto Vui Xuân.
+            if (isLocXuan) return false;
+
+            string gameTypeLabel = isLocXuan ? "Lộc Xuân Đầu Năm" : "Loto Vui Xuân";
+            var result = MessageBox.Show(
+                $"Tài khoản \"{_currentUsername}\" có cấu hình đã lưu trước đó " +
+                $"(loại game: {gameTypeLabel}, {saved.VongLoaiList.Count} vòng loại).\n\n" +
+                "Bạn có muốn dùng lại cấu hình này không?",
+                "Cấu hình đã lưu",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (result != MessageBoxResult.Yes) return false;
+
+            CurrentGameType = GameType.LotoVuiXuan;
+            this.Title = "Xổ Số Loto - Loto Vui Xuân";
+
+            VongLoaiConfig = new Dictionary<int, VongLoaiInfo>();
+            foreach (var dto in saved.VongLoaiList)
+            {
+                Color color;
+                try { color = (Color)ColorConverter.ConvertFromString(dto.ColorHex); }
+                catch { color = Colors.LightBlue; }
+
+                VongLoaiConfig[dto.VongNumber] = new VongLoaiInfo
+                {
+                    Numbers = dto.Numbers,
+                    GiaVe = dto.GiaVe,
+                    Color = new SolidColorBrush(color)
+                };
+            }
+
+            VongLoaiComboBox.Items.Clear();
+            foreach (var vong in VongLoaiConfig.Keys.OrderBy(k => k))
+            {
+                string displayText = string.Join(" ", VongLoaiConfig[vong].Numbers);
+                ComboBoxItem item = new ComboBoxItem
+                {
+                    Content = displayText,
+                    Tag = new
+                    {
+                        VongNumber = vong,
+                        Numbers = VongLoaiConfig[vong].Numbers,
+                        Color = VongLoaiConfig[vong].Color
+                    }
+                };
+                VongLoaiComboBox.Items.Add(item);
+            }
+            if (VongLoaiComboBox.Items.Count > 0)
+                VongLoaiComboBox.SelectedIndex = 0;
+
+            if (!string.IsNullOrEmpty(saved.SelectedMauVe))
+            {
+                foreach (ComboBoxItem item in MauVeComboBox.Items)
+                {
+                    if (item.Content.ToString() == saved.SelectedMauVe)
+                    {
+                        MauVeComboBox.SelectedItem = item;
+                        break;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>Lưu lại cấu hình hiện tại (vòng loại, giá vé, màu vé...) cho tài khoản đang đăng nhập.</summary>
+        private void SaveCurrentSettings()
+        {
+            if (string.IsNullOrEmpty(_currentUsername) || VongLoaiConfig == null) return;
+
+            var data = new AppSettingsData
+            {
+                GameType = CurrentGameType.ToString(),
+                SelectedMauVe = (MauVeComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "",
+                VongLoaiList = VongLoaiConfig.Select(kv => new VongLoaiSettingDto
+                {
+                    VongNumber = kv.Key,
+                    Numbers = kv.Value.Numbers,
+                    GiaVe = kv.Value.GiaVe,
+                    ColorHex = kv.Value.Color?.Color.ToString() ?? "#FFFFFF"
+                }).ToList()
+            };
+
+            AccountService.SaveSettings(_currentUsername, data);
+        }
+
+        private void LogoutButton_Click(object sender, RoutedEventArgs e)
+        {
+            var confirm = MessageBox.Show(
+                $"Đăng xuất khỏi tài khoản \"{_currentUsername}\"?",
+                "Đăng xuất", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (confirm != MessageBoxResult.Yes) return;
+
+            AccountService.ForgetUser();
+
+            var loginWindow = new LoginWindow();
+            if (loginWindow.ShowDialog() == true && !string.IsNullOrEmpty(loginWindow.LoggedInUsername))
+            {
+                var newMain = new MainWindow(loginWindow.LoggedInUsername);
+                Application.Current.MainWindow = newMain;
+                newMain.Show();
+                this.Close();
+            }
+            else
+            {
+                Application.Current.Shutdown();
             }
         }
 
@@ -97,6 +235,8 @@ namespace Xosoloto
                 }
                 if (VongLoaiComboBox.Items.Count > 0)
                     VongLoaiComboBox.SelectedIndex = 0;
+
+                SaveCurrentSettings();
             }
             else
             {
@@ -301,6 +441,8 @@ namespace Xosoloto
                     .FirstOrDefault(c => c.Name == selectedItem.Content.ToString());
                 if (match != null)
                     MauVeBorder.Background = match.Color;
+
+                SaveCurrentSettings();
             }
         }
 

@@ -4,11 +4,14 @@
         Title="Chọn Loại Game"
         Height="280"
         Width="500"
+        MinWidth="320" MinHeight="220"
         WindowStartupLocation="CenterScreen"
-        ResizeMode="NoResize"
+        ResizeMode="CanResize"
+        SizeToContent="Manual"
         Background="#f0f0f0">
 
-    <Grid Margin="20">
+    <Viewbox Stretch="Uniform">
+    <Grid Margin="20" Width="460" Height="240">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -121,4 +124,5 @@
             </Button.Style>
         </Button>
     </Grid>
+    </Viewbox>
 </Window>
