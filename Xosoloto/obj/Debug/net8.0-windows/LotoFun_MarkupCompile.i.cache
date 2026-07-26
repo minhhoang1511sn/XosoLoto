@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
 D:\DEV\XosoLoto\Xosoloto\App.xaml
-6-1294546683
-5-294569763
-14-440820519
+8-1044870592
+71463370056
+16-1370721030
 2101893287772
-GameTypeSelectionWindow.xaml;InitLocXuan.xaml;LuckyDrawControl.xaml;MainWindow.xaml;PrizeDisplayWindow.xaml;VongLoaiSetupWindow.xaml;
+BangGiaWindow.xaml;GameTypeSelectionWindow.xaml;InitLocXuan.xaml;LuckyDrawControl.xaml;MainWindow.xaml;PrizeDisplayWindow.xaml;StripedProgressBar.xaml;VongLoaiSetupWindow.xaml;
 
 False
 

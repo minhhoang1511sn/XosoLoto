@@ -25,6 +25,8 @@ namespace Xosoloto
         private bool isFullScreen = false;
         public Dictionary<int, VongLoaiInfo> VongLoaiConfig { get; set; }
         public GameType CurrentGameType { get; private set; }
+        public string TieuDe { get; private set; }
+        private BangGiaWindow _bangGiaWindow;
 
         public MainWindow()
         {
@@ -54,15 +56,15 @@ namespace Xosoloto
             if (gameTypeWindow.ShowDialog() == true)
             {
                 CurrentGameType = gameTypeWindow.SelectedGameType;
-
                 switch (CurrentGameType)
                 {
                     case GameType.LotoVuiXuan:
                         this.Title = "Xổ Số Loto - Loto Vui Xuân";
+                        //TieuDe = gameTypeWindow.TieuDe;
                         return true;
-
                     case GameType.LocXuanDauNam:
                         this.Title = "Xổ Số Loto - Lộc Xuân Đầu Năm";
+                        //TieuDe = gameTypeWindow.TieuDe;
                         return true;
                 }
                 return true;
@@ -76,6 +78,7 @@ namespace Xosoloto
             if (setupWindow.ShowDialog() == true)
             {
                 VongLoaiConfig = setupWindow.VongLoaiData;
+                // XÓA dòng: if (!string.IsNullOrEmpty(setupWindow.TieuDe)) TieuDe = setupWindow.TieuDe;
                 VongLoaiComboBox.Items.Clear();
                 foreach (var vong in VongLoaiConfig.Keys.OrderBy(k => k))
                 {
@@ -101,6 +104,7 @@ namespace Xosoloto
             }
         }
 
+
         private void ShowLocXuan()
         {
             InitLocXuan setupWindow = new InitLocXuan();
@@ -113,14 +117,24 @@ namespace Xosoloto
             }
         }
 
+        private void BangGiaButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_bangGiaWindow == null)
+                _bangGiaWindow = new BangGiaWindow(this);
+
+            _bangGiaWindow.LoadData(VongLoaiConfig); // XÓA tham số TieuDe
+
+            this.Hide();
+            _bangGiaWindow.Show();
+            _bangGiaWindow.Activate();
+        }
+
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.F11)
             {
-                if (isFullScreen)
-                    ExitFullScreen();
-                else
-                    EnterFullScreen();
+                if (isFullScreen) ExitFullScreen();
+                else EnterFullScreen();
                 e.Handled = true;
             }
             else if (e.Key == Key.Escape && isFullScreen)
@@ -155,15 +169,9 @@ namespace Xosoloto
             string number = tb.Text;
             switch (tb.Tag?.ToString())
             {
-                case "Add":
-                    HandleAddNumber(number);
-                    break;
-                case "Delete":
-                    HandleRemoveNumber(number);
-                    break;
-                case "Color":
-                    HandleBingoNumber(number);
-                    break;
+                case "Add": HandleAddNumber(number); break;
+                case "Delete": HandleRemoveNumber(number); break;
+                case "Color": HandleBingoNumber(number); break;
             }
             tb.Clear();
             e.Handled = true;
@@ -171,22 +179,14 @@ namespace Xosoloto
 
         private void AddNumberToHistory(string number)
         {
-            _historyNumbers.Add(new HistoryItem
-            {
-                Value = number,
-                Color = Brushes.Red
-            });
+            _historyNumbers.Add(new HistoryItem { Value = number, Color = Brushes.Red });
             UpdateHistoryNumbers();
         }
 
         private void RemoveNumber(string number)
         {
             var item = _historyNumbers.FirstOrDefault(x => x.Value == number);
-            if (item == null)
-            {
-                MessageBox.Show($"Không tìm thấy số {number}");
-                return;
-            }
+            if (item == null) { MessageBox.Show($"Không tìm thấy số {number}"); return; }
             _historyNumbers.Remove(item);
             UpdateHistoryNumbers();
         }
@@ -194,11 +194,7 @@ namespace Xosoloto
         private void ChangeNumberColor(string number)
         {
             var item = _historyNumbers.FirstOrDefault(x => x.Value == number);
-            if (item == null)
-            {
-                MessageBox.Show($"Không tìm thấy số {number}");
-                return;
-            }
+            if (item == null) { MessageBox.Show($"Không tìm thấy số {number}"); return; }
             item.Color = Brushes.Green;
             UpdateHistoryNumbers();
         }
@@ -227,23 +223,12 @@ namespace Xosoloto
                 CurrentNumberTextBlock.FontFamily,
                 CurrentNumberTextBlock.FontStyle,
                 CurrentNumberTextBlock.FontWeight,
-                CurrentNumberTextBlock.FontStretch
-            );
+                CurrentNumberTextBlock.FontStretch);
             foreach (var item in _historyNumbers.AsEnumerable().Reverse())
             {
-                var ft = new FormattedText(
-                    item.Value,
-                    CultureInfo.CurrentCulture,
-                    FlowDirection.LeftToRight,
-                    typeface,
-                    fontSize,
-                    item.Color,
-                    96);
-                if (x + ft.Width > maxWidth)
-                {
-                    x = 0;
-                    y += 40;
-                }
+                var ft = new FormattedText(item.Value, CultureInfo.CurrentCulture,
+                    FlowDirection.LeftToRight, typeface, fontSize, item.Color, 96);
+                if (x + ft.Width > maxWidth) { x = 0; y += 40; }
                 var path = new Path
                 {
                     Data = ft.BuildGeometry(new Point(x, y)),
@@ -294,24 +279,17 @@ namespace Xosoloto
         {
             string closestName = VongLoaiSetupWindow.AvailableColors[0].Name;
             double minDistance = double.MaxValue;
-
             foreach (var option in VongLoaiSetupWindow.AvailableColors)
             {
                 double distance = GetColorDistance(color, option.Color.Color);
-                if (distance < minDistance)
-                {
-                    minDistance = distance;
-                    closestName = option.Name;
-                }
+                if (distance < minDistance) { minDistance = distance; closestName = option.Name; }
             }
             return closestName;
         }
 
         private double GetColorDistance(Color c1, Color c2)
         {
-            int rDiff = c1.R - c2.R;
-            int gDiff = c1.G - c2.G;
-            int bDiff = c1.B - c2.B;
+            int rDiff = c1.R - c2.R, gDiff = c1.G - c2.G, bDiff = c1.B - c2.B;
             return Math.Sqrt(rDiff * rDiff + gDiff * gDiff + bDiff * bDiff);
         }
 
@@ -319,8 +297,8 @@ namespace Xosoloto
         {
             if (MauVeComboBox.SelectedItem is ComboBoxItem selectedItem)
             {
-                string mauVe = selectedItem.Content.ToString();
-                var match = VongLoaiSetupWindow.AvailableColors.FirstOrDefault(c => c.Name == mauVe);
+                var match = VongLoaiSetupWindow.AvailableColors
+                    .FirstOrDefault(c => c.Name == selectedItem.Content.ToString());
                 if (match != null)
                     MauVeBorder.Background = match.Color;
             }
@@ -333,14 +311,9 @@ namespace Xosoloto
                 CurrentNumberTextBlock.FontStyle,
                 CurrentNumberTextBlock.FontWeight,
                 CurrentNumberTextBlock.FontStretch);
-            var ft = new FormattedText(
-                number,
-                CultureInfo.CurrentCulture,
-                FlowDirection.LeftToRight,
-                typeface,
-                CurrentNumberTextBlock.FontSize,
-                Brushes.Red,
-                VisualTreeHelper.GetDpi(this).PixelsPerDip);
+            var ft = new FormattedText(number, CultureInfo.CurrentCulture,
+                FlowDirection.LeftToRight, typeface, CurrentNumberTextBlock.FontSize,
+                Brushes.Red, VisualTreeHelper.GetDpi(this).PixelsPerDip);
             NumberPath.Data = ft.BuildGeometry(new Point(0, -10));
         }
 
@@ -352,11 +325,7 @@ namespace Xosoloto
                 return;
             }
             int value = int.Parse(number);
-            if (value > 60)
-            {
-                MessageBox.Show("Số phải nhỏ hơn hoặc bằng 60");
-                return;
-            }
+            if (value > 60) { MessageBox.Show("Số phải nhỏ hơn hoặc bằng 60"); return; }
             CurrentNumberTextBlock.Text = number;
             SetNumber(number);
             AddNumberToHistory(number);
@@ -367,8 +336,7 @@ namespace Xosoloto
             number = number.Trim();
             if (string.IsNullOrEmpty(number))
             {
-                MessageBox.Show("Vui lòng nhập số để xóa.", "Lỗi",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Vui lòng nhập số để xóa.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
             var item = _historyNumbers.FirstOrDefault(x => x.Value == number);
@@ -377,16 +345,8 @@ namespace Xosoloto
                 _historyNumbers.Remove(item);
                 UpdateHistoryNumbers();
                 var lastItem = _historyNumbers.LastOrDefault();
-                if (lastItem != null)
-                {
-                    CurrentNumberTextBlock.Text = lastItem.Value;
-                    SetNumber(lastItem.Value);
-                }
-                else
-                {
-                    CurrentNumberTextBlock.Text = "";
-                    NumberPath.Data = Geometry.Empty;
-                }
+                if (lastItem != null) { CurrentNumberTextBlock.Text = lastItem.Value; SetNumber(lastItem.Value); }
+                else { CurrentNumberTextBlock.Text = ""; NumberPath.Data = Geometry.Empty; }
             }
             else
             {
@@ -405,21 +365,12 @@ namespace Xosoloto
             number = number.Trim();
             if (string.IsNullOrEmpty(number))
             {
-                MessageBox.Show("Vui lòng nhập một số.", "Lỗi",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Vui lòng nhập một số.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
             var item = _historyNumbers.FirstOrDefault(x => x.Value == number);
-            if (item != null)
-            {
-                item.Color = Brushes.Green;
-                UpdateHistoryNumbers();
-            }
-            else
-            {
-                MessageBox.Show($"Số '{number}' không tồn tại trong danh sách.",
-                    "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            if (item != null) { item.Color = Brushes.Green; UpdateHistoryNumbers(); }
+            else MessageBox.Show($"Số '{number}' không tồn tại trong danh sách.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private void BingoInputButton_Click(object sender, RoutedEventArgs e)
@@ -469,10 +420,8 @@ namespace Xosoloto
             for (int i = 0; i < childCount; i++)
             {
                 var child = VisualTreeHelper.GetChild(parent, i);
-                if (child is TextBlock textBlock)
-                    textBlock.Foreground = isNumberColorRed ? Brushes.Red : Brushes.Black;
-                else if (child is Path path)
-                    path.Fill = isNumberColorRed ? Brushes.Red : Brushes.Black;
+                if (child is TextBlock tb) tb.Foreground = isNumberColorRed ? Brushes.Red : Brushes.Black;
+                else if (child is Path path) path.Fill = isNumberColorRed ? Brushes.Red : Brushes.Black;
                 ChangeColorRecursive(child);
             }
         }

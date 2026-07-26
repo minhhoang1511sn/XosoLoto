@@ -10,6 +10,8 @@
 
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("gemini_generated_image_j8e92tj8e92tj8e9.ico")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/a.png")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/background.avi")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/background.mov")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/image5.mp4")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/media1.mp4")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/media1.mov")]

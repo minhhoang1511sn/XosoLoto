@@ -25,8 +25,6 @@ namespace Xosoloto
     public partial class VongLoaiSetupWindow : Window
     {
         public Dictionary<int, VongLoaiInfo> VongLoaiData { get; private set; }
-
-        // Public static để các class khác (MainWindow) dùng chung
         public static List<ColorOption> AvailableColors { get; private set; }
 
         private int vongCount = 1;

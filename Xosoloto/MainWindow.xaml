@@ -11,7 +11,7 @@
         x:Name="MyMainWindow"
         WindowStyle="SingleBorderWindow"
         ResizeMode="CanResize"
-        WindowState="Normal"
+        WindowState="Maximized"
         PreviewKeyDown="Window_PreviewKeyDown">
     <Window.Resources>
         <local:FontSizeConverter x:Key="FontSizeConverter"/>
@@ -43,24 +43,24 @@
                 </Grid.ColumnDefinitions>
 
                 <Image Grid.Column="0"
-           gif:ImageBehavior.AnimatedSource="Images/image5.gif"
-           Stretch="UniformToFill"
-           HorizontalAlignment="Stretch"
-           VerticalAlignment="Stretch"
-           Grid.ZIndex="-1"/>
+                       gif:ImageBehavior.AnimatedSource="Images/image5.gif"
+                       Stretch="UniformToFill"
+                       HorizontalAlignment="Stretch"
+                       VerticalAlignment="Stretch"
+                       Grid.ZIndex="-1"/>
 
                 <Grid Grid.Column="1">
                     <Image Source="/Images/HieuNguyenPhoto.png"
-               Stretch="Uniform"
-               Grid.ZIndex="-1" Margin="0,0,0,-7"/>
+                           Stretch="Uniform"
+                           Grid.ZIndex="-1" Margin="0,0,0,-7"/>
                 </Grid>
 
                 <Image Grid.Column="2"
-           gif:ImageBehavior.AnimatedSource="Images/image6.gif"
-           Stretch="UniformToFill"
-           HorizontalAlignment="Stretch"
-           VerticalAlignment="Stretch"
-           Grid.ZIndex="-1"/>
+                       gif:ImageBehavior.AnimatedSource="Images/image6.gif"
+                       Stretch="UniformToFill"
+                       HorizontalAlignment="Stretch"
+                       VerticalAlignment="Stretch"
+                       Grid.ZIndex="-1"/>
             </Grid>
 
             <Border Grid.Row="1">
@@ -71,56 +71,54 @@
                         <RowDefinition Height="0.1*" />
                     </Grid.RowDefinitions>
 
-                    <Grid Grid.Row="0" >
+                    <Grid Grid.Row="0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
                         <Viewbox Grid.Column="0" Margin="110,0,0,-5" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Top">
-                            <StackPanel Orientation="Horizontal" >
+                            <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="VÒNG LOẠI: "
-           FontWeight="Bold"
-           FontStyle="Italic"
+                                           FontWeight="Bold"
+                                           FontStyle="Italic"
                                            FontSize="48"
-           FontFamily="/Fonts/#Faustina"
-           Foreground="Black" />
-                                <TextBlock  FontSize="48"  FontFamily="/Fonts/#Faustina"
-                                            x:Name="VongLoaiTextBlock" Text="--" FontWeight="Bold" Foreground="Black" />
+                                           FontFamily="/Fonts/#Faustina"
+                                           Foreground="Black" />
+                                <TextBlock FontSize="48" FontFamily="/Fonts/#Faustina"
+                                           x:Name="VongLoaiTextBlock" Text="--" FontWeight="Bold" Foreground="Black" />
                             </StackPanel>
                         </Viewbox>
 
                         <!-- StackPanel MÀU VÉ -->
                         <Viewbox Grid.Column="1" Margin="0,0,0,-8"
-             Stretch="Uniform"
-             HorizontalAlignment="Center"
-             VerticalAlignment="Center">
-                            <Grid >
+                                 Stretch="Uniform"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Center">
+                            <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <!-- ép cho label + ô màu chiếm không gian gần bằng col0 -->
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
                                 <TextBlock Grid.Column="0"
-                       Text="MÀU VÉ:"
-                       FontWeight="Bold"
-                       Foreground="Black"
+                                           Text="MÀU VÉ:"
+                                           FontWeight="Bold"
+                                           Foreground="Black"
                                            Margin="0,10,10,-10"
                                            FontSize="100"
-                                            FontFamily="/Fonts/#Faustina"
-                       VerticalAlignment="Center"/>
+                                           FontFamily="/Fonts/#Faustina"
+                                           VerticalAlignment="Center"/>
                                 <Border x:Name="MauVeBorder"
-        Grid.Column="1"
-        Width="350"
-        Height="120"
+                                        Grid.Column="1"
+                                        Width="350"
+                                        Height="120"
                                         Margin="0,5,0,0"
-        Background="LightBlue"
-        BorderBrush="Black"
-        BorderThickness="2"                           
-        CornerRadius="5"
-        VerticalAlignment="Center"/>
-
+                                        Background="LightBlue"
+                                        BorderBrush="Black"
+                                        BorderThickness="2"
+                                        CornerRadius="5"
+                                        VerticalAlignment="Center"/>
                             </Grid>
                         </Viewbox>
                     </Grid>
@@ -132,7 +130,6 @@
                         </Grid.ColumnDefinitions>
 
                         <Viewbox Grid.Column="0" Stretch="Uniform" Margin="10, 0, 10, 10">
-
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="28*"/>
@@ -140,42 +137,33 @@
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
-                                    <!-- Label -->
                                     <RowDefinition Height="*"/>
-                                    <!-- Number -->
                                 </Grid.RowDefinitions>
 
                                 <TextBlock Grid.Row="0"
-                                   Text="Số Vừa Gọi"
-                                   FontFamily="/Fonts/#HL-Thufap2-Unicode"
-                                   FontWeight="Normal"
-                                   Foreground="Black"
-                                   HorizontalAlignment="Left"
-                                           Margin="47,5,0,5" Grid.ColumnSpan="2"
-                                   />
-
-                                <!-- Number với viền sắc -->
-                                <Viewbox Grid.Row="1" Margin="0, 5, 0, -10" Height="100" Width="150" Grid.ColumnSpan="2">
-                                    <Grid Width="20"  Margin="0, -3, 0, 0" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                        <!-- TextBlock tham chiếu font, ẩn đi -->
-                                        <TextBlock x:Name="CurrentNumberTextBlock"
+                                           Text="Số Vừa Gọi"
+                                           FontFamily="/Fonts/#HL-Thufap2-Unicode"
                                            FontWeight="Normal"
-                                           FontSize="20"
-                                           FontFamily="/Fonts/#Alumni Sans Collegiate One"
-                                           Foreground="Red"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"
-                                           Visibility="Collapsed"
-                                                  />
+                                           Foreground="Black"
+                                           HorizontalAlignment="Left"
+                                           Margin="47,5,0,5" Grid.ColumnSpan="2"/>
 
-                                        <!-- Path vẽ chữ có stroke -->
+                                <Viewbox Grid.Row="1" Margin="0, 5, 0, -10" Height="100" Width="150" Grid.ColumnSpan="2">
+                                    <Grid Width="20" Margin="0, -3, 0, 0" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <TextBlock x:Name="CurrentNumberTextBlock"
+                                                   FontWeight="Normal"
+                                                   FontSize="20"
+                                                   FontFamily="/Fonts/#Alumni Sans Collegiate One"
+                                                   Foreground="Red"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"
+                                                   Visibility="Collapsed"/>
                                         <Path x:Name="NumberPath"
-                                          Stroke="White"
-                                          StrokeThickness="0.2"
-                                          Fill="Red"
-                                          HorizontalAlignment="Center"
-                                          VerticalAlignment="Center">
-                                            <!-- Xích chữ lên 5 pixel -->
+                                              Stroke="White"
+                                              StrokeThickness="0.2"
+                                              Fill="Red"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center">
                                             <Path.RenderTransform>
                                                 <TranslateTransform Y="0"/>
                                             </Path.RenderTransform>
@@ -183,250 +171,243 @@
                                     </Grid>
                                 </Viewbox>
                             </Grid>
-
                         </Viewbox>
-                        <Viewbox Grid.Column="1" Stretch="Uniform" Margin="10, 0, 10, 10">
 
+                        <Viewbox Grid.Column="1" Stretch="Uniform" Margin="10, 0, 10, 10">
                             <Grid>
                                 <Grid.RowDefinitions>
-                                    <!-- Hàng trên: label -->
                                     <RowDefinition Height="Auto"/>
-                                    <!-- Hàng dưới: scrollviewer -->
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
 
                                 <TextBlock Grid.Row="0"
-                                Text="Các Số Đã Gọi"
-                                FontFamily="/Fonts/#HL-Thufap2-Unicode"
-                                FontWeight="Normal"
-                                Foreground="Black"
-                                HorizontalAlignment="Center"
-                                            Margin="0,5,0,-5"
-                                />
+                                           Text="Các Số Đã Gọi"
+                                           FontFamily="/Fonts/#HL-Thufap2-Unicode"
+                                           FontWeight="Normal"
+                                           Foreground="Black"
+                                           HorizontalAlignment="Center"
+                                           Margin="0,5,0,-5"/>
 
                                 <Viewbox Grid.Row="1" Height="100" Stretch="Uniform" Margin="0,0,8.5,0">
-                                    <ScrollViewer VerticalScrollBarVisibility="Auto" Width="258" Height="150" >
+                                    <ScrollViewer VerticalScrollBarVisibility="Auto" Width="258" Height="150">
                                         <Grid x:Name="HistoryNumberContainer"/>
                                     </ScrollViewer>
                                 </Viewbox>
-
                             </Grid>
-
                         </Viewbox>
                     </Grid>
 
-                    <Grid Grid.Row="2" Margin="40,0,40,10">
+                    <!-- ROW 3: Controls + Button Bảng Giá -->
+                    <Grid Grid.Row="2">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="1.8*"/>
-                            <ColumnDefinition Width="1.8*"/>
-                            <ColumnDefinition Width="1.8*"/>
-                            <ColumnDefinition Width="1.8*"/>
-                            <ColumnDefinition Width="1.8*"/>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <Button Grid.Column="0"
-                                x:Name="ToggleNumberColorButton"
-                                Content="Đổi màu số"
-                                Margin="5,5,5,5"
-                                FontSize="12"
-                                Padding="5,4"
-                                VerticalAlignment="Stretch"
-                                Click="ToggleNumberColorButton_Click"/>
-
-                        <Grid Grid.Column="1" Margin="5,5,5,5">
+                        <!-- Controls chính -->
+                        <Grid Grid.Column="0" Margin="40,0,5,10">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1.8*"/>
+                                <ColumnDefinition Width="1.8*"/>
+                                <ColumnDefinition Width="1.8*"/>
+                                <ColumnDefinition Width="1.8*"/>
+                                <ColumnDefinition Width="1.8*"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Text="Vòng Loại"
-                           FontWeight="Bold"
-                           FontSize="17"
-                           TextWrapping="Wrap"
-                           MaxWidth="60"
-                           TextAlignment="Center"
-                                        FontFamily="/Fonts/#Faustina"
-                           Margin="0,-4,5,0"/>
+                            <Button Grid.Column="0"
+                                    x:Name="ToggleNumberColorButton"
+                                    Content="Đổi màu số"
+                                    Margin="5,5,5,5"
+                                    FontSize="12"
+                                    Padding="5,4"
+                                    VerticalAlignment="Stretch"
+                                    Click="ToggleNumberColorButton_Click"/>
 
-                            <ComboBox Grid.Column="1"
-                                     x:Name="VongLoaiComboBox"
-                                     FontSize="20"
-                                     FontWeight="Bold"
-                                     VerticalAlignment="Stretch"
-                                     Margin="0,0,5,5"
-                                     SelectionChanged="VongLoaiComboBox_SelectionChanged">
-                                <ComboBoxItem Content="1"/>
-                                <ComboBoxItem Content="2"/>
-                                <ComboBoxItem Content="3"/>
-                                <ComboBoxItem Content="4"/>
-                                <ComboBoxItem Content="5"/>
-                                <ComboBoxItem Content="6"/>
-                                <ComboBoxItem Content="7"/>
-                                <ComboBoxItem Content="8"/>
-                                <ComboBoxItem Content="9"/>
-                                <ComboBoxItem Content="10"/>
-                            </ComboBox>
-                        </Grid>
+                            <Grid Grid.Column="1" Margin="5,5,5,5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Vòng Loại"
+                                           FontWeight="Bold"
+                                           FontSize="17"
+                                           TextWrapping="Wrap"
+                                           MaxWidth="60"
+                                           TextAlignment="Center"
+                                           FontFamily="/Fonts/#Faustina"
+                                           Margin="0,-4,5,0"/>
+                                <ComboBox Grid.Column="1"
+                                          x:Name="VongLoaiComboBox"
+                                          FontSize="20"
+                                          FontWeight="Bold"
+                                          VerticalAlignment="Stretch"
+                                          Margin="0,0,5,5"
+                                          SelectionChanged="VongLoaiComboBox_SelectionChanged">
+                                    <ComboBoxItem Content="1"/>
+                                    <ComboBoxItem Content="2"/>
+                                    <ComboBoxItem Content="3"/>
+                                    <ComboBoxItem Content="4"/>
+                                    <ComboBoxItem Content="5"/>
+                                    <ComboBoxItem Content="6"/>
+                                    <ComboBoxItem Content="7"/>
+                                    <ComboBoxItem Content="8"/>
+                                    <ComboBoxItem Content="9"/>
+                                    <ComboBoxItem Content="10"/>
+                                </ComboBox>
+                            </Grid>
 
-                        <Grid Grid.Column="2" Margin="5,5,5,5">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Column="2" Margin="5,5,5,5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Màu Vé"
+                                           FontWeight="Bold"
+                                           FontSize="18"
+                                           TextWrapping="Wrap"
+                                           MaxWidth="40"
+                                           FontFamily="/Fonts/#Faustina"
+                                           VerticalAlignment="Stretch"
+                                           TextAlignment="Center"
+                                           Margin="0,-4,5,0"/>
+                                <ComboBox Grid.Column="1"
+                                          x:Name="MauVeComboBox"
+                                          FontSize="20"
+                                          FontWeight="Bold"
+                                          Margin="0,0,5,5"
+                                          SelectionChanged="MauVeComboBox_SelectionChanged">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Background="{Binding Background}" Padding="8" CornerRadius="5">
+                                                <TextBlock Text="{Binding Content}" Foreground="{Binding Foreground}" HorizontalAlignment="Center"/>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                    <ComboBoxItem Content="Xanh" Background="#1E90FF" Foreground="White"/>
+                                    <ComboBoxItem Content="Hồng đậm" Background="#C7157F" Foreground="White"/>
+                                    <ComboBoxItem Content="Vàng" Background="Yellow" Foreground="Black"/>
+                                    <ComboBoxItem Content="Xanh lá" Background="Green" Foreground="White"/>
+                                </ComboBox>
+                            </Grid>
 
-                            <TextBlock Text="Màu Vé"
-                                       FontWeight="Bold"
-                                       FontSize="18"
-                                       TextWrapping="Wrap"
-                                       MaxWidth="40"
-                                        FontFamily="/Fonts/#Faustina"
-                                       VerticalAlignment="Stretch"
-                                       TextAlignment="Center"
-                                       Margin="0,-4,5,0"/>
+                            <Grid Grid.Column="3" Margin="5,5,5,5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Số"
+                                           FontWeight="Bold"
+                                           FontSize="26"
+                                           MaxWidth="40"
+                                           FontFamily="/Fonts/#Faustina"
+                                           TextWrapping="Wrap"
+                                           VerticalAlignment="Center"
+                                           TextAlignment="Center"
+                                           Margin="0,-7,5,0"/>
+                                <TextBox Grid.Column="1"
+                                         x:Name="NumberInputTextBox"
+                                         FontSize="30"
+                                         Tag="Add"
+                                         FontWeight="Bold"
+                                         VerticalAlignment="Stretch"
+                                         Margin="0,0,5,5"
+                                         PreviewKeyDown="NumberInput_PreviewKeyDown"/>
+                                <Button Grid.Column="2"
+                                        Content="OK"
+                                        FontSize="14"
+                                        Padding="15,4,15,8"
+                                        VerticalAlignment="Stretch"
+                                        Click="SoButton_Click"/>
+                            </Grid>
 
-                            <ComboBox Grid.Column="1"
-          x:Name="MauVeComboBox"
-          FontSize="20"
-          FontWeight="Bold"
-          Margin="0,0,5,5"
-          SelectionChanged="MauVeComboBox_SelectionChanged">
+                            <Grid Grid.Column="4" Margin="5,5,5,5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Column="0"
+                                         x:Name="RemoveNumberInput"
+                                         FontSize="20"
+                                         Tag="Delete"
+                                         FontWeight="Bold"
+                                         FontFamily="/Fonts/#Faustina"
+                                         VerticalAlignment="Stretch"
+                                         Margin="0,0,5,0"
+                                         PreviewKeyDown="NumberInput_PreviewKeyDown"/>
+                                <Button Grid.Column="1"
+                                        Content="Xóa số bất kỳ"
+                                        FontSize="14"
+                                        Padding="15,4"
+                                        VerticalAlignment="Stretch"
+                                        Click="RemoveSpecificNumberButton_Click"/>
+                            </Grid>
 
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border Background="{Binding Background}"
-                    Padding="8"
-                    CornerRadius="5">
-                                            <TextBlock Text="{Binding Content}"
-                           Foreground="{Binding Foreground}"
-                           HorizontalAlignment="Center"/>
-                                        </Border>
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
+                            <Grid Grid.Column="5" Margin="5,5,5,5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Số Trúng"
+                                           FontWeight="Bold"
+                                           FontSize="14"
+                                           MaxWidth="40"
+                                           TextWrapping="Wrap"
+                                           FontFamily="/Fonts/#Faustina"
+                                           VerticalAlignment="Stretch"
+                                           TextAlignment="Center"
+                                           Margin="0,0,5,0"/>
+                                <TextBox Grid.Column="1"
+                                         x:Name="BingoInputTextBox"
+                                         FontSize="30"
+                                         Tag="Color"
+                                         FontWeight="Bold"
+                                         VerticalAlignment="Stretch"
+                                         Margin="0,0,5,5"
+                                         PreviewKeyDown="NumberInput_PreviewKeyDown"/>
+                                <Button Grid.Column="2"
+                                        Content="OK"
+                                        FontSize="20"
+                                        Padding="15,4,15,8"
+                                        VerticalAlignment="Stretch"
+                                        Click="BingoInputButton_Click"/>
+                            </Grid>
 
-                                <ComboBoxItem Content="Xanh" Background="Blue" Foreground="White"/>
-                                <ComboBoxItem Content="Hồng đậm" Background="#C7157F" Foreground="White"/>
-                                <ComboBoxItem Content="Vàng" Background="Yellow" Foreground="Black"/>
-                                <ComboBoxItem Content="Xanh lá" Background="Green" Foreground="White"/>
-                            </ComboBox>
-
-                        </Grid>
-
-                        <Grid Grid.Column="3" Margin="5,5,5,5">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-
-                            <TextBlock Text="Số"
-                                   FontWeight="Bold"
-                                   FontSize="26"
-                                   MaxWidth="40"
-                                        FontFamily="/Fonts/#Faustina"
-                                   TextWrapping="Wrap"
-                                   VerticalAlignment="Center"
-                                   TextAlignment="Center"
-
-                                   Margin="0,-7,5,0"/>
-
-                            <TextBox Grid.Column="1"
-                                     x:Name="NumberInputTextBox"
-                                     FontSize="30"
-                                     Tag="Add"
-                                     FontWeight="Bold"
-                                     VerticalAlignment="Stretch"
-                                     Margin="0,0,5,5" PreviewKeyDown="NumberInput_PreviewKeyDown"/>
-
-                            <Button Grid.Column="2"
-                                    Content="OK"
+                            <Button Grid.Column="6"
+                                    Content="Xóa số trúng"
+                                    Margin="5,5,5,5"
                                     FontSize="14"
                                     Padding="15,4,15,8"
                                     VerticalAlignment="Stretch"
-                                    Click="SoButton_Click"/>
-                        </Grid>
+                                    Click="ClearBingoButton_Click"/>
 
-                        <Grid Grid.Column="4" Margin="5,5,5,5">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-
-                            <TextBox Grid.Column="0"
-                                     x:Name="RemoveNumberInput"
-                                     FontSize="20"
-                                     Tag="Delete"
-                                     FontWeight="Bold"
-                                      FontFamily="/Fonts/#Faustina"
-                                     VerticalAlignment="Stretch"
-                                     Margin="0,0,5,0"
-                                     PreviewKeyDown="NumberInput_PreviewKeyDown"/>
-
-                            <Button Grid.Column="1"
-                                    Content="Xóa số bất kỳ"
+                            <Button Grid.Column="7"
+                                    Content="Xóa tất cả"
+                                    Margin="5,5,5,5"
                                     FontSize="14"
-                                    Padding="15,4"
-                                    VerticalAlignment="Stretch"
-                                    Click="RemoveSpecificNumberButton_Click"/>
-                        </Grid>
-
-                        <Grid Grid.Column="5" Margin="5,5,5,5">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-
-                            <TextBlock Text="Số Trúng"
-                                       FontWeight="Bold"
-                                       FontSize="14"
-                                       MaxWidth="40"
-                                       TextWrapping="Wrap"
-                                        FontFamily="/Fonts/#Faustina"
-                                       VerticalAlignment="Stretch"
-                                       TextAlignment="Center"
-                                       Margin="0,0,5,0"
-                                      />
-
-                            <TextBox Grid.Column="1"
-                                     x:Name="BingoInputTextBox"
-                                     FontSize="30"
-                                     Tag="Color"
-                                     FontWeight="Bold"
-                                     VerticalAlignment="Stretch"
-                                     Margin="0,0,5,5"
-                                      PreviewKeyDown="NumberInput_PreviewKeyDown"/>
-
-                            <Button Grid.Column="2"
-                                    Content="OK"
-                                    FontSize="20"
                                     Padding="15,4,15,8"
                                     VerticalAlignment="Stretch"
-                                    Click="BingoInputButton_Click"/>
+                                    Click="ClearAllButton_Click"/>
                         </Grid>
-                        <Button Grid.Column="6"
-                        Content="Xóa số trúng"
-                        Margin="5,5,5,5"
-                        FontSize="14"
-                        Padding="15,4,15,8"
-                        VerticalAlignment="Stretch"
-                        Click="ClearBingoButton_Click"/>
 
-                        <Button Grid.Column="7"
-                                Content="Xóa tất cả"
-                                Margin="5,5,5,5"
-                                FontSize="14"
-                                Padding="15,4,15,8"
-                                VerticalAlignment="Stretch"
-                                Click="ClearAllButton_Click"/>
-
+                        <!-- Button Bảng Giá nhỏ góc dưới phải -->
+                        <Button Grid.Column="1"
+                                Content="📊"
+                                Width="32" Height="32"
+                                Margin="0,5,8,10"
+                                FontSize="16"
+                                VerticalAlignment="Bottom"
+                                HorizontalAlignment="Right"
+                                ToolTip="Bảng Giá Vé"
+                                Click="BangGiaButton_Click"/>
                     </Grid>
+
                 </Grid>
             </Border>
         </Grid>
     </Grid>
 </Window>
-    
-    

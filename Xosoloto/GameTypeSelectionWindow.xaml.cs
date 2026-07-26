@@ -5,7 +5,7 @@ namespace Xosoloto
     public enum GameType
     {
         LotoVuiXuan,
-        LocXuanDauNam 
+        LocXuanDauNam
     }
 
     public partial class GameTypeSelectionWindow : Window
@@ -23,7 +23,8 @@ namespace Xosoloto
             DialogResult = true;
             Close();
         }
-         private void LocXuanDauNamButton_Click(object sender, RoutedEventArgs e)
+
+        private void LocXuanDauNamButton_Click(object sender, RoutedEventArgs e)
         {
             SelectedGameType = GameType.LocXuanDauNam;
             DialogResult = true;

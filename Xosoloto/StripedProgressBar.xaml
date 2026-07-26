@@ -1,0 +1,275 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ============================================================
+         GREEN PROGRESS BAR STYLE
+         Fix: PART_Indicator phải nằm đúng vị trí trong Grid gốc
+              và dùng RenderTransform clip thay vì Border lồng nhau
+    ============================================================ -->
+    <Style x:Key="GreenStripedProgressBar" TargetType="ProgressBar">
+        <Setter Property="Height" Value="50"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Background" Value="#DDDDDD"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ProgressBar">
+                    <!-- Dùng Border ngoài để bo góc + clip toàn bộ nội dung -->
+                    <Border x:Name="OuterBorder"
+                            CornerRadius="25"
+                            Background="{TemplateBinding Background}"
+                            ClipToBounds="True">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="8" ShadowDepth="4"
+                                              Direction="270" Opacity="0.2"
+                                              Color="Black"/>
+                        </Border.Effect>
+
+                        <Grid>
+                            <!-- PART_Indicator: tên bắt buộc, WPF tự set Width -->
+                            <Border x:Name="PART_Indicator"
+                                    HorizontalAlignment="Left">
+                                <Border.Background>
+                                    <DrawingBrush TileMode="Tile"
+                                                  Viewport="0,0,30,30"
+                                                  ViewportUnits="Absolute"
+                                                  Viewbox="0,0,30,30"
+                                                  ViewboxUnits="Absolute">
+                                        <DrawingBrush.Drawing>
+                                            <DrawingGroup>
+                                                <!-- Nền xanh sáng -->
+                                                <GeometryDrawing Brush="#55CC00">
+                                                    <GeometryDrawing.Geometry>
+                                                        <RectangleGeometry Rect="0,0,30,30"/>
+                                                    </GeometryDrawing.Geometry>
+                                                </GeometryDrawing>
+                                                <!-- Sọc chéo xanh đậm -->
+                                                <GeometryDrawing Brush="#2A7000">
+                                                    <GeometryDrawing.Geometry>
+                                                        <GeometryGroup>
+                                                            <PathGeometry Figures="M-4,30 L30,-4 L38,-4 L4,30 Z"/>
+                                                            <PathGeometry Figures="M-19,30 L15,-4 L23,-4 L-11,30 Z"/>
+                                                        </GeometryGroup>
+                                                    </GeometryDrawing.Geometry>
+                                                </GeometryDrawing>
+                                                <!-- Sọc highlight sáng nhẹ -->
+                                                <GeometryDrawing Brush="#1AFFFFFF">
+                                                    <GeometryDrawing.Geometry>
+                                                        <GeometryGroup>
+                                                            <PathGeometry Figures="M4,30 L30,4 L34,4 L8,30 Z"/>
+                                                        </GeometryGroup>
+                                                    </GeometryDrawing.Geometry>
+                                                </GeometryDrawing>
+                                            </DrawingGroup>
+                                        </DrawingBrush.Drawing>
+                                    </DrawingBrush>
+                                </Border.Background>
+                            </Border>
+
+                            <!-- Gloss top (đè lên fill) -->
+                            <Border VerticalAlignment="Top"
+                                    Height="18"
+                                    IsHitTestVisible="False">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                        <GradientStop Color="#88FFFFFF" Offset="0"/>
+                                        <GradientStop Color="Transparent" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                            </Border>
+
+                            <!-- Bottom inner shadow -->
+                            <Border VerticalAlignment="Bottom"
+                                    Height="10"
+                                    IsHitTestVisible="False">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                        <GradientStop Color="Transparent" Offset="0"/>
+                                        <GradientStop Color="#44000000" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                            </Border>
+
+                            <!-- Label % -->
+                            <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent},
+                                                      Path=Value,
+                                                      StringFormat={}{0:0}%}"
+                                       FontSize="20" FontWeight="ExtraBold"
+                                       FontFamily="/Fonts/#Faustina"
+                                       Foreground="White"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       IsHitTestVisible="False">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect Color="Black" BlurRadius="5"
+                                                      ShadowDepth="1" Opacity="0.9"/>
+                                </TextBlock.Effect>
+                            </TextBlock>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ============================================================
+         ORANGE PROGRESS BAR STYLE
+    ============================================================ -->
+    <Style x:Key="OrangeStripedProgressBar" TargetType="ProgressBar">
+        <Setter Property="Height" Value="34"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Background" Value="#CCCCCC"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ProgressBar">
+                    <Border x:Name="OuterBorder"
+                            CornerRadius="17"
+                            Background="{TemplateBinding Background}"
+                            ClipToBounds="True">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="6" ShadowDepth="3"
+                                              Direction="270" Opacity="0.25"
+                                              Color="Black"/>
+                        </Border.Effect>
+
+                        <Grid>
+                            <Border x:Name="PART_Indicator"
+                                    HorizontalAlignment="Left">
+                                <Border.Background>
+                                    <DrawingBrush TileMode="Tile"
+                                                  Viewport="0,0,28,28"
+                                                  ViewportUnits="Absolute"
+                                                  Viewbox="0,0,28,28"
+                                                  ViewboxUnits="Absolute">
+                                        <DrawingBrush.Drawing>
+                                            <DrawingGroup>
+                                                <GeometryDrawing Brush="#FFCC00">
+                                                    <GeometryDrawing.Geometry>
+                                                        <RectangleGeometry Rect="0,0,28,28"/>
+                                                    </GeometryDrawing.Geometry>
+                                                </GeometryDrawing>
+                                                <GeometryDrawing Brush="#CC3300">
+                                                    <GeometryDrawing.Geometry>
+                                                        <GeometryGroup>
+                                                            <PathGeometry Figures="M-4,28 L28,-4 L36,-4 L4,28 Z"/>
+                                                            <PathGeometry Figures="M-18,28 L14,-4 L22,-4 L-10,28 Z"/>
+                                                        </GeometryGroup>
+                                                    </GeometryDrawing.Geometry>
+                                                </GeometryDrawing>
+                                            </DrawingGroup>
+                                        </DrawingBrush.Drawing>
+                                    </DrawingBrush>
+                                </Border.Background>
+                            </Border>
+
+                            <Border VerticalAlignment="Top" Height="12"
+                                    IsHitTestVisible="False">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                        <GradientStop Color="#AAFFFFFF" Offset="0"/>
+                                        <GradientStop Color="Transparent" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ============================================================
+         BLUE SLIDER STYLE
+    ============================================================ -->
+    <Style x:Key="BlueStripedSlider" TargetType="Slider">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Slider">
+                    <Grid>
+                        <Track x:Name="PART_Track">
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton Command="Slider.DecreaseLarge" Focusable="False">
+                                    <RepeatButton.Template>
+                                        <ControlTemplate TargetType="RepeatButton">
+                                            <Border Height="8" CornerRadius="4" ClipToBounds="True">
+                                                <Border.Background>
+                                                    <DrawingBrush TileMode="Tile"
+                                                                  Viewport="0,0,20,20"
+                                                                  ViewportUnits="Absolute"
+                                                                  Viewbox="0,0,20,20"
+                                                                  ViewboxUnits="Absolute">
+                                                        <DrawingBrush.Drawing>
+                                                            <DrawingGroup>
+                                                                <GeometryDrawing Brush="#4499DD">
+                                                                    <GeometryDrawing.Geometry>
+                                                                        <RectangleGeometry Rect="0,0,20,20"/>
+                                                                    </GeometryDrawing.Geometry>
+                                                                </GeometryDrawing>
+                                                                <GeometryDrawing Brush="#1155AA">
+                                                                    <GeometryDrawing.Geometry>
+                                                                        <GeometryGroup>
+                                                                            <PathGeometry Figures="M-4,20 L20,-4 L26,-4 L2,20 Z"/>
+                                                                            <PathGeometry Figures="M-14,20 L10,-4 L16,-4 L-8,20 Z"/>
+                                                                        </GeometryGroup>
+                                                                    </GeometryDrawing.Geometry>
+                                                                </GeometryDrawing>
+                                                            </DrawingGroup>
+                                                        </DrawingBrush.Drawing>
+                                                    </DrawingBrush>
+                                                </Border.Background>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </RepeatButton.Template>
+                                </RepeatButton>
+                            </Track.DecreaseRepeatButton>
+
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton Command="Slider.IncreaseLarge" Focusable="False">
+                                    <RepeatButton.Template>
+                                        <ControlTemplate TargetType="RepeatButton">
+                                            <Border Height="8" CornerRadius="4" Background="#CCCCCC"/>
+                                        </ControlTemplate>
+                                    </RepeatButton.Template>
+                                </RepeatButton>
+                            </Track.IncreaseRepeatButton>
+
+                            <Track.Thumb>
+                                <Thumb>
+                                    <Thumb.Template>
+                                        <ControlTemplate TargetType="Thumb">
+                                            <Grid Width="26" Height="26">
+                                                <Ellipse>
+                                                    <Ellipse.Fill>
+                                                        <RadialGradientBrush GradientOrigin="0.35,0.3">
+                                                            <GradientStop Color="#88CCFF" Offset="0"/>
+                                                            <GradientStop Color="#1166CC" Offset="0.7"/>
+                                                            <GradientStop Color="#0A3D8F" Offset="1"/>
+                                                        </RadialGradientBrush>
+                                                    </Ellipse.Fill>
+                                                    <Ellipse.Effect>
+                                                        <DropShadowEffect BlurRadius="6" ShadowDepth="2"
+                                                                          Direction="270" Opacity="0.4"
+                                                                          Color="#1155AA"/>
+                                                    </Ellipse.Effect>
+                                                </Ellipse>
+                                                <Ellipse Margin="5,3,5,13">
+                                                    <Ellipse.Fill>
+                                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                            <GradientStop Color="#88FFFFFF" Offset="0"/>
+                                                            <GradientStop Color="Transparent" Offset="1"/>
+                                                        </LinearGradientBrush>
+                                                    </Ellipse.Fill>
+                                                </Ellipse>
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </Thumb.Template>
+                                </Thumb>
+                            </Track.Thumb>
+                        </Track>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

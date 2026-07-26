@@ -25,8 +25,11 @@
     <None Remove="Fonts\Faustina-VariableFont_wght.ttf" />
     <None Remove="Fonts\HL-thufap2-unicode.ttf" />
     <None Remove="Images\a.png" />
+    <None Remove="Images\background.avi" />
     <None Remove="Images\background.jpg" />
+    <None Remove="Images\background.mov" />
     <None Remove="Images\backgroundlocxuan.png" />
+    <None Remove="Images\c.png" />
     <None Remove="Images\DetailsPrize.png" />
     <None Remove="Images\HieuNguyenPhoto.png" />
     <None Remove="Images\image1.png" />
@@ -57,6 +60,7 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Fonts\HL-thufap2-unicode.ttf" />
+    <Resource Include="Images\c.png" />
     <Resource Include="Images\HieuNguyenPhoto.png" />
     <Resource Include="Images\image1.png" />
     <Resource Include="Images\image2.png" />
@@ -65,6 +69,12 @@
     <Content Include="Gemini_Generated_Image_j8e92tj8e92tj8e9.ico" />
     <Content Include="Images\a.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\background.avi">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\background.mov">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\image5.mp4">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
