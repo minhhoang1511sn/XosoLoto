@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using Xosoloto.Models;
 using Xosoloto.Services;
+// (Xosoloto.Services đã được import ở trên - dùng cho NumberRenderHelper, MonitorHelper)
 
 namespace Xosoloto
 {
@@ -32,6 +33,13 @@ namespace Xosoloto
         private string _currentUsername = "";
 
         /// <summary>
+        /// Màn hình Trình chiếu (Show Window) dành cho khán giả/máy chiếu, tách biệt với
+        /// màn hình Chỉnh sửa (MainWindow này) - giống mô hình Presenter View / Slide Show
+        /// của PowerPoint. Mọi thay đổi trên MainWindow được đẩy sang cửa sổ này ngay lập tức.
+        /// </summary>
+        private LotoShowWindow _showWindow;
+
+        /// <summary>
         /// True nếu trong quá trình khởi tạo, người dùng đã hủy (bấm Thoát/Hủy) ở một bước
         /// bắt buộc (chọn loại game, thiết lập Lộc Xuân...) và ứng dụng đã bắt đầu Shutdown().
         /// App.xaml.cs cần kiểm tra cờ này trước khi gọi Show(), vì gọi Show() trên một
@@ -46,12 +54,15 @@ namespace Xosoloto
             InitializeComponent();
             _currentUsername = string.IsNullOrWhiteSpace(username) ? "Khách" : username.Trim();
 
+            this.Closed += (s, e) => CloseShowWindow();
+
             if (TryLoadSavedSettings())
             {
                 if (CurrentGameType == GameType.LotoVuiXuan)
                 {
                     mediaElement.Play();
                     SetNumber("");
+                    EnsureShowWindow();
                 }
                 return;
             }
@@ -68,11 +79,31 @@ namespace Xosoloto
                 ShowVongLoaiSetup();
                 mediaElement.Play();
                 SetNumber("");
+                EnsureShowWindow();
             }
             if (CurrentGameType == GameType.LocXuanDauNam)
             {
                 ShowLocXuan();
             }
+        }
+
+        /// <summary>
+        /// Bật/tắt màn hình Trình chiếu theo yêu cầu người dùng (ví dụ khi chưa cắm máy chiếu,
+        /// hoặc muốn tạm ẩn khỏi khán giả). Chỉ áp dụng cho Loto Vui Xuân - game này hiển thị
+        /// số quay trực tiếp; Lộc Xuân Đầu Năm có màn hình Trình chiếu riêng gắn với
+        /// LuckyDrawWindow (mở khi vào màn hình quay giải).
+        /// </summary>
+        private void ToggleShowWindowButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (CurrentGameType != GameType.LotoVuiXuan)
+            {
+                MessageBox.Show("Màn hình Trình chiếu cho Lộc Xuân Đầu Năm sẽ tự mở khi bạn vào màn hình quay giải.",
+                    "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            if (_showWindow == null) EnsureShowWindow();
+            else CloseShowWindow();
         }
 
         /// <summary>
@@ -93,12 +124,17 @@ namespace Xosoloto
             // vẫn còn hiển thị phía sau các cửa sổ chọn game / thiết lập game mới.
             mediaElement.Stop();
             this.Hide();
+            CloseShowWindow();
 
             if (!ShowGameTypeSelection())
             {
                 // Người dùng hủy chọn game mới -> hiện lại màn hình game hiện tại như cũ.
                 this.Show();
-                if (CurrentGameType == GameType.LotoVuiXuan) mediaElement.Play();
+                if (CurrentGameType == GameType.LotoVuiXuan)
+                {
+                    mediaElement.Play();
+                    EnsureShowWindow();
+                }
                 return;
             }
 
@@ -109,6 +145,7 @@ namespace Xosoloto
                 this.Show();
                 mediaElement.Play();
                 SetNumber("");
+                EnsureShowWindow();
             }
             else if (CurrentGameType == GameType.LocXuanDauNam)
             {
@@ -240,6 +277,46 @@ namespace Xosoloto
             {
                 Application.Current.Shutdown();
             }
+        }
+
+        /// <summary>
+        /// Mở (hoặc đưa lên foreground) màn hình Trình chiếu dành cho khán giả, tách biệt hoàn
+        /// toàn với màn hình Chỉnh sửa (MainWindow này). Nếu máy có 2 màn hình trở lên, màn hình
+        /// Trình chiếu sẽ tự động đặt full-screen ở màn hình phụ (giống PowerPoint: Presenter
+        /// View ở màn hình chính, Slide Show ở máy chiếu/màn hình phụ).
+        /// </summary>
+        private void EnsureShowWindow()
+        {
+            if (_showWindow == null)
+            {
+                _showWindow = new LotoShowWindow();
+                _showWindow.Show();
+            }
+            MonitorHelper.PlaceOnShowMonitor(_showWindow);
+            _showWindow.PlayVideo();
+            SyncShowWindowFull();
+        }
+
+        private void CloseShowWindow()
+        {
+            if (_showWindow == null) return;
+            _showWindow.StopVideo();
+            _showWindow.Close();
+            _showWindow = null;
+        }
+
+        /// <summary>Đẩy toàn bộ trạng thái hiện tại (vòng loại, màu vé, số vừa gọi, lịch sử) sang màn hình Trình chiếu.</summary>
+        private void SyncShowWindowFull()
+        {
+            if (_showWindow == null) return;
+            var typeface = new Typeface(
+                CurrentNumberTextBlock.FontFamily,
+                CurrentNumberTextBlock.FontStyle,
+                CurrentNumberTextBlock.FontWeight,
+                CurrentNumberTextBlock.FontStretch);
+            _showWindow.SetVongLoai(VongLoaiTextBlock.Text, MauVeBorder.Background as SolidColorBrush);
+            _showWindow.SetCurrentNumber(CurrentNumberTextBlock.Text, isNumberColorRed ? Brushes.Red : Brushes.Black);
+            _showWindow.SetHistory(_historyNumbers, typeface, fontSize);
         }
 
         private bool ShowGameTypeSelection()
@@ -403,6 +480,8 @@ namespace Xosoloto
             CurrentNumberTextBlock.Text = "";
             NumberPath.Data = Geometry.Empty;
             UpdateHistoryNumbers();
+            _showWindow?.ClearAll();
+            _showWindow?.SetCurrentNumber("", isNumberColorRed ? Brushes.Red : Brushes.Black);
         }
 
         private void ClearBingoButton_Click(object sender, RoutedEventArgs e)
@@ -414,29 +493,16 @@ namespace Xosoloto
 
         private void UpdateHistoryNumbers()
         {
-            HistoryNumberContainer.Children.Clear();
-            double x = 0, y = -5;
-            double maxWidth = HistoryNumberContainer.ActualWidth;
             var typeface = new Typeface(
                 CurrentNumberTextBlock.FontFamily,
                 CurrentNumberTextBlock.FontStyle,
                 CurrentNumberTextBlock.FontWeight,
                 CurrentNumberTextBlock.FontStretch);
-            foreach (var item in _historyNumbers.AsEnumerable().Reverse())
-            {
-                var ft = new FormattedText(item.Value, CultureInfo.CurrentCulture,
-                    FlowDirection.LeftToRight, typeface, fontSize, item.Color, 96);
-                if (x + ft.Width > maxWidth) { x = 0; y += 40; }
-                var path = new Path
-                {
-                    Data = ft.BuildGeometry(new Point(x, y)),
-                    Fill = item.Color,
-                    Stroke = Brushes.White,
-                    StrokeThickness = 1
-                };
-                HistoryNumberContainer.Children.Add(path);
-                x += ft.Width + 10;
-            }
+
+            NumberRenderHelper.RenderHistory(HistoryNumberContainer, _historyNumbers, typeface, fontSize, HistoryNumberContainer.ActualWidth);
+
+            // Đẩy real-time sang màn hình Trình chiếu (nếu đang mở).
+            _showWindow?.SetHistory(_historyNumbers, typeface, fontSize);
         }
 
         private void VongLoaiComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -456,6 +522,7 @@ namespace Xosoloto
                     }
                 }
                 catch { }
+                _showWindow?.SetVongLoai(VongLoaiTextBlock.Text, MauVeBorder.Background as SolidColorBrush);
             }
         }
 
@@ -503,20 +570,17 @@ namespace Xosoloto
                     MauVeBorder.Background = match.Color;
 
                 SaveCurrentSettings();
+                _showWindow?.SetVongLoai(VongLoaiTextBlock.Text, MauVeBorder.Background as SolidColorBrush);
             }
         }
 
         private void SetNumber(string number)
         {
-            var typeface = new Typeface(
-                CurrentNumberTextBlock.FontFamily,
-                CurrentNumberTextBlock.FontStyle,
-                CurrentNumberTextBlock.FontWeight,
-                CurrentNumberTextBlock.FontStretch);
-            var ft = new FormattedText(number, CultureInfo.CurrentCulture,
-                FlowDirection.LeftToRight, typeface, CurrentNumberTextBlock.FontSize,
-                Brushes.Red, VisualTreeHelper.GetDpi(this).PixelsPerDip);
-            NumberPath.Data = ft.BuildGeometry(new Point(0, -10));
+            var foreground = isNumberColorRed ? Brushes.Red : Brushes.Black;
+            NumberRenderHelper.RenderCurrentNumber(NumberPath, CurrentNumberTextBlock, number, foreground);
+
+            // Đẩy real-time sang màn hình Trình chiếu (nếu đang mở).
+            _showWindow?.SetCurrentNumber(number, foreground);
         }
 
         private void HandleAddNumber(string number)
@@ -614,6 +678,12 @@ namespace Xosoloto
                 NumberPath.Fill = Brushes.Black;
             }
             ChangeColorRecursive(HistoryNumberContainer);
+
+            // Đồng bộ màu số hiện tại + lịch sử sang màn hình Trình chiếu.
+            _showWindow?.SetCurrentNumber(CurrentNumberTextBlock.Text, isNumberColorRed ? Brushes.Red : Brushes.Black);
+            foreach (var item in _historyNumbers)
+                if (item.Color != Brushes.Green) item.Color = isNumberColorRed ? Brushes.Red : Brushes.Black;
+            UpdateHistoryNumbers();
         }
 
         private void ChangeColorRecursive(DependencyObject parent)

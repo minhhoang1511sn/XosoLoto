@@ -1,0 +1,63 @@
+﻿<Window x:Class="Xosoloto.LocXuanShowWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:Xosoloto"
+        mc:Ignorable="d"
+        Title="Lộc Xuân Đầu Năm - Màn hình Trình chiếu"
+        Height="900" Width="1600"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        Topmost="True"
+        WindowState="Maximized"
+        SizeChanged="Window_SizeChanged">
+
+    <Window.Resources>
+        <DropShadowEffect x:Key="TextShadow"
+                          Color="Black"
+                          BlurRadius="10"
+                          ShadowDepth="3"
+                          Opacity="0.8"/>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.Background>
+            <ImageBrush ImageSource="Images/backgroundlocxuan.png" Stretch="Fill" />
+        </Grid.Background>
+
+        <Canvas x:Name="MainCanvas">
+            <Image x:Name="imgLogo"
+                   Height="110"
+                   Width="250"
+                   Canvas.Left="90"
+                   Canvas.Top="180"
+                   Stretch="Fill"/>
+
+            <TextBlock x:Name="txtTitle"
+                       Text="ĐẠI HỘI TẾT 2025"
+                       FontSize="80"
+                       FontWeight="Bold"
+                       Foreground="#FFD700"
+                       FontFamily="/Fonts/#HL-Thufap2-Unicode"
+                       Canvas.Top="100"
+                       TextAlignment="Center"
+                       Effect="{StaticResource TextShadow}">
+                <TextBlock.RenderTransform>
+                    <SkewTransform AngleX="-5"/>
+                </TextBlock.RenderTransform>
+            </TextBlock>
+
+            <Image x:Name="imgPrize"
+                   Height="330"
+                   Width="330"
+                   Canvas.Left="90"
+                   Canvas.Top="300"
+                   Stretch="Fill"/>
+
+            <!-- Các ô số "Lộc Xuân i" được sinh ĐỘNG trong code-behind, cùng số vòng với
+                 LuckyDrawWindow (màn hình Chỉnh sửa), xem LocXuanShowWindow.xaml.cs. -->
+        </Canvas>
+    </Grid>
+</Window>

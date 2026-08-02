@@ -4,11 +4,19 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Xosoloto.Services;
 
 namespace Xosoloto
 {
     public partial class LuckyDrawWindow : Window
     {
+        /// <summary>
+        /// Màn hình Trình chiếu (Show Window) dành cho khán giả/máy chiếu khi chơi "Lộc Xuân
+        /// Đầu Năm", tách biệt hoàn toàn với cửa sổ điều khiển này (màn hình Chỉnh sửa) - giống
+        /// mô hình Presenter View / Slide Show của PowerPoint. Mọi thao tác nhập số trúng
+        /// thưởng (kể cả từ PrizeDisplayWindow) được đẩy sang đây ngay lập tức.
+        /// </summary>
+        private LocXuanShowWindow _showWindow;
         // Kích thước chuẩn
         private const double BASE_WIDTH = 1600;
         private const double BASE_HEIGHT = 900;
@@ -41,6 +49,7 @@ namespace Xosoloto
         {
             InitializeComponent();
             this.Loaded += Window_Loaded;
+            this.Closed += (s, e) => CloseShowWindow();
 
             this.ImagePath = imagePath;
             this.Title = title;
@@ -49,6 +58,32 @@ namespace Xosoloto
 
             BuildDynamicPrizeSlots();
             LoadData();
+            EnsureShowWindow();
+        }
+
+        /// <summary>
+        /// Mở (hoặc đưa lên foreground) màn hình Trình chiếu. Nếu máy có 2 màn hình trở lên,
+        /// màn hình này tự động full-screen ở màn hình phụ (máy chiếu/TV), tách biệt với cửa
+        /// sổ điều khiển hiện tại.
+        /// </summary>
+        private void EnsureShowWindow()
+        {
+            if (_showWindow == null)
+            {
+                _showWindow = new LocXuanShowWindow();
+                _showWindow.Show();
+            }
+            MonitorHelper.PlaceOnShowMonitor(_showWindow);
+            _showWindow.Initialize(this.Title, this.LogoPath, this.ImagePath, PrizePaths?.Length ?? 0);
+            for (int i = 0; i < prizeNumbers.Count; i++)
+                _showWindow.UpdatePrizeNumber(i, prizeNumbers[i]);
+        }
+
+        private void CloseShowWindow()
+        {
+            if (_showWindow == null) return;
+            _showWindow.Close();
+            _showWindow = null;
         }
 
         /// <summary>
@@ -144,6 +179,12 @@ namespace Xosoloto
             }
         }
 
+        private void btnToggleShow_Click(object sender, RoutedEventArgs e)
+        {
+            if (_showWindow == null) EnsureShowWindow();
+            else CloseShowWindow();
+        }
+
         // PUBLIC METHOD - Cập nhật số giải thưởng từ PrizeDisplayWindow
         public void UpdatePrizeNumber(int prizeIndex, string prizeNumber)
         {
@@ -151,6 +192,9 @@ namespace Xosoloto
 
             prizeNumbers[prizeIndex] = prizeNumber;
             prizeNumberBlocks[prizeIndex].Text = prizeNumber;
+
+            // Đẩy real-time sang màn hình Trình chiếu (khán giả/máy chiếu).
+            _showWindow?.UpdatePrizeNumber(prizeIndex, prizeNumber);
         }
 
         // PUBLIC METHOD - Lấy số giải thưởng hiện tại

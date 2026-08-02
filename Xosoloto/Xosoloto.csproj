@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>Gemini_Generated_Image_j8e92tj8e92tj8e9.ico</ApplicationIcon>
     <AssemblyName>LotoFun</AssemblyName>
     <RootNamespace>Xosoloto</RootNamespace>

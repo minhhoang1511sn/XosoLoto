@@ -65,6 +65,14 @@
                  xem LuckyDrawControl.xaml.cs -> BuildDynamicPrizeSlots(). -->
             <StackPanel x:Name="spButtons" Orientation="Horizontal"/>
 
+            <Button x:Name="btnToggleShow"
+                    Content="🖥️ Trình chiếu"
+                    Canvas.Right="20"
+                    Canvas.Top="20"
+                    Padding="10,5"
+                    FontSize="14"
+                    Click="btnToggleShow_Click"/>
+
         </Canvas>
     </Grid>
 </Window>

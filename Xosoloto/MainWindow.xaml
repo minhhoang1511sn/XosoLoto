@@ -401,6 +401,12 @@
                                     Margin="0,5,8,10"
                                     VerticalAlignment="Bottom"
                                     HorizontalAlignment="Right">
+                            <Button Content="🖥️"
+                                    Width="32" Height="32"
+                                    Margin="0,0,6,0"
+                                    FontSize="16"
+                                    ToolTip="Mở/tắt màn hình Trình chiếu (cho khán giả/máy chiếu)"
+                                    Click="ToggleShowWindowButton_Click"/>
                             <Button Content="🎮"
                                     Width="32" Height="32"
                                     Margin="0,0,6,0"
