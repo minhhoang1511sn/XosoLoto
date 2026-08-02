@@ -25,7 +25,13 @@ namespace Xosoloto
     public partial class VongLoaiSetupWindow : Window
     {
         public Dictionary<int, VongLoaiInfo> VongLoaiData { get; private set; }
-        public static List<ColorOption> AvailableColors { get; private set; }
+
+        // Khởi tạo ngay khi class được load (static initializer), KHÔNG phụ thuộc vào việc
+        // constructor của VongLoaiSetupWindow có chạy hay không. Trước đây field này chỉ được
+        // gán trong InitializeColors() gọi từ constructor, nên nếu người dùng chọn "dùng lại
+        // cấu hình cũ" (bỏ qua màn hình setup) thì AvailableColors vẫn null, gây
+        // ArgumentNullException khi MainWindow cố khôi phục màu vé đã lưu.
+        public static List<ColorOption> AvailableColors { get; private set; } = CreateDefaultColors();
 
         private int vongCount = 1;
 
@@ -51,14 +57,16 @@ namespace Xosoloto
 
         private void InitializeColors()
         {
-            AvailableColors = new List<ColorOption>
-            {
-               new ColorOption { Name = "Hồng đậm", Color = new SolidColorBrush(Color.FromRgb(199, 21, 133)) },
-               new ColorOption { Name = "Xanh", Color = new SolidColorBrush(Color.FromRgb(30, 144, 255)) },
-                new ColorOption { Name = "Xanh lá", Color = new SolidColorBrush(Color.FromRgb(60,  179, 113)) },
-                new ColorOption { Name = "Vàng",    Color = new SolidColorBrush(Color.FromRgb(255, 215, 0))   },
-            };
+            AvailableColors = CreateDefaultColors();
         }
+
+        private static List<ColorOption> CreateDefaultColors() => new List<ColorOption>
+        {
+           new ColorOption { Name = "Hồng đậm", Color = new SolidColorBrush(Color.FromRgb(199, 21, 133)) },
+           new ColorOption { Name = "Xanh", Color = new SolidColorBrush(Color.FromRgb(30, 144, 255)) },
+            new ColorOption { Name = "Xanh lá", Color = new SolidColorBrush(Color.FromRgb(60,  179, 113)) },
+            new ColorOption { Name = "Vàng",    Color = new SolidColorBrush(Color.FromRgb(255, 215, 0))   },
+        };
 
         private void PopulateColorComboBox(ComboBox comboBox)
         {

@@ -14,7 +14,22 @@ namespace Xosoloto
         public LoginWindow()
         {
             InitializeComponent();
-            Loaded += (s, e) => txtUsername.Focus();
+            Loaded += (s, e) =>
+            {
+                // Nếu có tài khoản đã "ghi nhớ đăng nhập" từ lần trước, điền sẵn username
+                // và tick sẵn checkbox "Ghi nhớ" để người dùng chỉ cần nhập mật khẩu.
+                string? remembered = AccountService.GetRememberedUser();
+                if (!string.IsNullOrEmpty(remembered))
+                {
+                    txtUsername.Text = remembered;
+                    chkRemember.IsChecked = true;
+                    txtPassword.Focus();
+                }
+                else
+                {
+                    txtUsername.Focus();
+                }
+            };
         }
 
         private void btnSubmit_Click(object sender, RoutedEventArgs e)

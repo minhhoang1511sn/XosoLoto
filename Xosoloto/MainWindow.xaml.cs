@@ -31,6 +31,14 @@ namespace Xosoloto
         private BangGiaWindow _bangGiaWindow;
         private string _currentUsername = "";
 
+        /// <summary>
+        /// True nếu trong quá trình khởi tạo, người dùng đã hủy (bấm Thoát/Hủy) ở một bước
+        /// bắt buộc (chọn loại game, thiết lập Lộc Xuân...) và ứng dụng đã bắt đầu Shutdown().
+        /// App.xaml.cs cần kiểm tra cờ này trước khi gọi Show(), vì gọi Show() trên một
+        /// window đã bị đóng do Shutdown() sẽ ném InvalidOperationException.
+        /// </summary>
+        public bool IsShuttingDown { get; private set; } = false;
+
         public MainWindow() : this("Khách") { }
 
         public MainWindow(string username)
@@ -50,6 +58,7 @@ namespace Xosoloto
 
             if (!ShowGameTypeSelection())
             {
+                IsShuttingDown = true;
                 Application.Current.Shutdown();
                 return;
             }
@@ -63,6 +72,34 @@ namespace Xosoloto
             if (CurrentGameType == GameType.LocXuanDauNam)
             {
                 ShowLocXuan();
+            }
+        }
+
+        /// <summary>
+        /// Cho phép người dùng thoát ra chọn lại loại game khác bất cứ lúc nào, kể cả khi
+        /// đang ở màn hình được nạp tự động từ "cấu hình đã lưu" (trường hợp này trước đây
+        /// không có đường quay lại màn hình chọn game).
+        /// </summary>
+        private void ChangeGameButton_Click(object sender, RoutedEventArgs e)
+        {
+            var confirm = MessageBox.Show(
+                "Bạn có muốn đổi sang loại game khác không?\n" +
+                "Cấu hình hiện tại vẫn được lưu lại cho tài khoản này.",
+                "Đổi loại game", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (confirm != MessageBoxResult.Yes) return;
+
+            if (!ShowGameTypeSelection()) return; // người dùng hủy -> giữ nguyên trạng thái hiện tại
+
+            if (CurrentGameType == GameType.LotoVuiXuan)
+            {
+                // exitAppOnCancel: false -> nếu hủy setup vòng loại thì chỉ giữ nguyên, không thoát app
+                ShowVongLoaiSetup(exitAppOnCancel: false);
+                mediaElement.Play();
+                SetNumber("");
+            }
+            else if (CurrentGameType == GameType.LocXuanDauNam)
+            {
+                ShowLocXuan(exitAppOnCancel: false);
             }
         }
 
@@ -104,7 +141,8 @@ namespace Xosoloto
 
                 VongLoaiConfig[dto.VongNumber] = new VongLoaiInfo
                 {
-                    Numbers = dto.Numbers,
+                    // dto.Numbers có thể null nếu dữ liệu lưu trước đó bị thiếu/hỏng
+                    Numbers = dto.Numbers ?? new List<int>(),
                     GiaVe = dto.GiaVe,
                     Color = new SolidColorBrush(color)
                 };
@@ -113,7 +151,7 @@ namespace Xosoloto
             VongLoaiComboBox.Items.Clear();
             foreach (var vong in VongLoaiConfig.Keys.OrderBy(k => k))
             {
-                string displayText = string.Join(" ", VongLoaiConfig[vong].Numbers);
+                string displayText = string.Join(" ", VongLoaiConfig[vong].Numbers ?? new List<int>());
                 ComboBoxItem item = new ComboBoxItem
                 {
                     Content = displayText,
@@ -156,7 +194,7 @@ namespace Xosoloto
                 VongLoaiList = VongLoaiConfig.Select(kv => new VongLoaiSettingDto
                 {
                     VongNumber = kv.Key,
-                    Numbers = kv.Value.Numbers,
+                    Numbers = kv.Value.Numbers ?? new List<int>(),
                     GiaVe = kv.Value.GiaVe,
                     ColorHex = kv.Value.Color?.Color.ToString() ?? "#FFFFFF"
                 }).ToList()
@@ -178,6 +216,8 @@ namespace Xosoloto
             if (loginWindow.ShowDialog() == true && !string.IsNullOrEmpty(loginWindow.LoggedInUsername))
             {
                 var newMain = new MainWindow(loginWindow.LoggedInUsername);
+                if (newMain.IsShuttingDown) return; // đã Shutdown() trong constructor, không Show() nữa
+
                 Application.Current.MainWindow = newMain;
                 newMain.Show();
                 this.Close();
@@ -210,7 +250,7 @@ namespace Xosoloto
             return false;
         }
 
-        private void ShowVongLoaiSetup()
+        private void ShowVongLoaiSetup(bool exitAppOnCancel = true)
         {
             VongLoaiSetupWindow setupWindow = new VongLoaiSetupWindow();
             if (setupWindow.ShowDialog() == true)
@@ -220,7 +260,7 @@ namespace Xosoloto
                 VongLoaiComboBox.Items.Clear();
                 foreach (var vong in VongLoaiConfig.Keys.OrderBy(k => k))
                 {
-                    string displayText = string.Join(" ", VongLoaiConfig[vong].Numbers);
+                    string displayText = string.Join(" ", VongLoaiConfig[vong].Numbers ?? new List<int>());
                     ComboBoxItem item = new ComboBoxItem
                     {
                         Content = displayText,
@@ -238,23 +278,27 @@ namespace Xosoloto
 
                 SaveCurrentSettings();
             }
-            else
+            else if (exitAppOnCancel)
             {
+                IsShuttingDown = true;
                 Application.Current.Shutdown();
             }
+            // else: người dùng hủy khi đang đổi game giữa chừng -> giữ nguyên trạng thái hiện tại
         }
 
 
-        private void ShowLocXuan()
+        private void ShowLocXuan(bool exitAppOnCancel = true)
         {
             InitLocXuan setupWindow = new InitLocXuan();
             if (setupWindow.ShowDialog() == true)
             {
             }
-            else
+            else if (exitAppOnCancel)
             {
+                IsShuttingDown = true;
                 Application.Current.Shutdown();
             }
+            // else: người dùng hủy khi đang đổi game giữa chừng -> giữ nguyên trạng thái hiện tại
         }
 
         private void BangGiaButton_Click(object sender, RoutedEventArgs e)
@@ -417,6 +461,8 @@ namespace Xosoloto
 
         private string GetClosestColorName(Color color)
         {
+            if (VongLoaiSetupWindow.AvailableColors == null || VongLoaiSetupWindow.AvailableColors.Count == 0)
+                return "";
             string closestName = VongLoaiSetupWindow.AvailableColors[0].Name;
             double minDistance = double.MaxValue;
             foreach (var option in VongLoaiSetupWindow.AvailableColors)
@@ -437,7 +483,7 @@ namespace Xosoloto
         {
             if (MauVeComboBox.SelectedItem is ComboBoxItem selectedItem)
             {
-                var match = VongLoaiSetupWindow.AvailableColors
+                var match = VongLoaiSetupWindow.AvailableColors?
                     .FirstOrDefault(c => c.Name == selectedItem.Content.ToString());
                 if (match != null)
                     MauVeBorder.Background = match.Color;

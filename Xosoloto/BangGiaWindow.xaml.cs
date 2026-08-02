@@ -109,7 +109,7 @@ namespace Xosoloto
             VongLoaiSelectComboBox.Items.Clear();
             foreach (var vong in vongLoaiConfig.Keys.OrderBy(k => k))
             {
-                string displayText = string.Join(" ", vongLoaiConfig[vong].Numbers); // ← giống MainWindow
+                string displayText = string.Join(" ", vongLoaiConfig[vong].Numbers ?? new List<int>()); // ← giống MainWindow
                 var item = new ComboBoxItem
                 {
                     Content = displayText,
@@ -126,7 +126,7 @@ namespace Xosoloto
             if (VongLoaiSelectComboBox.SelectedItem is ComboBoxItem selected && selected.Tag is int vongSo)
             {
                 var info = _vongLoaiConfig[vongSo];
-                VongSoTextBlock.Text = string.Join(" ", info.Numbers);
+                VongSoTextBlock.Text = string.Join(" ", info.Numbers ?? new List<int>());
                 GiaTienTextBlock.Text = info.GiaVe.ToString("N0").Replace(",", ".");
                 MauVeDisplayBorder.Background = info.Color;
             }
