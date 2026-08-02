@@ -172,6 +172,12 @@ namespace Xosoloto
                 // Hiển thị LuckyDrawWindow
                 luc.ShowDialog();
                 
+                // Báo cho nơi gọi (ShowLocXuan) biết là thiết lập đã HOÀN TẤT thành công,
+                // không phải bị hủy — nếu không set DialogResult, ShowDialog() ở nơi gọi
+                // sẽ trả về null (không phải true), khiến ứng dụng hiểu nhầm là "hủy" và
+                // có thể tự thoát ứng dụng ngay sau khi người dùng quay xong Lộc Xuân.
+                this.DialogResult = true;
+
                 // Đóng cửa sổ InitLocXuan sau khi LuckyDrawWindow đóng
                 this.Close();
             //}

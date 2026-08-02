@@ -88,18 +88,32 @@ namespace Xosoloto
                 "Đổi loại game", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (confirm != MessageBoxResult.Yes) return;
 
-            if (!ShowGameTypeSelection()) return; // người dùng hủy -> giữ nguyên trạng thái hiện tại
+            // Dừng video/nội dung của game hiện tại và ẩn màn hình chính đi TRƯỚC khi mở
+            // màn hình chọn game mới. Nếu không, MainWindow (với nội dung/video của game cũ)
+            // vẫn còn hiển thị phía sau các cửa sổ chọn game / thiết lập game mới.
+            mediaElement.Stop();
+            this.Hide();
+
+            if (!ShowGameTypeSelection())
+            {
+                // Người dùng hủy chọn game mới -> hiện lại màn hình game hiện tại như cũ.
+                this.Show();
+                if (CurrentGameType == GameType.LotoVuiXuan) mediaElement.Play();
+                return;
+            }
 
             if (CurrentGameType == GameType.LotoVuiXuan)
             {
                 // exitAppOnCancel: false -> nếu hủy setup vòng loại thì chỉ giữ nguyên, không thoát app
                 ShowVongLoaiSetup(exitAppOnCancel: false);
+                this.Show();
                 mediaElement.Play();
                 SetNumber("");
             }
             else if (CurrentGameType == GameType.LocXuanDauNam)
             {
                 ShowLocXuan(exitAppOnCancel: false);
+                this.Show();
             }
         }
 

@@ -80,22 +80,66 @@ namespace Xosoloto.Services
             return accounts.Any(a => a.Username.Equals((username ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase));
         }
 
-        public static (bool success, string message) Register(string username, string password)
+        public static bool EmailExists(string email)
+        {
+            var accounts = LoadAccounts();
+            return accounts.Any(a => a.Email.Equals((email ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase));
+        }
+
+        private static bool IsValidEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email)) return false;
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email.Trim());
+                return addr.Address.Equals(email.Trim(), StringComparison.OrdinalIgnoreCase);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Kiểm tra hợp lệ (username/email/password) TRƯỚC khi gửi OTP đăng ký.
+        /// Không tạo tài khoản ở bước này — tài khoản chỉ được tạo sau khi OTP xác thực đúng
+        /// (xem CompleteRegistration).
+        /// </summary>
+        public static (bool success, string message) ValidateRegistration(string username, string email, string password)
         {
             username = (username ?? string.Empty).Trim();
+            email = (email ?? string.Empty).Trim();
+
             if (string.IsNullOrWhiteSpace(username) || username.Length < 3)
                 return (false, "Tên đăng nhập phải có ít nhất 3 ký tự.");
+            if (!IsValidEmail(email))
+                return (false, "Email không hợp lệ.");
             if (string.IsNullOrWhiteSpace(password) || password.Length < 4)
                 return (false, "Mật khẩu phải có ít nhất 4 ký tự.");
 
             var accounts = LoadAccounts();
             if (accounts.Any(a => a.Username.Equals(username, StringComparison.OrdinalIgnoreCase)))
                 return (false, "Tên đăng nhập đã tồn tại.");
+            if (accounts.Any(a => a.Email.Equals(email, StringComparison.OrdinalIgnoreCase)))
+                return (false, "Email này đã được sử dụng cho tài khoản khác.");
 
+            return (true, "Hợp lệ.");
+        }
+
+        /// <summary>Tạo tài khoản thật sự, gọi sau khi người dùng đã nhập đúng mã OTP gửi tới email.</summary>
+        public static (bool success, string message) CompleteRegistration(string username, string email, string password)
+        {
+            // Kiểm tra lại lần nữa để tránh trường hợp có tài khoản trùng được tạo song song
+            // trong lúc người dùng đang chờ nhập OTP.
+            var (valid, message) = ValidateRegistration(username, email, password);
+            if (!valid) return (false, message);
+
+            var accounts = LoadAccounts();
             var (hash, salt) = HashPassword(password);
             accounts.Add(new UserAccount
             {
-                Username = username,
+                Username = username.Trim(),
+                Email = email.Trim(),
                 PasswordHash = hash,
                 PasswordSalt = salt,
                 CreatedAt = DateTime.Now
@@ -116,6 +160,64 @@ namespace Xosoloto.Services
                 return (false, "Sai mật khẩu.");
 
             return (true, "Đăng nhập thành công.");
+        }
+
+        // ---------- Quên mật khẩu ----------
+
+        /// <summary>
+        /// Tìm email gắn với một username hoặc email (người dùng có thể nhập 1 trong 2 khi
+        /// bấm "Quên mật khẩu"). Trả về null nếu không tìm thấy tài khoản nào khớp.
+        /// </summary>
+        public static string? FindEmailForAccount(string usernameOrEmail)
+        {
+            string input = (usernameOrEmail ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(input)) return null;
+
+            var accounts = LoadAccounts();
+            var account = accounts.FirstOrDefault(a =>
+                a.Username.Equals(input, StringComparison.OrdinalIgnoreCase) ||
+                a.Email.Equals(input, StringComparison.OrdinalIgnoreCase));
+
+            return account?.Email;
+        }
+
+        /// <summary>Lấy username tương ứng với username/email nhập vào (dùng nội bộ cho ResetPassword).</summary>
+        public static string? FindUsernameForAccount(string usernameOrEmail)
+        {
+            string input = (usernameOrEmail ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(input)) return null;
+
+            var accounts = LoadAccounts();
+            var account = accounts.FirstOrDefault(a =>
+                a.Username.Equals(input, StringComparison.OrdinalIgnoreCase) ||
+                a.Email.Equals(input, StringComparison.OrdinalIgnoreCase));
+
+            return account?.Username;
+        }
+
+        /// <summary>
+        /// Đặt lại mật khẩu cho tài khoản. CHỈ được gọi sau khi mã OTP gửi tới email của tài
+        /// khoản đó đã được xác thực đúng (xem OtpService.VerifyOtp).
+        /// </summary>
+        public static (bool success, string message) ResetPassword(string usernameOrEmail, string newPassword)
+        {
+            if (string.IsNullOrWhiteSpace(newPassword) || newPassword.Length < 4)
+                return (false, "Mật khẩu mới phải có ít nhất 4 ký tự.");
+
+            var accounts = LoadAccounts();
+            string input = (usernameOrEmail ?? string.Empty).Trim();
+            var account = accounts.FirstOrDefault(a =>
+                a.Username.Equals(input, StringComparison.OrdinalIgnoreCase) ||
+                a.Email.Equals(input, StringComparison.OrdinalIgnoreCase));
+
+            if (account == null)
+                return (false, "Không tìm thấy tài khoản.");
+
+            var (hash, salt) = HashPassword(newPassword);
+            account.PasswordHash = hash;
+            account.PasswordSalt = salt;
+            SaveAccounts(accounts);
+            return (true, "Đặt lại mật khẩu thành công.");
         }
 
         // ---------- Ghi nhớ đăng nhập ----------
