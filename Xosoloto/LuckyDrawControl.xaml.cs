@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace Xosoloto
@@ -11,29 +13,28 @@ namespace Xosoloto
         private const double BASE_WIDTH = 1600;
         private const double BASE_HEIGHT = 900;
 
-        private string[] prizeNames = new string[]
+        // Bảng màu xoay vòng cho các nút bấm (số vòng động, không còn giới hạn 5).
+        private static readonly string[] ButtonColors =
         {
-            "LỘC XUÂN 1",
-            "LỘC XUÂN 2",
-            "LỘC XUÂN 3",
-            "LỘC XUÂN 4",
-            "LỘC XUÂN 5"
+            "#4CAF50", "#2196F3", "#FF9800", "#E91E63", "#9C27B0",
+            "#00BCD4", "#795548", "#607D8B", "#8BC34A", "#3F51B5",
+            "#FFC107", "#009688"
         };
-
-        // Lưu trữ các số giải thưởng
-        private string[] prizeNumbers = new string[5];
 
         // THÊM CÁC PROPERTIES
         public string ImagePath { get; set; }
         public string LogoPath { get; set; }
         public string[] PrizePaths { get; set; }
 
+        // Ô số hiển thị mỗi giải (sinh động theo PrizePaths.Length).
+        private List<TextBlock> prizeNumberBlocks = new();
+        private List<string> prizeNumbers = new();
+        private List<string> prizeNames = new();
+
         public LuckyDrawWindow()
         {
             InitializeComponent();
             this.Loaded += Window_Loaded;
-            InitializeButtonEvents();
-            InitializePrizeNumbers();
         }
 
         public LuckyDrawWindow(string imagePath, string title, string logoPath, string[] prizePaths)
@@ -44,68 +45,63 @@ namespace Xosoloto
             this.ImagePath = imagePath;
             this.Title = title;
             this.LogoPath = logoPath;
-            this.PrizePaths = prizePaths;
+            this.PrizePaths = prizePaths ?? Array.Empty<string>();
 
-            InitializeButtonEvents();
-            InitializePrizeNumbers();
+            BuildDynamicPrizeSlots();
             LoadData();
         }
 
-        private void InitializePrizeNumbers()
+        /// <summary>
+        /// Sinh động (theo số vòng = PrizePaths.Length) các ô TextBlock hiển thị số trúng
+        /// thưởng và các nút mở màn hình nhập số cho từng giải. Vị trí ô số được sắp theo
+        /// lưới 2 cột (giống bố cục gốc cho 4 giải "Lộc Xuân"); ô cuối cùng luôn là giải
+        /// "Khuyến khích" và được canh giữa phía dưới, giữ đúng hành vi cũ khi có 5 giải.
+        /// </summary>
+        private void BuildDynamicPrizeSlots()
         {
-            // Khởi tạo mảng số giải với giá trị mặc định
-            for (int i = 0; i < prizeNumbers.Length; i++)
+            int count = PrizePaths?.Length ?? 0;
+
+            prizeNumberBlocks = new List<TextBlock>(count);
+            prizeNumbers = new List<string>(count);
+            prizeNames = new List<string>(count);
+            spButtons.Children.Clear();
+
+            for (int i = 0; i < count; i++)
             {
-                prizeNumbers[i] = GetDefaultPrizeNumber(i);
+                bool isLastSlot = i == count - 1;
+                prizeNames.Add(isLastSlot ? "KHUYẾN KHÍCH" : $"LỘC XUÂN {i + 1}");
+                prizeNumbers.Add("- - - -");
+
+                var block = new TextBlock
+                {
+                    Text = "- - - -",
+                    FontWeight = FontWeights.Bold,
+                    Foreground = Brushes.Black,
+                    FontSize = isLastSlot ? 35 : 56
+                };
+                prizeNumberBlocks.Add(block);
+                MainCanvas.Children.Add(block);
+
+                int capturedIndex = i;
+                var btn = new Button
+                {
+                    Content = (i + 1).ToString(),
+                    Width = 50,
+                    Height = 50,
+                    FontSize = 24,
+                    FontWeight = FontWeights.Bold,
+                    Margin = new Thickness(0, 0, 10, 0),
+                    Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ButtonColors[i % ButtonColors.Length])),
+                    Foreground = Brushes.White,
+                    BorderThickness = new Thickness(0),
+                    Cursor = System.Windows.Input.Cursors.Hand
+                };
+                var cornerStyle = new Style(typeof(Border));
+                cornerStyle.Setters.Add(new Setter(Border.CornerRadiusProperty, new CornerRadius(25)));
+                btn.Resources.Add(typeof(Border), cornerStyle);
+                btn.Click += (s, e) => OpenPrizeWindow(capturedIndex);
+                spButtons.Children.Add(btn);
             }
-        }
-
-        private string GetDefaultPrizeNumber(int index)
-        {
-            // Trả về số mặc định hiển thị ban đầu
-            switch (index)
-            {
-                case 0: return "- - - -";
-                case 1: return "- - - -";
-                case 2: return "- - - -";
-                case 3: return "- - - -";
-                default: return "- - - -";
-            }
-        }
-
-        private void InitializeButtonEvents()
-        {
-            // Gắn sự kiện Click cho các buttons
-            btn1.Click += Btn1_Click;
-            btn2.Click += Btn2_Click;
-            btn3.Click += Btn3_Click;
-            btn4.Click += Btn4_Click;
-            btn5.Click += Btn5_Click;
-        }
-
-        private void Btn1_Click(object sender, RoutedEventArgs e)
-        {
-            OpenPrizeWindow(0);
-        }
-
-        private void Btn2_Click(object sender, RoutedEventArgs e)
-        {
-            OpenPrizeWindow(1);
-        }
-
-        private void Btn3_Click(object sender, RoutedEventArgs e)
-        {
-            OpenPrizeWindow(2);
-        }
-
-        private void Btn4_Click(object sender, RoutedEventArgs e)
-        {
-            OpenPrizeWindow(3);
-        }
-
-        private void Btn5_Click(object sender, RoutedEventArgs e)
-        {
-            OpenPrizeWindow(4);
         }
 
         private void OpenPrizeWindow(int prizeIndex)
@@ -151,35 +147,16 @@ namespace Xosoloto
         // PUBLIC METHOD - Cập nhật số giải thưởng từ PrizeDisplayWindow
         public void UpdatePrizeNumber(int prizeIndex, string prizeNumber)
         {
-            if (prizeIndex < 0 || prizeIndex > 4) return;
+            if (prizeIndex < 0 || prizeIndex >= prizeNumberBlocks.Count) return;
 
             prizeNumbers[prizeIndex] = prizeNumber;
-
-            // Cập nhật UI
-            switch (prizeIndex)
-            {
-                case 0:
-                    txtLoc1.Text = prizeNumber;
-                    break;
-                case 1:
-                    txtLoc2.Text = prizeNumber;
-                    break;
-                case 2:
-                    txtLoc3.Text = prizeNumber;
-                    break;
-                case 3:
-                    txtLoc4.Text = prizeNumber;
-                    break;
-                case 4:
-                    txtKK.Text = prizeNumber;
-                    break;
-            }
+            prizeNumberBlocks[prizeIndex].Text = prizeNumber;
         }
 
         // PUBLIC METHOD - Lấy số giải thưởng hiện tại
         public string GetPrizeNumber(int prizeIndex)
         {
-            if (prizeIndex < 0 || prizeIndex >= prizeNumbers.Length)
+            if (prizeIndex < 0 || prizeIndex >= prizeNumbers.Count)
                 return "? ? ? ?";
 
             return prizeNumbers[prizeIndex];
@@ -188,9 +165,10 @@ namespace Xosoloto
         // PUBLIC METHOD - Cập nhật tất cả số trúng thưởng
         public void UpdateAllPrizeNumbers(string[] winningNumbers)
         {
-            if (winningNumbers == null || winningNumbers.Length < 4) return;
+            if (winningNumbers == null) return;
 
-            for (int i = 0; i < Math.Min(4, winningNumbers.Length); i++)
+            int max = Math.Min(prizeNumberBlocks.Count, winningNumbers.Length);
+            for (int i = 0; i < max; i++)
             {
                 UpdatePrizeNumber(i, winningNumbers[i]);
             }
@@ -225,45 +203,35 @@ namespace Xosoloto
             Canvas.SetLeft(txtTitle, (actualWidth - txtTitle.DesiredSize.Width) / 2);
             Canvas.SetTop(txtTitle, 130 * scaleY);
 
-            // Lộc Xuân 1
-            txtLoc1.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-            double loc1X = actualWidth - 1000 * scaleX + 100 * scaleX;
-            double loc1Y = 340 * scaleY + 30;
-            Canvas.SetLeft(txtLoc1, loc1X - txtLoc1.DesiredSize.Width / 2);
-            Canvas.SetTop(txtLoc1, loc1Y);
+            // Các ô số giải (trừ ô cuối cùng = Khuyến khích) được xếp lưới 2 cột,
+            // đúng bố cục gốc khi có 4 giải "Lộc Xuân" (0,0) (0,1) (1,0) (1,1)...
+            int mainCount = Math.Max(0, prizeNumberBlocks.Count - 1);
+            for (int i = 0; i < mainCount; i++)
+            {
+                var block = prizeNumberBlocks[i];
+                int row = i / 2;
+                int col = i % 2;
 
-            // Lộc Xuân 2
-            txtLoc2.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-            double loc2X = actualWidth - 1000 * scaleX + 600 * scaleX;
-            double loc2Y = 340 * scaleY + 30;
-            Canvas.SetLeft(txtLoc2, loc2X - txtLoc2.DesiredSize.Width / 2);
-            Canvas.SetTop(txtLoc2, loc2Y);
-
-            // Lộc Xuân 3
-            txtLoc3.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-            double loc3X = actualWidth - 1000 * scaleX + 100 * scaleX;
-            double loc3Y = 340 * scaleY + 200;
-            Canvas.SetLeft(txtLoc3, loc3X - txtLoc3.DesiredSize.Width / 2);
-            Canvas.SetTop(txtLoc3, loc3Y);
-
-            // Lộc Xuân 4
-            txtLoc4.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-            double loc4X = actualWidth - 1000 * scaleX + 600 * scaleX;
-            double loc4Y = 340 * scaleY + 200;
-            Canvas.SetLeft(txtLoc4, loc4X - txtLoc4.DesiredSize.Width / 2);
-            Canvas.SetTop(txtLoc4, loc4Y);
+                block.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                double x = actualWidth - 1000 * scaleX + (col == 0 ? 100 : 600) * scaleX;
+                double y = 340 * scaleY + 30 + row * 200;
+                Canvas.SetLeft(block, x - block.DesiredSize.Width / 2);
+                Canvas.SetTop(block, y);
+            }
 
             // Buttons
             spButtons.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
             Canvas.SetLeft(spButtons, 100 * scaleX);
             Canvas.SetTop(spButtons, actualHeight - 120 * scaleY);
 
-            // Text KK1
-            txtKK.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-            Canvas.SetLeft(txtKK, ((actualWidth - txtKK.DesiredSize.Width) / 2) + 60);
-            Canvas.SetTop(txtKK, actualHeight - 160 * scaleY);
-
-          
+            // Ô số cuối cùng = giải Khuyến khích, canh giữa phía dưới (như txtKK gốc).
+            if (prizeNumberBlocks.Count > 0)
+            {
+                var kk = prizeNumberBlocks[prizeNumberBlocks.Count - 1];
+                kk.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                Canvas.SetLeft(kk, ((actualWidth - kk.DesiredSize.Width) / 2) + 60 - 55);
+                Canvas.SetTop(kk, actualHeight - 160 * scaleY);
+            }
         }
 
         private void LoadData()
@@ -286,7 +254,7 @@ namespace Xosoloto
                 }
 
                 // Cập nhật số giải ban đầu
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < prizeNumbers.Count; i++)
                 {
                     UpdatePrizeNumber(i, prizeNumbers[i]);
                 }
@@ -296,14 +264,6 @@ namespace Xosoloto
                 MessageBox.Show($"Error loading data: {ex.Message}", "Error",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
-        }
-
-        // Public method để cập nhật text khuyến khích
-        public void UpdateIncentiveTexts(string kk1, string kk2)
-        {
-            if (!string.IsNullOrEmpty(kk1))
-                txtKK.Text = kk1;
-           
         }
     }
 }

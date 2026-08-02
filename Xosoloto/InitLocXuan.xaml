@@ -14,6 +14,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <!-- Title Section -->
@@ -46,64 +47,23 @@
                 </StackPanel>
             </StackPanel>
 
-            <!-- Prize Images Section -->
-            <StackPanel Grid.Row="3" Margin="0,0,0,20">
-                <Label Content="Prize Images (5 prizes):" FontWeight="Bold" FontSize="14"/>
-                <StackPanel>
-                    <!-- Prize 1 -->
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
-                        <Label Content="Prize 1:" Width="70" VerticalAlignment="Center"/>
-                        <Button x:Name="btnAddPrize1" Content="Select Image" Width="100" Height="30" 
-                                Margin="0,0,10,0" Tag="1"/>
-                        <Border BorderBrush="Gray" BorderThickness="1" Width="120" Height="90">
-                            <Image x:Name="imgPrize1Preview" Stretch="Uniform"/>
-                        </Border>
-                    </StackPanel>
+            <!-- Số vòng (động) -->
+            <StackPanel Grid.Row="3" Margin="0,0,0,10" Orientation="Horizontal">
+                <Label Content="Số vòng (giải):" FontWeight="Bold" FontSize="14" VerticalAlignment="Center" Width="150"/>
+                <Button x:Name="btnSoVongMinus" Content="-" Width="30" Height="30"/>
+                <TextBlock x:Name="txtSoVong" Text="5" FontSize="16" FontWeight="Bold"
+                           Width="40" TextAlignment="Center" VerticalAlignment="Center"/>
+                <Button x:Name="btnSoVongPlus" Content="+" Width="30" Height="30"/>
+            </StackPanel>
 
-                    <!-- Prize 2 -->
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
-                        <Label Content="Prize 2:" Width="70" VerticalAlignment="Center"/>
-                        <Button x:Name="btnAddPrize2" Content="Select Image" Width="100" Height="30" 
-                                Margin="0,0,10,0" Tag="2"/>
-                        <Border BorderBrush="Gray" BorderThickness="1" Width="120" Height="90">
-                            <Image x:Name="imgPrize2Preview" Stretch="Uniform"/>
-                        </Border>
-                    </StackPanel>
-
-                    <!-- Prize 3 -->
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
-                        <Label Content="Prize 3:" Width="70" VerticalAlignment="Center"/>
-                        <Button x:Name="btnAddPrize3" Content="Select Image" Width="100" Height="30" 
-                                Margin="0,0,10,0" Tag="3"/>
-                        <Border BorderBrush="Gray" BorderThickness="1" Width="120" Height="90">
-                            <Image x:Name="imgPrize3Preview" Stretch="Uniform"/>
-                        </Border>
-                    </StackPanel>
-
-                    <!-- Prize 4 -->
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
-                        <Label Content="Prize 4:" Width="70" VerticalAlignment="Center"/>
-                        <Button x:Name="btnAddPrize4" Content="Select Image" Width="100" Height="30" 
-                                Margin="0,0,10,0" Tag="4"/>
-                        <Border BorderBrush="Gray" BorderThickness="1" Width="120" Height="90">
-                            <Image x:Name="imgPrize4Preview" Stretch="Uniform"/>
-                        </Border>
-                    </StackPanel>
-
-                    <!-- Prize 5 -->
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
-                        <Label Content="Prize 5:" Width="70" VerticalAlignment="Center"/>
-                        <Button x:Name="btnAddPrize5" Content="Select Image" Width="100" Height="30" 
-                                Margin="0,0,10,0" Tag="5"/>
-                        <Border BorderBrush="Gray" BorderThickness="1" Width="120" Height="90">
-                            <Image x:Name="imgPrize5Preview" Stretch="Uniform"/>
-                        </Border>
-                    </StackPanel>
-                </StackPanel>
+            <!-- Prize Images Section (số lượng ô sinh động theo Số vòng ở trên) -->
+            <StackPanel Grid.Row="4" Margin="0,0,0,20">
+                <Label Content="Prize Images:" FontWeight="Bold" FontSize="14"/>
+                <StackPanel x:Name="pnlPrizes"/>
             </StackPanel>
 
             <!-- Done Button -->
-            <Button x:Name="btnDone" Grid.Row="4" Content="Done" Width="120" Height="40" 
+            <Button x:Name="btnDone" Grid.Row="5" Content="Done" Width="120" Height="40" 
                     FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,20"/>
         </Grid>
     </Viewbox>

@@ -303,7 +303,7 @@ namespace Xosoloto
 
         private void ShowLocXuan(bool exitAppOnCancel = true)
         {
-            InitLocXuan setupWindow = new InitLocXuan();
+            InitLocXuan setupWindow = new InitLocXuan(_currentUsername);
             if (setupWindow.ShowDialog() == true)
             {
             }

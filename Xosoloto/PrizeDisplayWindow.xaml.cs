@@ -56,7 +56,7 @@ namespace Xosoloto
             // =================================================
             // 🎯 GIẢI 5 → TEXT THUẦN (không format gì)
             // =================================================
-            if (prizeIndex == 4)
+            if (IsKhuyenKhichSlot(prizeIndex))
             {
                 parentWindow?.UpdatePrizeNumber(prizeIndex, raw);
                 return;
@@ -95,7 +95,7 @@ namespace Xosoloto
         {
             // Khi nhấn Enter, tự động back về màn hình chính
 
-            if (prizeIndex == 4 && e.Key == Key.Enter)
+            if (IsKhuyenKhichSlot(prizeIndex) && e.Key == Key.Enter)
             {
                 e.Handled = true; // 🔥 CHẶN xuống dòng
 
@@ -123,6 +123,12 @@ namespace Xosoloto
                 }
             }
         }
+
+        /// <summary>
+        /// Giải "Khuyến khích" luôn là giải CUỐI CÙNG trong danh sách, bất kể số vòng
+        /// (số giải) hiện đang cấu hình là bao nhiêu (trước đây cố định là index 4/5 giải).
+        /// </summary>
+        private bool IsKhuyenKhichSlot(int index) => prizePaths != null && prizePaths.Length > 0 && index == prizePaths.Length - 1;
 
         private void LoadInitialData()
         {
@@ -153,8 +159,8 @@ namespace Xosoloto
         {
             if (index < 0 || index >= prizePaths.Length) return;
             prizeIndex = index;
-            txtPrizeName.Text = index < 4  ? $"LỘC XUÂN {index + 1}" : "9 GIẢI KHUYẾN KHÍCH";
-            if (index == 4) // Giải 5
+            txtPrizeName.Text = !IsKhuyenKhichSlot(index) ? $"LỘC XUÂN {index + 1}" : "9 GIẢI KHUYẾN KHÍCH";
+            if (IsKhuyenKhichSlot(index)) // Giải cuối cùng (khuyến khích)
             {
                 
                 txtPrizeNumber.FontSize = 35;

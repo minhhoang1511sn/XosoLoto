@@ -1,19 +1,38 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
+using Xosoloto.Models;
+using Xosoloto.Services;
 
 namespace Xosoloto
 {
     public partial class InitLocXuan : Window
     {
+        private const int MIN_VONG = 2;
+        private const int MAX_VONG = 12;
+        private const int DEFAULT_VONG = 5;
+
+        private readonly string _username;
+
         private string imagePath = string.Empty;
         private string logoPath = string.Empty;
-        private string[] prizePaths = new string[5];
 
-        public InitLocXuan()
+        // Số lượng phần tử ĐỘNG (không còn cố định 5) — mỗi phần tử là đường dẫn ảnh giải.
+        private List<string> prizePaths = new();
+        // Các Image control preview tương ứng, theo cùng thứ tự với prizePaths.
+        private List<Image> prizePreviews = new();
+
+        public InitLocXuan() : this(string.Empty) { }
+
+        public InitLocXuan(string username)
         {
             InitializeComponent();
+            _username = string.IsNullOrWhiteSpace(username) ? string.Empty : username.Trim();
 
             // Đảm bảo cửa sổ luôn vừa với màn hình, kể cả màn hình nhỏ
             this.Loaded += (s, e) =>
@@ -24,24 +43,81 @@ namespace Xosoloto
                 if (this.Width > workArea.Width) this.Width = workArea.Width;
                 if (this.Height > workArea.Height) this.Height = workArea.Height;
             };
-            
-            // Khởi tạo mảng prize paths
-            for (int i = 0; i < prizePaths.Length; i++)
-            {
-                prizePaths[i] = string.Empty;
-            }
-            
-            // Gắn sự kiện cho các button
+
             btnAddImg.Click += BtnAddImg_Click;
             btnAddLogo.Click += BtnAddLogo_Click;
             btnDone.Click += BtnDone_Click;
-            
-            // Gắn sự kiện cho các button prize
-            btnAddPrize1.Click += BtnAddPrize_Click;
-            btnAddPrize2.Click += BtnAddPrize_Click;
-            btnAddPrize3.Click += BtnAddPrize_Click;
-            btnAddPrize4.Click += BtnAddPrize_Click;
-            btnAddPrize5.Click += BtnAddPrize_Click;
+            btnSoVongMinus.Click += (s, e) => SetSoVong(CurrentSoVong - 1);
+            btnSoVongPlus.Click += (s, e) => SetSoVong(CurrentSoVong + 1);
+
+            // Nạp lại cấu hình đã lưu (nếu có) cho tài khoản này, nếu không thì dùng mặc định.
+            if (!TryLoadSavedConfig())
+            {
+                BuildPrizeRows(DEFAULT_VONG);
+            }
+        }
+
+        private int CurrentSoVong => prizePaths.Count;
+
+        private void SetSoVong(int newCount)
+        {
+            newCount = Math.Max(MIN_VONG, Math.Min(MAX_VONG, newCount));
+            if (newCount == CurrentSoVong) return;
+            BuildPrizeRows(newCount);
+        }
+
+        /// <summary>
+        /// Sinh động danh sách các dòng "chọn ảnh giải thưởng" theo đúng số vòng hiện tại.
+        /// Giữ lại đường dẫn ảnh đã chọn trước đó cho các vị trí còn tồn tại (nếu tăng/giảm số vòng).
+        /// </summary>
+        private void BuildPrizeRows(int count)
+        {
+            var oldPaths = prizePaths;
+
+            prizePaths = new List<string>(count);
+            prizePreviews = new List<Image>(count);
+            pnlPrizes.Children.Clear();
+
+            for (int i = 0; i < count; i++)
+            {
+                string existingPath = oldPaths != null && i < oldPaths.Count ? oldPaths[i] : string.Empty;
+                prizePaths.Add(existingPath ?? string.Empty);
+
+                bool isLastSlot = i == count - 1;
+                string label = isLastSlot ? "Khuyến khích:" : $"Prize {i + 1}:";
+
+                var row = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 0, 0, 15) };
+                row.Children.Add(new Label { Content = label, Width = 100, VerticalAlignment = VerticalAlignment.Center });
+
+                int capturedIndex = i;
+                var btn = new Button { Content = "Select Image", Width = 100, Height = 30, Margin = new Thickness(0, 0, 10, 0), Tag = capturedIndex };
+                btn.Click += (s, e) => BtnAddPrize_Click(capturedIndex);
+                row.Children.Add(btn);
+
+                var border = new Border { BorderBrush = System.Windows.Media.Brushes.Gray, BorderThickness = new Thickness(1), Width = 120, Height = 90 };
+                var img = new Image { Stretch = System.Windows.Media.Stretch.Uniform };
+                if (!string.IsNullOrWhiteSpace(existingPath) && File.Exists(existingPath))
+                {
+                    img.Source = LoadPreview(existingPath);
+                }
+                border.Child = img;
+                row.Children.Add(border);
+
+                prizePreviews.Add(img);
+                pnlPrizes.Children.Add(row);
+            }
+
+            txtSoVong.Text = count.ToString();
+        }
+
+        private static BitmapImage LoadPreview(string path)
+        {
+            var bitmap = new BitmapImage();
+            bitmap.BeginInit();
+            bitmap.UriSource = new Uri(path);
+            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+            bitmap.EndInit();
+            return bitmap;
         }
 
         private void BtnAddImg_Click(object sender, RoutedEventArgs e)
@@ -49,19 +125,11 @@ namespace Xosoloto
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Image files (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp|All files (*.*)|*.*";
             openFileDialog.Title = "Select Background Image";
-            
+
             if (openFileDialog.ShowDialog() == true)
             {
                 imagePath = openFileDialog.FileName;
-                
-                // Hiển thị preview
-                BitmapImage bitmap = new BitmapImage();
-                bitmap.BeginInit();
-                bitmap.UriSource = new Uri(imagePath);
-                bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                bitmap.EndInit();
-                imgBackgroundPreview.Source = bitmap;
-                
+                imgBackgroundPreview.Source = LoadPreview(imagePath);
             }
         }
 
@@ -70,64 +138,83 @@ namespace Xosoloto
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Image files (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp|All files (*.*)|*.*";
             openFileDialog.Title = "Select a Logo";
-            
+
             if (openFileDialog.ShowDialog() == true)
             {
                 logoPath = openFileDialog.FileName;
-                
-                // Hiển thị preview
-                BitmapImage bitmap = new BitmapImage();
-                bitmap.BeginInit();
-                bitmap.UriSource = new Uri(logoPath);
-                bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                bitmap.EndInit();
-                imgLogoPreview.Source = bitmap;
+                imgLogoPreview.Source = LoadPreview(logoPath);
             }
         }
 
-        private void BtnAddPrize_Click(object sender, RoutedEventArgs e)
+        private void BtnAddPrize_Click(int prizeIndex)
         {
-            var button = sender as System.Windows.Controls.Button;
-            if (button == null) return;
-            
-            int prizeIndex = int.Parse(button.Tag.ToString()) - 1;
-            
+            if (prizeIndex < 0 || prizeIndex >= prizePaths.Count) return;
+
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Image files (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp|All files (*.*)|*.*";
             openFileDialog.Title = $"Select Prize {prizeIndex + 1} Image";
-            
+
             if (openFileDialog.ShowDialog() == true)
             {
                 prizePaths[prizeIndex] = openFileDialog.FileName;
-                
-                // Hiển thị preview cho prize tương ứng
-                BitmapImage bitmap = new BitmapImage();
-                bitmap.BeginInit();
-                bitmap.UriSource = new Uri(prizePaths[prizeIndex]);
-                bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                bitmap.EndInit();
-                
-                // Gán hình ảnh vào Image control tương ứng
-                switch (prizeIndex)
-                {
-                    case 0:
-                        imgPrize1Preview.Source = bitmap;
-                        break;
-                    case 1:
-                        imgPrize2Preview.Source = bitmap;
-                        break;
-                    case 2:
-                        imgPrize3Preview.Source = bitmap;
-                        break;
-                    case 3:
-                        imgPrize4Preview.Source = bitmap;
-                        break;
-                    case 4:
-                        imgPrize5Preview.Source = bitmap;
-                        break;
-                }
-                
+                prizePreviews[prizeIndex].Source = LoadPreview(prizePaths[prizeIndex]);
             }
+        }
+
+        /// <summary>
+        /// Nạp lại cấu hình Lộc Xuân đã lưu trước đó cho tài khoản hiện tại (nếu có).
+        /// Trả về false nếu không có tài khoản / không có cấu hình đã lưu.
+        /// </summary>
+        private bool TryLoadSavedConfig()
+        {
+            if (string.IsNullOrEmpty(_username)) return false;
+
+            var saved = AccountService.LoadSettings(_username);
+            var locXuan = saved?.LocXuan;
+            if (locXuan == null) return false;
+
+            int soVong = locXuan.SoVong > 0 ? locXuan.SoVong : DEFAULT_VONG;
+            soVong = Math.Max(MIN_VONG, Math.Min(MAX_VONG, soVong));
+
+            txtTitle.Text = locXuan.Title ?? string.Empty;
+
+            if (!string.IsNullOrWhiteSpace(locXuan.ImagePath) && File.Exists(locXuan.ImagePath))
+            {
+                imagePath = locXuan.ImagePath;
+                imgBackgroundPreview.Source = LoadPreview(imagePath);
+            }
+
+            if (!string.IsNullOrWhiteSpace(locXuan.LogoPath) && File.Exists(locXuan.LogoPath))
+            {
+                logoPath = locXuan.LogoPath;
+                imgLogoPreview.Source = LoadPreview(logoPath);
+            }
+
+            prizePaths = new List<string>(locXuan.PrizePaths ?? new List<string>());
+            while (prizePaths.Count < soVong) prizePaths.Add(string.Empty);
+            if (prizePaths.Count > soVong) prizePaths = prizePaths.Take(soVong).ToList();
+
+            BuildPrizeRows(soVong);
+            return true;
+        }
+
+        /// <summary>Lưu lại cấu hình Lộc Xuân hiện tại cho tài khoản đang đăng nhập.</summary>
+        private void SaveCurrentConfig()
+        {
+            if (string.IsNullOrEmpty(_username)) return;
+
+            var data = AccountService.LoadSettings(_username) ?? new AppSettingsData();
+            data.GameType = GameType.LocXuanDauNam.ToString();
+            data.LocXuan = new LocXuanSettingDto
+            {
+                Title = txtTitle.Text ?? string.Empty,
+                ImagePath = imagePath,
+                LogoPath = logoPath,
+                PrizePaths = new List<string>(prizePaths),
+                SoVong = CurrentSoVong
+            };
+
+            AccountService.SaveSettings(_username, data);
         }
 
         private void BtnDone_Click(object sender, RoutedEventArgs e)
@@ -143,44 +230,37 @@ namespace Xosoloto
             }
             if (string.IsNullOrWhiteSpace(logoPath))
             {
-               
                 return;
             }
-            
-            // Kiểm tra xem đã chọn đủ 5 hình ảnh giải thưởng chưa
-            for (int i = 0; i < prizePaths.Length; i++)
+
+            // Kiểm tra xem đã chọn đủ ảnh cho tất cả các giải (số vòng động) chưa
+            for (int i = 0; i < prizePaths.Count; i++)
             {
                 if (string.IsNullOrWhiteSpace(prizePaths[i]))
                 {
-                  
                     return;
                 }
             }
-            
-            //MessageBoxResult result = MessageBox.Show("Are you sure you want to finish?",
-            //                                          "Confirm",
-            //                                          MessageBoxButton.YesNo,
-            //                                          MessageBoxImage.Question);
-            //if (result == MessageBoxResult.Yes)
-            //{
-            //    // Truyền dữ liệu sang LuckyDrawWindow
-                LuckyDrawWindow luc = new LuckyDrawWindow(imagePath, txtTitle.Text, logoPath, prizePaths);
-                
-                // Ẩn cửa sổ hiện tại
-                this.Hide();
-                
-                // Hiển thị LuckyDrawWindow
-                luc.ShowDialog();
-                
-                // Báo cho nơi gọi (ShowLocXuan) biết là thiết lập đã HOÀN TẤT thành công,
-                // không phải bị hủy — nếu không set DialogResult, ShowDialog() ở nơi gọi
-                // sẽ trả về null (không phải true), khiến ứng dụng hiểu nhầm là "hủy" và
-                // có thể tự thoát ứng dụng ngay sau khi người dùng quay xong Lộc Xuân.
-                this.DialogResult = true;
 
-                // Đóng cửa sổ InitLocXuan sau khi LuckyDrawWindow đóng
-                this.Close();
-            //}
+            // Lưu cấu hình lại cho tài khoản hiện tại trước khi mở màn hình quay số
+            SaveCurrentConfig();
+
+            LuckyDrawWindow luc = new LuckyDrawWindow(imagePath, txtTitle.Text, logoPath, prizePaths.ToArray());
+
+            // Ẩn cửa sổ hiện tại
+            this.Hide();
+
+            // Hiển thị LuckyDrawWindow
+            luc.ShowDialog();
+
+            // Báo cho nơi gọi (ShowLocXuan) biết là thiết lập đã HOÀN TẤT thành công,
+            // không phải bị hủy — nếu không set DialogResult, ShowDialog() ở nơi gọi
+            // sẽ trả về null (không phải true), khiến ứng dụng hiểu nhầm là "hủy" và
+            // có thể tự thoát ứng dụng ngay sau khi người dùng quay xong Lộc Xuân.
+            this.DialogResult = true;
+
+            // Đóng cửa sổ InitLocXuan sau khi LuckyDrawWindow đóng
+            this.Close();
         }
     }
 }
