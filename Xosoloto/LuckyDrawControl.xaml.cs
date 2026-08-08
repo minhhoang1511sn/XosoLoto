@@ -20,7 +20,13 @@ namespace Xosoloto
         // Kích thước chuẩn
         private const double BASE_WIDTH = 1600;
         private const double BASE_HEIGHT = 900;
+        private const double KK_X_FRAC = 0.5768;
+        private const double KK_Y_FRAC = 0.8815;
 
+        // Bề rộng khung "9 GIẢI KHUYẾN KHÍCH" trên ảnh nền (đo theo canvas gốc 1600x900).
+        // Dùng để giới hạn TextWrapping khi chuỗi số khuyến khích dài, đồng thời để
+        // TextAlignment="Center" canh giữa từng dòng bên trong khung.
+        private const double KK_FRAME_WIDTH = 900;
         // Bảng màu xoay vòng cho các nút bấm (số vòng động, không còn giới hạn 5).
         private static readonly string[] ButtonColors =
         {
@@ -119,7 +125,7 @@ namespace Xosoloto
             for (int i = 0; i < count; i++)
             {
                 bool isLastSlot = i == count - 1;
-                prizeNames.Add(isLastSlot ? "KHUYẾN KHÍCH" : $"LỘC XUÂN {i + 1}");
+                prizeNames.Add(isLastSlot ? "9 GIẢI KHUYẾN KHÍCH" : $"LỘC XUÂN {i + 1}");
                 prizeNumbers.Add("- - - -");
 
                 var block = new TextBlock
@@ -127,7 +133,10 @@ namespace Xosoloto
                     Text = "- - - -",
                     FontWeight = FontWeights.Bold,
                     Foreground = Brushes.Black,
-                    FontSize = isLastSlot ? 35 : 56
+                    FontSize = isLastSlot ? 35 : 56,
+                    TextAlignment = TextAlignment.Center,
+                    TextWrapping = isLastSlot ? TextWrapping.Wrap : TextWrapping.NoWrap,
+                    Width = isLastSlot ? KK_FRAME_WIDTH : double.NaN // NaN = auto, giữ hành vi cũ cho các ô khác
                 };
                 prizeNumberBlocks.Add(block);
                 MainCanvas.Children.Add(block);
@@ -325,15 +334,15 @@ namespace Xosoloto
         private const double COL1_X_FRAC = 0.7688;
         private const double ROW0_Y_FRAC = 0.4583;
         private const double ROW_GAP_FRAC = 0.2174; // = ROW1_Y_FRAC (0.6758) - ROW0_Y_FRAC
-        private const double KK_X_FRAC = 0.5768;
-        private const double KK_Y_FRAC = 0.8815;
+
 
         /// <summary>Đặt vị trí cố định (trên canvas gốc 1600x900) cho 1 ô số giải, ngay khi
         /// nó được tạo ra - không cần chờ SizeChanged vì canvas không đổi kích thước, chỉ có
         /// Viewbox bao ngoài co giãn hình ảnh của toàn khối.</summary>
         private void PositionPrizeBlock(TextBlock block, int index, bool isLastSlot)
         {
-            block.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+            double measureWidth = isLastSlot ? KK_FRAME_WIDTH : double.PositiveInfinity;
+            block.Measure(new Size(measureWidth, double.PositiveInfinity));
 
             double x, y;
             if (isLastSlot)
@@ -349,6 +358,10 @@ namespace Xosoloto
                 y = BASE_HEIGHT * (ROW0_Y_FRAC + row * ROW_GAP_FRAC);
             }
 
+            // Với ô "khuyến khích": block.DesiredSize.Width == KK_FRAME_WIDTH (do đã set Width cố
+            // định), nên trừ nửa Width vẫn canh đúng tâm ngang khung; TextAlignment=Center lo phần
+            // canh giữa TỪNG DÒNG bên trong. Trừ nửa Height (đã tính đủ số dòng sau khi wrap) canh
+            // đúng tâm dọc cho cả khối nhiều dòng.
             Canvas.SetLeft(block, x - block.DesiredSize.Width / 2);
             Canvas.SetTop(block, y - block.DesiredSize.Height / 2);
         }

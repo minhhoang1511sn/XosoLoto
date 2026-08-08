@@ -258,14 +258,14 @@ namespace Xosoloto
 
         private void btnBack_Click(object sender, RoutedEventArgs e)
         {
-                // Lưu số giải hiện tại trước khi back
-                string currentNumber = txtPrizeNumber.Text.Trim();
-                if (parentWindow != null && !string.IsNullOrEmpty(currentNumber))
-                {
-                    parentWindow.UpdatePrizeNumber(prizeIndex, currentNumber);
-                }
+            // Lưu số giải hiện tại trước khi back
+            string currentNumber = txtPrizeNumber.Text.Trim();
+            if (parentWindow != null && !string.IsNullOrEmpty(currentNumber))
+            {
+                parentWindow.UpdatePrizeNumber(prizeIndex, currentNumber);
+            }
 
-                BackToMainScreen();
+            BackToMainScreen();
         }
 
         private bool _isClosing = false;

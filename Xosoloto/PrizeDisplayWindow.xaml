@@ -11,28 +11,33 @@
             </Grid.Background>
 
             <!-- ============================================================
-                 Toạ độ dưới đây được ĐO TRỰC TIẾP từ ảnh nền Images/DetailsPrize.png
-                 (dải ruy băng nhãn tên giải + khung bo góc chứa số trúng thưởng),
-                 quy đổi sang hệ toạ độ canvas gốc 1920x1080. Dùng Canvas với vị trí
-                 TUYỆT ĐỐI thay vì Grid + Margin ÂM như trước (từng khiến logo/tiêu
-                 đề đè lên dải ruy băng "Lộc Xuân May Mắn" phía trên, còn chữ số thì
-                 dính sát mép khung bên dưới) để đảm bảo LUÔN khớp đúng khung trong
-                 ảnh nền, không bị lệch dù màn hình nào. -->
+                 Toạ độ dưới đây được ĐO TRỰC TIẾP (bằng phân tích pixel) từ ảnh
+                 nền Images/DetailsPrize.png (dải ruy băng nhãn tên giải + khung
+                 bo góc chứa số trúng thưởng), quy đổi sang hệ toạ độ canvas gốc
+                 1920x1080. Dùng Canvas với vị trí TUYỆT ĐỐI để đảm bảo LUÔN khớp
+                 đúng khung trong ảnh nền, không bị lệch dù màn hình nào.
+
+                 Đo được (ảnh gốc 1344x768, scale X=1.4286 / Y=1.40625):
+                   - Dải ruy băng nhãn: x 130→1225, y 419→605
+                   - Khung số (bo góc): x 130→1225, y 605→975
+            -->
             <Canvas Width="1920" Height="1080">
                 <!-- Header: Logo + Title - đặt ngay dưới dải ruy băng nền (ruy băng
-                     kết thúc ở khoảng y=240), không còn đè lên chữ trên ruy băng. -->
+                     kết thúc ở khoảng y=115-170 tại điểm thấp nhất), không đè lên
+                     chữ trên ruy băng. -->
                 <Image x:Name="imgLogo" Height="110" Width="250"
                        Canvas.Left="100" Canvas.Top="200" Stretch="Uniform"/>
                 <TextBlock x:Name="txtTitle"
                       Text="ĐẠI HỘI TẾT 2025"
-                      FontSize="80"
+                      FontSize="70"
                       FontWeight="Bold"
                       Foreground="#FFD700"
-                           FontFamily="/Fonts/#HL-Thufap2-Unicode"
+                      FontFamily="/Fonts/#HL-Thufap2-Unicode"
                       Canvas.Left="390"
                       Canvas.Top="200"
                       Height="110"
                       MaxWidth="1430"
+                           TextAlignment="Center"
                       TextTrimming="CharacterEllipsis">
                     <TextBlock.RenderTransform>
                         <SkewTransform AngleX="-5"/>
@@ -43,26 +48,34 @@
                 </TextBlock>
 
                 <!-- Nhãn tên giải ("LỘC XUÂN i" / "9 GIẢI KHUYẾN KHÍCH") - khớp đúng
-                     dải ruy băng đỏ nhỏ (tab) phía trên khung số trong ảnh nền. -->
-                <TextBlock x:Name="txtPrizeName"
-                      Text="LỘC XUÂN"
-                      FontSize="70"
-                      FontWeight="ExtraBold"
-                      Foreground="White"
-                      Canvas.Left="180"
-                      Canvas.Top="422"
-                      Width="900"
-                      Height="126"
-                      TextAlignment="Left"
-                      VerticalAlignment="Center">
-                    <TextBlock.Effect>
-                        <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="2"/>
-                    </TextBlock.Effect>
-                </TextBlock>
+                     dải ruy băng đỏ (brush stroke) phía trên khung số trong ảnh nền.
+                     Đo được: x 130→1225, y 419→605 (cao 186px) -->
+                <Border Canvas.Left="170"
+        Canvas.Top="425"
+        Width="1000"
+        Height="170">
+                    <TextBlock x:Name="txtPrizeName"
+               Text="LỘC XUÂN"
+               FontSize="70"
+               FontWeight="ExtraBold"
+               Foreground="White"
+               TextAlignment="Center"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center">
+                        <TextBlock.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="2"/>
+                        </TextBlock.Effect>
+                    </TextBlock>
+                </Border>
 
-                <!-- Số trúng thưởng - khớp đúng khung bo góc màu kem trong ảnh nền. -->
+                <!-- Số trúng thưởng - khớp đúng khung bo góc màu kem trong ảnh nền.
+                     Đo được: x 130→1225, y 605→975 (cao 370px).
+                     FontFamily khai báo rõ ràng để tránh WPF chọn nhầm font fallback
+                     không có glyph "?" dạng outline (gây hiện tượng ô vuông đen nhỏ
+                     không co giãn theo FontSize). -->
                 <TextBox x:Name="txtPrizeNumber"
      Text="? ? ? ?"
+     FontFamily="Segoe UI"
      FontSize="180"
      FontWeight="Black"
 
@@ -75,15 +88,37 @@
 
      Background="Transparent"
      BorderThickness="0"
+     Foreground="Black"
 
-     Canvas.Left="180"
-     Canvas.Top="548"
-     Width="1030"
-     Height="380"
-     TextAlignment="Left"
-     VerticalContentAlignment="Center"/>
+     Canvas.Left="150"
+     Canvas.Top="615"
+     Width="1055"
+     Height="350"
+     TextAlignment="Center">
+                    <!-- ControlTemplate riêng: TextBox có AcceptsReturn="True" (multiline)
+                         mặc định BỎ QUA VerticalContentAlignment="Center", luôn dính chữ
+                         lên sát mép trên. Ghi đè template để Grid bọc ScrollViewer tự co
+                         theo nội dung và canh giữa trong khung cao 350px. HorizontalAlignment
+                         của ScrollViewer để "Stretch" (thay vì "Left") để ScrollViewer chiếm
+                         trọn bề rộng 1055px, nhờ đó TextAlignment="Center" mới có khoảng
+                         trống để canh chữ vào giữa theo chiều ngang. -->
+                    <TextBox.Template>
+                        <ControlTemplate TargetType="TextBox">
+                            <Border Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}">
+                                <Grid VerticalAlignment="Center">
+                                    <ScrollViewer x:Name="PART_ContentHost"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalAlignment="Stretch"/>
+                                </Grid>
+                            </Border>
+                        </ControlTemplate>
+                    </TextBox.Template>
+                </TextBox>
 
-                <!-- Ảnh giải thưởng - bên phải khung số, canh giữa khoảng trống còn lại. -->
+                <!-- Ảnh giải thưởng - bên phải khung số (khung kết thúc ở x=1225),
+                     canh giữa khoảng trống còn lại bên phải. -->
                 <Viewbox Canvas.Left="1330" Canvas.Top="440" Width="480" Height="480">
                     <Image x:Name="imgPrize" Stretch="Uniform" MaxHeight="350" MaxWidth="350"/>
                 </Viewbox>
