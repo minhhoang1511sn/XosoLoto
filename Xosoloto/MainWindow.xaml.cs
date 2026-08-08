@@ -79,8 +79,8 @@ namespace Xosoloto
                     if (CurrentGameType == GameType.LotoVuiXuan)
                     {
                         mediaElement.Play();
-                        SetNumber("");
                         EnsureShowWindow();
+                        SyncShowWindowFull();
                     }
                     // LocXuanDauNam: InitLocXuan/LuckyDrawWindow tự lo giao diện của chúng.
                 });
@@ -107,7 +107,13 @@ namespace Xosoloto
 
                 if (CurrentGameType == GameType.LotoVuiXuan)
                 {
-                    ShowVongLoaiSetup(exitAppOnCancel: exitAppOnCancel);
+                    // Nếu đã có trạng thái Loto Vui Xuân được lưu lại từ lần trước (do người
+                    // dùng vừa "Đổi loại game" từ Loto Vui Xuân sang game khác), khôi phục lại
+                    // đúng trạng thái đang dở đó thay vì bắt thiết lập lại từ đầu.
+                    if (GameSessionCache.LotoSession != null)
+                        RestoreLotoSessionFromCache();
+                    else
+                        ShowVongLoaiSetup(exitAppOnCancel: exitAppOnCancel);
                     onGameReady?.Invoke();
                     return;
                 }
@@ -156,6 +162,12 @@ namespace Xosoloto
                 "Đổi loại game", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (confirm != MessageBoxResult.Yes) return;
 
+            // Lưu lại trạng thái ĐANG CHƠI DỞ của game hiện tại (nếu là Loto Vui Xuân) vào bộ
+            // nhớ đệm trong phiên làm việc, để nếu người dùng quay lại game này sau (chuyển qua
+            // chuyển lại), trạng thái sẽ được nạp lại đúng chỗ đang dở thay vì mất hết.
+            if (CurrentGameType == GameType.LotoVuiXuan)
+                SaveLotoSessionToCache();
+
             // Dừng video/nội dung của game hiện tại và ẩn màn hình chính đi TRƯỚC khi mở
             // màn hình chọn game mới. Nếu không, MainWindow (với nội dung/video của game cũ)
             // vẫn còn hiển thị phía sau các cửa sổ chọn game / thiết lập game mới.
@@ -173,6 +185,7 @@ namespace Xosoloto
                     {
                         mediaElement.Play();
                         EnsureShowWindow();
+                        SyncShowWindowFull();
                     }
                 },
                 onGameReady: () =>
@@ -181,8 +194,11 @@ namespace Xosoloto
                     if (CurrentGameType == GameType.LotoVuiXuan)
                     {
                         mediaElement.Play();
-                        SetNumber("");
                         EnsureShowWindow();
+                        // Đẩy toàn bộ trạng thái hiện tại (dù là vừa thiết lập mới, hay vừa
+                        // được khôi phục từ bộ nhớ đệm) sang màn hình Trình chiếu, thay vì luôn
+                        // SetNumber("") - nếu không sẽ xoá mất số vừa được khôi phục.
+                        SyncShowWindowFull();
                     }
                     // LocXuanDauNam: MainWindow chỉ hiện lại làm nền, InitLocXuan/LuckyDrawWindow
                     // đã tự lo xong toàn bộ giao diện của chúng.
@@ -295,6 +311,11 @@ namespace Xosoloto
                 $"Đăng xuất khỏi tài khoản \"{_currentUsername}\"?",
                 "Đăng xuất", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (confirm != MessageBoxResult.Yes) return;
+
+            // Xoá bộ nhớ đệm trạng thái đang chơi dở (Loto Vui Xuân / Lộc Xuân Đầu Năm) của
+            // tài khoản này, tránh việc tài khoản đăng nhập tiếp theo lại bị nạp nhầm trạng thái
+            // của tài khoản trước đó.
+            GameSessionCache.ClearAll();
 
             AccountService.ForgetUser();
 
@@ -410,6 +431,13 @@ namespace Xosoloto
                 if (VongLoaiComboBox.Items.Count > 0)
                     VongLoaiComboBox.SelectedIndex = 0;
 
+                // Đây là một lượt thiết lập MỚI (không phải khôi phục từ bộ nhớ đệm) -> làm
+                // sạch số đang hiển thị/lịch sử của lượt chơi trước đó, đúng hành vi cũ.
+                _historyNumbers.Clear();
+                CurrentNumberTextBlock.Text = "";
+                NumberPath.Data = Geometry.Empty;
+                UpdateHistoryNumbers();
+
                 SaveCurrentSettings();
             }
             else if (exitAppOnCancel)
@@ -420,6 +448,84 @@ namespace Xosoloto
             // else: người dùng hủy khi đang đổi game giữa chừng -> giữ nguyên trạng thái hiện tại
         }
 
+        /// <summary>
+        /// Lưu lại trạng thái ĐANG CHƠI DỞ của Loto Vui Xuân (vòng loại đang chọn, màu vé, số
+        /// vừa quay, lịch sử số đã quay...) vào bộ nhớ đệm trong phiên làm việc, gọi ngay trước
+        /// khi rời khỏi game này (bấm "🔁 Đổi loại game") để có thể khôi phục lại đúng chỗ đang
+        /// dở nếu người dùng quay lại chơi Loto Vui Xuân sau đó.
+        /// </summary>
+        private void SaveLotoSessionToCache()
+        {
+            if (VongLoaiConfig == null) return;
+
+            GameSessionCache.LotoSession = new LotoVuiXuanSession
+            {
+                VongLoaiConfig = VongLoaiConfig,
+                SelectedVongLoaiIndex = VongLoaiComboBox.SelectedIndex,
+                SelectedMauVe = (MauVeComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "",
+                HistoryNumbers = _historyNumbers.Select(h => new HistoryItem { Value = h.Value, Color = h.Color }).ToList(),
+                CurrentNumber = CurrentNumberTextBlock.Text,
+                IsNumberColorRed = isNumberColorRed
+            };
+        }
+
+        /// <summary>
+        /// Khôi phục lại trạng thái Loto Vui Xuân đã lưu ở <see cref="SaveLotoSessionToCache"/>
+        /// (vòng loại, màu vé, số vừa quay, lịch sử...), gọi khi người dùng chọn lại "Loto Vui
+        /// Xuân" trong lúc đã có sẵn bộ nhớ đệm cho game này - thay vì bắt thiết lập lại từ đầu.
+        /// </summary>
+        private void RestoreLotoSessionFromCache()
+        {
+            var session = GameSessionCache.LotoSession;
+            if (session == null) return;
+
+            VongLoaiConfig = session.VongLoaiConfig;
+
+            VongLoaiComboBox.Items.Clear();
+            foreach (var vong in VongLoaiConfig.Keys.OrderBy(k => k))
+            {
+                string displayText = string.Join(" ", VongLoaiConfig[vong].Numbers ?? new List<int>());
+                ComboBoxItem item = new ComboBoxItem
+                {
+                    Content = displayText,
+                    Tag = new
+                    {
+                        VongNumber = vong,
+                        Numbers = VongLoaiConfig[vong].Numbers,
+                        Color = VongLoaiConfig[vong].Color
+                    }
+                };
+                VongLoaiComboBox.Items.Add(item);
+            }
+            if (VongLoaiComboBox.Items.Count > 0)
+            {
+                int idx = session.SelectedVongLoaiIndex;
+                VongLoaiComboBox.SelectedIndex = (idx >= 0 && idx < VongLoaiComboBox.Items.Count) ? idx : 0;
+            }
+
+            if (!string.IsNullOrEmpty(session.SelectedMauVe))
+            {
+                foreach (ComboBoxItem item in MauVeComboBox.Items)
+                {
+                    if (item.Content.ToString() == session.SelectedMauVe)
+                    {
+                        MauVeComboBox.SelectedItem = item;
+                        break;
+                    }
+                }
+            }
+
+            isNumberColorRed = session.IsNumberColorRed;
+            CurrentNumberTextBlock.Foreground = isNumberColorRed ? Brushes.Red : Brushes.Black;
+            NumberPath.Fill = isNumberColorRed ? Brushes.Red : Brushes.Black;
+
+            _historyNumbers = session.HistoryNumbers?
+                .Select(h => new HistoryItem { Value = h.Value, Color = h.Color }).ToList()
+                ?? new List<HistoryItem>();
+            CurrentNumberTextBlock.Text = session.CurrentNumber ?? "";
+            UpdateHistoryNumbers();
+            SetNumber(session.CurrentNumber ?? "");
+        }
 
         /// <summary>
         /// Mở màn hình thiết lập/chơi Lộc Xuân Đầu Năm.

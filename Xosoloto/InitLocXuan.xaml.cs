@@ -59,11 +59,75 @@ namespace Xosoloto
             btnSoVongMinus.Click += (s, e) => SetSoVong(CurrentSoVong - 1);
             btnSoVongPlus.Click += (s, e) => SetSoVong(CurrentSoVong + 1);
 
-            // Nạp lại cấu hình đã lưu (nếu có) cho tài khoản này, nếu không thì dùng mặc định.
-            if (!TryLoadSavedConfig())
+            // Ưu tiên khôi phục trạng thái đang chơi dở gần nhất trong phiên làm việc (được lưu
+            // khi người dùng bấm "🔁 Đổi loại game"); nếu không có mới nạp cấu hình đã lưu trên
+            // đĩa cho tài khoản này, nếu vẫn không có thì dùng mặc định.
+            bool restoredFromCache = TryRestoreFromSessionCache();
+            if (!restoredFromCache && !TryLoadSavedConfig())
             {
                 BuildPrizeRows(DEFAULT_VONG);
             }
+
+            // Nếu lần trước đã vào tới màn hình quay giải (có số đã quay dở), tự động mở lại
+            // luôn màn hình quay giải với đúng các số đã quay, thay vì bắt người dùng bấm
+            // "Done" lại từ đầu và mất hết kết quả đã quay.
+            var cachedSession = GameSessionCache.LocXuanSession;
+            if (restoredFromCache && cachedSession != null && cachedSession.HasDrawStarted)
+            {
+                this.Loaded += (s, e) => ResumeDrawFromCache(cachedSession);
+            }
+        }
+
+        /// <summary>
+        /// Khôi phục các trường thiết lập (tiêu đề, logo, ảnh nền, ảnh giải) từ bộ nhớ đệm
+        /// trong phiên làm việc (nếu có) - trạng thái này luôn MỚI HƠN cấu hình đã lưu trên đĩa
+        /// vì được ghi lại ngay tại thời điểm người dùng rời khỏi Lộc Xuân Đầu Năm gần nhất.
+        /// </summary>
+        private bool TryRestoreFromSessionCache()
+        {
+            var session = GameSessionCache.LocXuanSession;
+            if (session == null) return false;
+
+            txtTitle.Text = session.Title ?? string.Empty;
+
+            if (!string.IsNullOrWhiteSpace(session.ImagePath) && File.Exists(session.ImagePath))
+            {
+                imagePath = session.ImagePath;
+                imgBackgroundPreview.Source = LoadPreview(imagePath);
+            }
+
+            if (!string.IsNullOrWhiteSpace(session.LogoPath) && File.Exists(session.LogoPath))
+            {
+                logoPath = session.LogoPath;
+                imgLogoPreview.Source = LoadPreview(logoPath);
+            }
+
+            int soVong = (session.PrizePaths != null && session.PrizePaths.Count > 0) ? session.PrizePaths.Count : DEFAULT_VONG;
+            soVong = Math.Max(MIN_VONG, Math.Min(MAX_VONG, soVong));
+
+            prizePaths = new List<string>(session.PrizePaths ?? new List<string>());
+            while (prizePaths.Count < soVong) prizePaths.Add(string.Empty);
+            if (prizePaths.Count > soVong) prizePaths = prizePaths.Take(soVong).ToList();
+
+            BuildPrizeRows(soVong);
+            return true;
+        }
+
+        /// <summary>
+        /// Tự động mở lại màn hình quay giải (LuckyDrawWindow) với đúng các số đã quay dở từ
+        /// lần trước, thay vì bắt người dùng thiết lập/bấm "Done" lại từ đầu. Chỉ chạy khi dữ
+        /// liệu thiết lập đã đủ (ảnh nền, logo, tiêu đề, đủ ảnh giải) - nếu thiếu, để người dùng
+        /// tự bổ sung và bấm "Done" như bình thường.
+        /// </summary>
+        private void ResumeDrawFromCache(LocXuanDauNamSession session)
+        {
+            if (string.IsNullOrWhiteSpace(imagePath)) return;
+            if (string.IsNullOrWhiteSpace(txtTitle.Text)) return;
+            if (string.IsNullOrWhiteSpace(logoPath)) return;
+            if (prizePaths.Any(string.IsNullOrWhiteSpace)) return;
+
+            SaveCurrentConfig();
+            OpenLuckyDrawWindow(session.PrizeNumbers?.ToArray());
         }
 
         private int CurrentSoVong => prizePaths.Count;
@@ -233,9 +297,21 @@ namespace Xosoloto
         private void BtnChangeGame_Click(object sender, RoutedEventArgs e)
         {
             var confirm = MessageBox.Show(
-                "Bạn có muốn thoát khỏi thiết lập Lộc Xuân Đầu Năm và chọn lại loại game khác không?",
+                "Bạn có muốn thoát khỏi thiết lập Lộc Xuân Đầu Năm và chọn lại loại game khác không?\n" +
+                "Các trường đang nhập sẽ được lưu lại và tự động điền lại nếu bạn quay lại Lộc Xuân Đầu Năm.",
                 "Đổi loại game", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (confirm != MessageBoxResult.Yes) return;
+
+            // Lưu lại các trường đang nhập dở (dù chưa bấm "Done") vào bộ nhớ đệm trong phiên
+            // làm việc, để tự động điền lại nếu người dùng quay lại Lộc Xuân Đầu Năm sau đó.
+            GameSessionCache.LocXuanSession = new LocXuanDauNamSession
+            {
+                Title = txtTitle.Text ?? string.Empty,
+                ImagePath = imagePath,
+                LogoPath = logoPath,
+                PrizePaths = new List<string>(prizePaths),
+                HasDrawStarted = false
+            };
 
             ChangeGameRequested = true;
             // DialogResult = true để nơi gọi (ShowLocXuan) không hiểu nhầm là "hủy" và tự
@@ -271,7 +347,21 @@ namespace Xosoloto
             // Lưu cấu hình lại cho tài khoản hiện tại trước khi mở màn hình quay số
             SaveCurrentConfig();
 
+            OpenLuckyDrawWindow(null);
+        }
+
+        /// <summary>
+        /// Mở màn hình quay giải (LuckyDrawWindow) và đóng InitLocXuan sau khi nó đóng lại.
+        /// </summary>
+        /// <param name="restoreNumbers">Nếu khác null, các số đã quay dở từ lần chơi trước
+        /// (lưu trong bộ nhớ đệm phiên làm việc) sẽ được khôi phục lại ngay khi mở, cho phép
+        /// tiếp tục quay đúng chỗ đang dở thay vì phải quay lại từ đầu.</param>
+        private void OpenLuckyDrawWindow(string[] restoreNumbers)
+        {
             LuckyDrawWindow luc = new LuckyDrawWindow(imagePath, txtTitle.Text, logoPath, prizePaths.ToArray());
+
+            if (restoreNumbers != null)
+                luc.RestoreDrawnNumbers(restoreNumbers);
 
             // Ẩn cửa sổ hiện tại
             this.Hide();

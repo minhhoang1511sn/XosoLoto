@@ -253,12 +253,41 @@ namespace Xosoloto
         {
             var confirm = MessageBox.Show(
                 "Bạn có muốn thoát khỏi Lộc Xuân Đầu Năm và chọn lại loại game khác không?\n" +
-                "Kết quả quay giải hiện tại (nếu có) sẽ không được lưu lại.",
+                "Kết quả quay giải hiện tại sẽ được lưu lại và tự động khôi phục nếu bạn quay lại chơi Lộc Xuân Đầu Năm.",
                 "Đổi loại game", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (confirm != MessageBoxResult.Yes) return;
 
+            // Lưu lại toàn bộ kết quả quay dở (số đã quay được của từng giải) vào bộ nhớ đệm
+            // trong phiên làm việc, để tự động khôi phục đúng chỗ đang dở nếu người dùng quay
+            // lại chơi Lộc Xuân Đầu Năm sau đó, thay vì phải quay lại từ đầu.
+            GameSessionCache.LocXuanSession = new LocXuanDauNamSession
+            {
+                Title = this.Title,
+                ImagePath = this.ImagePath,
+                LogoPath = this.LogoPath,
+                PrizePaths = new List<string>(this.PrizePaths ?? Array.Empty<string>()),
+                HasDrawStarted = true,
+                PrizeNumbers = new List<string>(prizeNumbers)
+            };
+
             ChangeGameRequested = true;
             this.Close();
+        }
+
+        /// <summary>
+        /// Khôi phục lại các số đã quay được của từng giải từ lần chơi trước (bộ nhớ đệm phiên
+        /// làm việc), gọi ngay sau khi khởi tạo LuckyDrawWindow khi đang "tiếp tục" một lượt
+        /// quay đang dở thay vì bắt đầu mới hoàn toàn.
+        /// </summary>
+        public void RestoreDrawnNumbers(string[] numbers)
+        {
+            if (numbers == null) return;
+            int max = Math.Min(prizeNumberBlocks.Count, numbers.Length);
+            for (int i = 0; i < max; i++)
+            {
+                string number = string.IsNullOrWhiteSpace(numbers[i]) ? "- - - -" : numbers[i];
+                UpdatePrizeNumber(i, number);
+            }
         }
 
         // PUBLIC METHOD - Cập nhật số giải thưởng từ PrizeDisplayWindow
