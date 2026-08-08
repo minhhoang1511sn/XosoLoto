@@ -117,7 +117,7 @@
                            Canvas.Left="100" Canvas.Top="200" Stretch="Uniform"/>
                     <TextBlock x:Name="txtDetailTitle"
                                Text="ĐẠI HỘI TẾT"
-                               FontSize="80"
+                               FontSize="70"
                                FontWeight="Bold"
                                Foreground="#FFD700"
                                FontFamily="/Fonts/#HL-Thufap2-Unicode"
@@ -135,10 +135,10 @@
                     </TextBlock>
 
                     <!-- Nhãn tên giải - khớp dải ruy băng đỏ phía trên khung số. -->
-                    <Border Canvas.Left="180"
-                            Canvas.Top="422"
-                            Width="900"
-                            Height="126">
+                    <Border Canvas.Left="170"
+                            Canvas.Top="425"
+                            Width="1000"
+                            Height="170">
                         <TextBlock x:Name="txtDetailPrizeName"
                                    Text="LỘC XUÂN"
                                    FontSize="70"
@@ -156,10 +156,10 @@
                     <!-- Số trúng thưởng - khớp khung bo góc màu kem. TextWrapping="Wrap" để
                          giải Khuyến khích (nhiều số, cỡ chữ nhỏ hơn) tự xuống dòng và vẫn
                          canh giữa đúng cả khối theo chiều dọc lẫn ngang. -->
-                    <Border Canvas.Left="180"
-                            Canvas.Top="548"
-                            Width="1030"
-                            Height="380">
+                    <Border Canvas.Left="150"
+                            Canvas.Top="615"
+                            Width="1055"
+                            Height="350">
                         <TextBlock x:Name="txtDetailNumber"
                                    Text="? ? ? ?"
                                    FontSize="180"
