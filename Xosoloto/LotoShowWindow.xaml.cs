@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using Xosoloto.Services;
 
@@ -17,6 +18,30 @@ namespace Xosoloto
         {
             InitializeComponent();
         }
+
+        /// <summary>Cập nhật dòng chữ trạng thái (đang trình chiếu ở màn hình phụ hay dùng
+        /// chung màn hình chính) để người dùng luôn biết rõ đang ở chế độ nào.</summary>
+        public void SetMonitorStatus(string text) => txtMonitorStatus.Text = text ?? string.Empty;
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            // Đảm bảo cửa sổ nhận được sự kiện bàn phím (ESC) ngay cả khi Topmost.
+            this.Focus();
+            Keyboard.Focus(this);
+        }
+
+        /// <summary>Cho phép thoát màn hình Trình chiếu bằng phím ESC, tránh bị "kẹt" không có
+        /// nút thoát khi cửa sổ này che kín màn hình Chỉnh sửa (đặc biệt khi máy chỉ có 1 màn hình).</summary>
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+            {
+                e.Handled = true;
+                this.Close();
+            }
+        }
+
+        private void BtnCloseShow_Click(object sender, RoutedEventArgs e) => this.Close();
 
         public void PlayVideo() => mediaElement.Play();
         public void StopVideo() => mediaElement.Stop();

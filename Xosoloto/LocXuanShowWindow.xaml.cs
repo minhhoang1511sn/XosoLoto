@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -26,6 +27,30 @@ namespace Xosoloto
         {
             InitializeComponent();
         }
+
+        /// <summary>Cập nhật dòng chữ trạng thái (đang trình chiếu ở màn hình phụ hay dùng
+        /// chung màn hình chính) để người dùng luôn biết rõ đang ở chế độ nào.</summary>
+        public void SetMonitorStatus(string text) => txtMonitorStatus.Text = text ?? string.Empty;
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            // Đảm bảo cửa sổ nhận được sự kiện bàn phím (ESC) ngay cả khi Topmost.
+            this.Focus();
+            Keyboard.Focus(this);
+        }
+
+        /// <summary>Cho phép thoát màn hình Trình chiếu bằng phím ESC, tránh bị "kẹt" không có
+        /// nút thoát khi cửa sổ này che kín màn hình Chỉnh sửa (đặc biệt khi máy chỉ có 1 màn hình).</summary>
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+            {
+                e.Handled = true;
+                this.Close();
+            }
+        }
+
+        private void BtnCloseShow_Click(object sender, RoutedEventArgs e) => this.Close();
 
         /// <summary>Nạp dữ liệu ban đầu: tiêu đề, logo, ảnh nền/giải và số lượng ô giải (bằng đúng số vòng đã cấu hình).</summary>
         public void Initialize(string title, string logoPath, string imagePath, int prizeCount)
@@ -83,15 +108,20 @@ namespace Xosoloto
             double actualHeight = MainCanvas.ActualHeight > 0 ? MainCanvas.ActualHeight : this.ActualHeight;
             if (actualWidth == 0 || actualHeight == 0) return;
 
-            double scaleX = actualWidth / BASE_WIDTH;
             double scaleY = actualHeight / BASE_HEIGHT;
 
             txtTitle.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
             Canvas.SetLeft(txtTitle, (actualWidth - txtTitle.DesiredSize.Width) / 2);
             Canvas.SetTop(txtTitle, 130 * scaleY);
 
-            // Lưới 2 cột cho các giải chính (giống LuckyDrawWindow.UpdatePositions), ô cuối
-            // cùng (Khuyến khích) canh giữa phía dưới.
+            // Vị trí các ô số - xem giải thích chi tiết trong LuckyDrawControl.xaml.cs.UpdatePositions()
+            // (phải giữ ĐÚNG các hằng số này ở cả 2 nơi để màn hình Trình chiếu khớp 100% với
+            // màn hình Chỉnh sửa).
+            const double COL0_X_FRAC = 0.4453;
+            const double COL1_X_FRAC = 0.7688;
+            const double ROW0_Y_FRAC = 0.4583;
+            const double ROW_GAP_FRAC = 0.2174;
+
             int mainCount = Math.Max(0, _prizeNumberBlocks.Count - 1);
             for (int i = 0; i < mainCount; i++)
             {
@@ -100,18 +130,20 @@ namespace Xosoloto
                 int col = i % 2;
 
                 block.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-                double x = actualWidth - 1000 * scaleX + (col == 0 ? 100 : 600) * scaleX;
-                double y = 340 * scaleY + 30 + row * 200;
+                double x = actualWidth * (col == 0 ? COL0_X_FRAC : COL1_X_FRAC);
+                double y = actualHeight * (ROW0_Y_FRAC + row * ROW_GAP_FRAC);
                 Canvas.SetLeft(block, x - block.DesiredSize.Width / 2);
-                Canvas.SetTop(block, y);
+                Canvas.SetTop(block, y - block.DesiredSize.Height / 2);
             }
 
+            const double KK_X_FRAC = 0.5768;
+            const double KK_Y_FRAC = 0.8815;
             if (_prizeNumberBlocks.Count > 0)
             {
                 var kk = _prizeNumberBlocks[_prizeNumberBlocks.Count - 1];
                 kk.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-                Canvas.SetLeft(kk, ((actualWidth - kk.DesiredSize.Width) / 2) + 60 - 55);
-                Canvas.SetTop(kk, actualHeight - 160 * scaleY);
+                Canvas.SetLeft(kk, actualWidth * KK_X_FRAC - kk.DesiredSize.Width / 2);
+                Canvas.SetTop(kk, actualHeight * KK_Y_FRAC - kk.DesiredSize.Height / 2);
             }
         }
     }

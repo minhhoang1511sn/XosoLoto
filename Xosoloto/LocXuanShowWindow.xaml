@@ -12,7 +12,10 @@
         ShowInTaskbar="False"
         Topmost="True"
         WindowState="Maximized"
-        SizeChanged="Window_SizeChanged">
+        Focusable="True"
+        SizeChanged="Window_SizeChanged"
+        KeyDown="Window_KeyDown"
+        Loaded="Window_Loaded">
 
     <Window.Resources>
         <DropShadowEffect x:Key="TextShadow"
@@ -59,5 +62,31 @@
             <!-- Các ô số "Lộc Xuân i" được sinh ĐỘNG trong code-behind, cùng số vòng với
                  LuckyDrawWindow (màn hình Chỉnh sửa), xem LocXuanShowWindow.xaml.cs. -->
         </Canvas>
+
+        <!-- Thanh trạng thái + nút thoát: LUÔN hiển thị để người dùng biết đang trình chiếu
+             ở màn hình nào (1 hay 2 màn hình) và luôn có cách thoát khỏi màn hình Trình chiếu
+             (không phụ thuộc phím ESC, phòng khi không có bàn phím trong tầm tay). -->
+        <Border x:Name="StatusBadge"
+                Background="#AA000000"
+                CornerRadius="6"
+                Padding="10,5"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Margin="0,10,10,0"
+                Panel.ZIndex="999">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock x:Name="txtMonitorStatus"
+                           Text="—"
+                           Foreground="White"
+                           FontSize="14"
+                           VerticalAlignment="Center"
+                           Margin="0,0,14,0"/>
+                <Button x:Name="btnCloseShow"
+                        Content="✕ Đóng (ESC)"
+                        Padding="10,3"
+                        FontSize="13"
+                        Click="BtnCloseShow_Click"/>
+            </StackPanel>
+        </Border>
     </Grid>
 </Window>

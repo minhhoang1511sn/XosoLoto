@@ -78,12 +78,20 @@ namespace Xosoloto
             if (_showWindow == null)
             {
                 _showWindow = new LocXuanShowWindow();
+                // Nếu người dùng tự đóng màn hình Trình chiếu (bấm ESC hoặc nút "✕ Đóng"),
+                // phải xoá tham chiếu ở đây để lần bấm "Trình chiếu" tiếp theo tạo cửa sổ mới
+                // thay vì lỗi do dùng lại một Window đã Close().
+                _showWindow.Closed += (s, e) => _showWindow = null;
                 _showWindow.Show();
             }
             MonitorHelper.PlaceOnShowMonitor(_showWindow);
+            _showWindow.SetMonitorStatus(MonitorHelper.DescribeMode());
             _showWindow.Initialize(this.Title, this.LogoPath, this.ImagePath, PrizePaths?.Length ?? 0);
             for (int i = 0; i < prizeNumbers.Count; i++)
                 _showWindow.UpdatePrizeNumber(i, prizeNumbers[i]);
+            // Đưa focus bàn phím sang màn hình Trình chiếu để phím ESC đóng được ngay,
+            // kể cả khi đang Topmost đè lên màn hình Chỉnh sửa (trường hợp chỉ có 1 màn hình).
+            _showWindow.Activate();
         }
 
         private void CloseShowWindow()
@@ -271,8 +279,19 @@ namespace Xosoloto
             Canvas.SetLeft(txtTitle, (actualWidth - txtTitle.DesiredSize.Width) / 2);
             Canvas.SetTop(txtTitle, 130 * scaleY);
 
-            // Các ô số giải (trừ ô cuối cùng = Khuyến khích) được xếp lưới 2 cột,
-            // đúng bố cục gốc khi có 4 giải "Lộc Xuân" (0,0) (0,1) (1,0) (1,1)...
+            // Vị trí các ô số được đo TRỰC TIẾP từ ảnh nền Images/backgroundlocxuan.png (tâm
+            // của từng khung trắng bên dưới mỗi banner "LỘC XUÂN i"/"9 GIẢI KHUYẾN KHÍCH"),
+            // biểu diễn bằng TỶ LỆ (%) theo chiều rộng/cao cửa sổ - vì ImageBrush dùng
+            // Stretch="Fill" nên toạ độ tỷ lệ này luôn khớp đúng khung dù cửa sổ đổi kích
+            // thước/độ phân giải nào. Cột trái/phải và hàng 1/2 ứng với 4 giải "Lộc Xuân 1-4"
+            // (đúng bố cục 2x2 trong ảnh nền); các hàng > 1 (nếu số vòng > 4) được ngoại suy
+            // thêm xuống dưới bằng đúng khoảng cách giữa hàng 1 và hàng 2, do ảnh nền chỉ vẽ
+            // sẵn 2 hàng khung.
+            const double COL0_X_FRAC = 0.4453;
+            const double COL1_X_FRAC = 0.7688;
+            const double ROW0_Y_FRAC = 0.4583;
+            const double ROW_GAP_FRAC = 0.2174; // = ROW1_Y_FRAC (0.6758) - ROW0_Y_FRAC
+
             int mainCount = Math.Max(0, prizeNumberBlocks.Count - 1);
             for (int i = 0; i < mainCount; i++)
             {
@@ -281,10 +300,10 @@ namespace Xosoloto
                 int col = i % 2;
 
                 block.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-                double x = actualWidth - 1000 * scaleX + (col == 0 ? 100 : 600) * scaleX;
-                double y = 340 * scaleY + 30 + row * 200;
+                double x = actualWidth * (col == 0 ? COL0_X_FRAC : COL1_X_FRAC);
+                double y = actualHeight * (ROW0_Y_FRAC + row * ROW_GAP_FRAC);
                 Canvas.SetLeft(block, x - block.DesiredSize.Width / 2);
-                Canvas.SetTop(block, y);
+                Canvas.SetTop(block, y - block.DesiredSize.Height / 2);
             }
 
             // Buttons
@@ -292,13 +311,15 @@ namespace Xosoloto
             Canvas.SetLeft(spButtons, 100 * scaleX);
             Canvas.SetTop(spButtons, actualHeight - 120 * scaleY);
 
-            // Ô số cuối cùng = giải Khuyến khích, canh giữa phía dưới (như txtKK gốc).
+            // Ô số cuối cùng = giải Khuyến khích, canh giữa khung "9 GIẢI KHUYẾN KHÍCH" trong ảnh nền.
+            const double KK_X_FRAC = 0.5768;
+            const double KK_Y_FRAC = 0.8815;
             if (prizeNumberBlocks.Count > 0)
             {
                 var kk = prizeNumberBlocks[prizeNumberBlocks.Count - 1];
                 kk.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-                Canvas.SetLeft(kk, ((actualWidth - kk.DesiredSize.Width) / 2) + 60 - 55);
-                Canvas.SetTop(kk, actualHeight - 160 * scaleY);
+                Canvas.SetLeft(kk, actualWidth * KK_X_FRAC - kk.DesiredSize.Width / 2);
+                Canvas.SetTop(kk, actualHeight * KK_Y_FRAC - kk.DesiredSize.Height / 2);
             }
         }
 

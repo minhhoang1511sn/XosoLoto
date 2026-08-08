@@ -98,8 +98,12 @@ namespace Xosoloto
             if (IsKhuyenKhichSlot(prizeIndex) && e.Key == Key.Enter)
             {
                 e.Handled = true; // 🔥 CHẶN xuống dòng
-
                 btnBack_Click(null, null); // quay về trang chính
+                // QUAN TRỌNG: phải return ngay ở đây, nếu không đoạn "if (e.Key == Key.Enter)"
+                // bên dưới sẽ chạy thêm 1 lần nữa và gọi BackToMainScreen() -> this.Close() lần
+                // THỨ HAI trên một cửa sổ ShowDialog() đã đóng, khiến WPF ném
+                // InvalidOperationException: DialogResultMustBeSetAfterShowDialog.
+                return;
             }
 
             if (e.Key == Key.Enter && Keyboard.Modifiers == ModifierKeys.Shift)
@@ -223,8 +227,15 @@ namespace Xosoloto
                 BackToMainScreen();
         }
 
+        private bool _isClosing = false;
+
         private void BackToMainScreen()
         {
+            // Bảo vệ 2 lớp: tránh gọi Close() nhiều lần trên cùng 1 dialog (ShowDialog) nếu có
+            // đường gọi nào khác vô tình kích hoạt BackToMainScreen() lần thứ hai.
+            if (_isClosing) return;
+            _isClosing = true;
+
             if (parentWindow != null)
             {
                 // Đóng cửa sổ hiện tại và quay về parent

@@ -17,6 +17,19 @@ namespace Xosoloto.Services
         public static bool HasSecondaryMonitor => Forms.Screen.AllScreens.Length > 1;
 
         /// <summary>
+        /// Mô tả ngắn gọn chế độ trình chiếu hiện tại, để hiển thị trên màn hình Trình chiếu
+        /// (LocXuanShowWindow / LotoShowWindow) giúp người dùng biết ngay đang chạy 1 hay 2 màn
+        /// hình, thay vì phải đoán - đây chính là nguyên nhân gây "kẹt" màn hình khi test trên
+        /// máy chỉ có 1 màn hình (màn hình Trình chiếu che kín màn hình Chỉnh sửa bên dưới).
+        /// </summary>
+        public static string DescribeMode()
+        {
+            return HasSecondaryMonitor
+                ? $"🖥️ Đang trình chiếu ở màn hình phụ ({Forms.Screen.AllScreens.Length} màn hình)"
+                : "⚠️ Chỉ có 1 màn hình – đang dùng chung màn hình chính";
+        }
+
+        /// <summary>
         /// Đưa <paramref name="window"/> ra toàn màn hình phụ (nếu có), hoặc toàn màn hình chính
         /// nếu máy chỉ có 1 màn hình. Phải gọi SAU khi window đã Show() (hoặc trong Loaded) để
         /// WPF đã có handle hợp lệ; an toàn khi gọi nhiều lần (ví dụ khi cắm thêm màn hình).

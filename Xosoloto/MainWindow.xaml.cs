@@ -325,11 +325,19 @@ namespace Xosoloto
             if (_showWindow == null)
             {
                 _showWindow = new LotoShowWindow();
+                // Nếu người dùng tự đóng màn hình Trình chiếu (bấm ESC hoặc nút "✕ Đóng"),
+                // phải xoá tham chiếu ở đây để lần bấm "Trình chiếu" tiếp theo tạo cửa sổ mới
+                // thay vì lỗi do dùng lại một Window đã Close().
+                _showWindow.Closed += (s, e) => _showWindow = null;
                 _showWindow.Show();
             }
             MonitorHelper.PlaceOnShowMonitor(_showWindow);
+            _showWindow.SetMonitorStatus(MonitorHelper.DescribeMode());
             _showWindow.PlayVideo();
             SyncShowWindowFull();
+            // Đưa focus bàn phím sang màn hình Trình chiếu để phím ESC đóng được ngay,
+            // kể cả khi đang Topmost đè lên màn hình Chỉnh sửa (trường hợp chỉ có 1 màn hình).
+            _showWindow.Activate();
         }
 
         private void CloseShowWindow()
