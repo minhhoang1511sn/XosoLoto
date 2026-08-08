@@ -67,23 +67,60 @@ namespace Xosoloto
                 return;
             }
 
-            if (!ShowGameTypeSelection())
-            {
-                IsShuttingDown = true;
-                Application.Current.Shutdown();
-                return;
-            }
+            SelectAndSetupGameLoop(
+                exitAppOnCancel: true,
+                onSelectionCancelled: () =>
+                {
+                    IsShuttingDown = true;
+                    Application.Current.Shutdown();
+                },
+                onGameReady: () =>
+                {
+                    if (CurrentGameType == GameType.LotoVuiXuan)
+                    {
+                        mediaElement.Play();
+                        SetNumber("");
+                        EnsureShowWindow();
+                    }
+                    // LocXuanDauNam: InitLocXuan/LuckyDrawWindow tự lo giao diện của chúng.
+                });
+        }
 
-            if (CurrentGameType == GameType.LotoVuiXuan)
+        /// <summary>
+        /// Hiện màn hình chọn loại game rồi thiết lập game tương ứng, LẶP LẠI nếu người dùng
+        /// bấm "🔁 Đổi loại game" ngay trong lúc đang thiết lập/chơi Lộc Xuân Đầu Năm (ở
+        /// InitLocXuan hoặc LuckyDrawWindow) — thay vì phải đóng hẳn ứng dụng hoặc bị kẹt
+        /// lại không có đường quay ra màn hình chọn game.
+        /// </summary>
+        /// <param name="exitAppOnCancel">Có Shutdown() ứng dụng khi người dùng hủy các bước thiết lập bắt buộc hay không.</param>
+        /// <param name="onSelectionCancelled">Gọi khi người dùng hủy ngay ở màn hình chọn loại game (không chọn gì cả).</param>
+        /// <param name="onGameReady">Gọi sau khi một loại game đã được chọn và thiết lập xong (không bị "Đổi loại game" tiếp).</param>
+        private void SelectAndSetupGameLoop(bool exitAppOnCancel, Action onSelectionCancelled, Action onGameReady)
+        {
+            while (true)
             {
-                ShowVongLoaiSetup();
-                mediaElement.Play();
-                SetNumber("");
-                EnsureShowWindow();
-            }
-            if (CurrentGameType == GameType.LocXuanDauNam)
-            {
-                ShowLocXuan();
+                if (!ShowGameTypeSelection())
+                {
+                    onSelectionCancelled?.Invoke();
+                    return;
+                }
+
+                if (CurrentGameType == GameType.LotoVuiXuan)
+                {
+                    ShowVongLoaiSetup(exitAppOnCancel: exitAppOnCancel);
+                    onGameReady?.Invoke();
+                    return;
+                }
+
+                if (CurrentGameType == GameType.LocXuanDauNam)
+                {
+                    bool wantsChangeGame = ShowLocXuan(exitAppOnCancel: exitAppOnCancel);
+                    if (wantsChangeGame) continue; // quay lại chọn loại game khác
+                    onGameReady?.Invoke();
+                    return;
+                }
+
+                return;
             }
         }
 
@@ -126,32 +163,30 @@ namespace Xosoloto
             this.Hide();
             CloseShowWindow();
 
-            if (!ShowGameTypeSelection())
-            {
-                // Người dùng hủy chọn game mới -> hiện lại màn hình game hiện tại như cũ.
-                this.Show();
-                if (CurrentGameType == GameType.LotoVuiXuan)
+            SelectAndSetupGameLoop(
+                exitAppOnCancel: false,
+                onSelectionCancelled: () =>
                 {
-                    mediaElement.Play();
-                    EnsureShowWindow();
-                }
-                return;
-            }
-
-            if (CurrentGameType == GameType.LotoVuiXuan)
-            {
-                // exitAppOnCancel: false -> nếu hủy setup vòng loại thì chỉ giữ nguyên, không thoát app
-                ShowVongLoaiSetup(exitAppOnCancel: false);
-                this.Show();
-                mediaElement.Play();
-                SetNumber("");
-                EnsureShowWindow();
-            }
-            else if (CurrentGameType == GameType.LocXuanDauNam)
-            {
-                ShowLocXuan(exitAppOnCancel: false);
-                this.Show();
-            }
+                    // Người dùng hủy chọn game mới -> hiện lại màn hình game hiện tại như cũ.
+                    this.Show();
+                    if (CurrentGameType == GameType.LotoVuiXuan)
+                    {
+                        mediaElement.Play();
+                        EnsureShowWindow();
+                    }
+                },
+                onGameReady: () =>
+                {
+                    this.Show();
+                    if (CurrentGameType == GameType.LotoVuiXuan)
+                    {
+                        mediaElement.Play();
+                        SetNumber("");
+                        EnsureShowWindow();
+                    }
+                    // LocXuanDauNam: MainWindow chỉ hiện lại làm nền, InitLocXuan/LuckyDrawWindow
+                    // đã tự lo xong toàn bộ giao diện của chúng.
+                });
         }
 
         /// <summary>
@@ -378,11 +413,18 @@ namespace Xosoloto
         }
 
 
-        private void ShowLocXuan(bool exitAppOnCancel = true)
+        /// <summary>
+        /// Mở màn hình thiết lập/chơi Lộc Xuân Đầu Năm.
+        /// Trả về true nếu người dùng bấm "🔁 Đổi loại game" (từ InitLocXuan hoặc
+        /// LuckyDrawWindow bên trong) để quay lại màn hình chọn loại game - khi đó
+        /// SelectAndSetupGameLoop() sẽ tự lặp lại và mở màn hình chọn loại game.
+        /// </summary>
+        private bool ShowLocXuan(bool exitAppOnCancel = true)
         {
             InitLocXuan setupWindow = new InitLocXuan(_currentUsername);
             if (setupWindow.ShowDialog() == true)
             {
+                return setupWindow.ChangeGameRequested;
             }
             else if (exitAppOnCancel)
             {
@@ -390,6 +432,7 @@ namespace Xosoloto
                 Application.Current.Shutdown();
             }
             // else: người dùng hủy khi đang đổi game giữa chừng -> giữ nguyên trạng thái hiện tại
+            return false;
         }
 
         private void BangGiaButton_Click(object sender, RoutedEventArgs e)

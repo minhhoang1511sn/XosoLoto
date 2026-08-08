@@ -67,11 +67,20 @@
 
             <Button x:Name="btnToggleShow"
                     Content="🖥️ Trình chiếu"
-                    Canvas.Right="20"
+                    Canvas.Right="160"
                     Canvas.Top="20"
                     Padding="10,5"
                     FontSize="14"
                     Click="btnToggleShow_Click"/>
+
+            <Button x:Name="btnChangeGame"
+                    Content="🔁 Đổi loại game"
+                    Canvas.Right="20"
+                    Canvas.Top="20"
+                    Padding="10,5"
+                    FontSize="14"
+                    ToolTip="Thoát khỏi Lộc Xuân Đầu Năm, quay lại màn hình chọn loại game"
+                    Click="btnChangeGame_Click"/>
 
         </Canvas>
     </Grid>

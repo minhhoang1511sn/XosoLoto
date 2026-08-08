@@ -22,6 +22,14 @@ namespace Xosoloto
         private string imagePath = string.Empty;
         private string logoPath = string.Empty;
 
+        /// <summary>
+        /// True nếu người dùng bấm "🔁 Đổi loại game" (ở đây hoặc từ màn hình quay giải
+        /// LuckyDrawWindow bên trong) để thoát khỏi Lộc Xuân Đầu Năm và quay lại màn hình
+        /// chọn loại game, thay vì đóng hẳn ứng dụng. MainWindow.ShowLocXuan() kiểm tra cờ
+        /// này sau khi ShowDialog() trả về để quyết định có mở lại màn hình chọn game hay không.
+        /// </summary>
+        public bool ChangeGameRequested { get; private set; } = false;
+
         // Số lượng phần tử ĐỘNG (không còn cố định 5) — mỗi phần tử là đường dẫn ảnh giải.
         private List<string> prizePaths = new();
         // Các Image control preview tương ứng, theo cùng thứ tự với prizePaths.
@@ -47,6 +55,7 @@ namespace Xosoloto
             btnAddImg.Click += BtnAddImg_Click;
             btnAddLogo.Click += BtnAddLogo_Click;
             btnDone.Click += BtnDone_Click;
+            btnChangeGame.Click += BtnChangeGame_Click;
             btnSoVongMinus.Click += (s, e) => SetSoVong(CurrentSoVong - 1);
             btnSoVongPlus.Click += (s, e) => SetSoVong(CurrentSoVong + 1);
 
@@ -217,6 +226,24 @@ namespace Xosoloto
             AccountService.SaveSettings(_username, data);
         }
 
+        /// <summary>
+        /// Thoát khỏi màn hình thiết lập Lộc Xuân và quay lại màn hình chọn loại game,
+        /// thay vì phải đóng hẳn ứng dụng.
+        /// </summary>
+        private void BtnChangeGame_Click(object sender, RoutedEventArgs e)
+        {
+            var confirm = MessageBox.Show(
+                "Bạn có muốn thoát khỏi thiết lập Lộc Xuân Đầu Năm và chọn lại loại game khác không?",
+                "Đổi loại game", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (confirm != MessageBoxResult.Yes) return;
+
+            ChangeGameRequested = true;
+            // DialogResult = true để nơi gọi (ShowLocXuan) không hiểu nhầm là "hủy" và tự
+            // Shutdown() ứng dụng - xem ChangeGameRequested để biết cần mở lại màn hình chọn game.
+            this.DialogResult = true;
+            this.Close();
+        }
+
         private void BtnDone_Click(object sender, RoutedEventArgs e)
         {
             // Kiểm tra xem đã nhập đủ dữ liệu chưa
@@ -252,6 +279,11 @@ namespace Xosoloto
 
             // Hiển thị LuckyDrawWindow
             luc.ShowDialog();
+
+            // Nếu người dùng bấm "Đổi loại game" TRONG màn hình quay giải (LuckyDrawWindow),
+            // truyền cờ đó lên cho nơi gọi (ShowLocXuan) để mở lại màn hình chọn loại game.
+            if (luc.ChangeGameRequested)
+                ChangeGameRequested = true;
 
             // Báo cho nơi gọi (ShowLocXuan) biết là thiết lập đã HOÀN TẤT thành công,
             // không phải bị hủy — nếu không set DialogResult, ShowDialog() ở nơi gọi

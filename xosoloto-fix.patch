@@ -1,0 +1,23 @@
+diff --git a/Xosoloto/Xosoloto.csproj b/Xosoloto/Xosoloto.csproj
+index 5a829a7..c06a784 100644
+--- a/Xosoloto/Xosoloto.csproj
++++ b/Xosoloto/Xosoloto.csproj
+@@ -3,7 +3,17 @@
+     <OutputType>WinExe</OutputType>
+     <TargetFramework>net8.0-windows</TargetFramework>
+     <Nullable>enable</Nullable>
+-    <ImplicitUsings>enable</ImplicitUsings>
++    <!--
++      ImplicitUsings bị TẮT có chủ đích: khi bật đồng thời UseWPF + UseWindowsForms,
++      SDK sẽ tự add "global using" cho CẢ HAI bộ namespace (System.Windows.* của WPF
++      và System.Windows.Forms / System.Drawing của WinForms) trong cùng 1 file, gây ra
++      hàng loạt lỗi CS0104 "ambiguous reference" cho các type trùng tên ở cả 2 namespace
++      (Brush, Application, KeyEventArgs, Image, Color, FontFamily, Panel, ComboBox...).
++      Toàn bộ các file .cs trong project đã khai báo "using" tường minh cho những gì
++      chúng cần nên tắt ImplicitUsings không ảnh hưởng gì, chỉ loại bỏ phần global using
++      tự động gây xung đột đó.
++    -->
++    <ImplicitUsings>disable</ImplicitUsings>
+     <UseWPF>true</UseWPF>
+     <UseWindowsForms>true</UseWindowsForms>
+     <ApplicationIcon>Gemini_Generated_Image_j8e92tj8e92tj8e9.ico</ApplicationIcon>

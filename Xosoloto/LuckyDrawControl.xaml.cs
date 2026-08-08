@@ -34,6 +34,13 @@ namespace Xosoloto
         public string LogoPath { get; set; }
         public string[] PrizePaths { get; set; }
 
+        /// <summary>
+        /// True nếu người dùng bấm "🔁 Đổi loại game" ngay trong màn hình quay giải này để
+        /// thoát ra và quay lại màn hình chọn loại game, thay vì phải đóng hẳn ứng dụng.
+        /// InitLocXuan.BtnDone_Click kiểm tra cờ này sau khi ShowDialog() trả về.
+        /// </summary>
+        public bool ChangeGameRequested { get; private set; } = false;
+
         // Ô số hiển thị mỗi giải (sinh động theo PrizePaths.Length).
         private List<TextBlock> prizeNumberBlocks = new();
         private List<string> prizeNumbers = new();
@@ -183,6 +190,23 @@ namespace Xosoloto
         {
             if (_showWindow == null) EnsureShowWindow();
             else CloseShowWindow();
+        }
+
+        /// <summary>
+        /// Thoát khỏi màn hình quay giải Lộc Xuân hiện tại và quay lại màn hình chọn loại
+        /// game, thay vì phải đóng hẳn ứng dụng. Đóng luôn màn hình Trình chiếu (nếu đang
+        /// mở) trước khi thoát.
+        /// </summary>
+        private void btnChangeGame_Click(object sender, RoutedEventArgs e)
+        {
+            var confirm = MessageBox.Show(
+                "Bạn có muốn thoát khỏi Lộc Xuân Đầu Năm và chọn lại loại game khác không?\n" +
+                "Kết quả quay giải hiện tại (nếu có) sẽ không được lưu lại.",
+                "Đổi loại game", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (confirm != MessageBoxResult.Yes) return;
+
+            ChangeGameRequested = true;
+            this.Close();
         }
 
         // PUBLIC METHOD - Cập nhật số giải thưởng từ PrizeDisplayWindow

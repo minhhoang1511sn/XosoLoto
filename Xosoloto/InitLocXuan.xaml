@@ -15,16 +15,23 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
+            <!-- Thanh trên cùng: nút Đổi loại game (quay lại màn hình chọn game) -->
+            <DockPanel Grid.Row="0" Margin="0,0,0,10" LastChildFill="False">
+                <Button x:Name="btnChangeGame" Content="🔁 Đổi loại game" DockPanel.Dock="Right"
+                        Padding="10,5" FontSize="14" ToolTip="Thoát khỏi thiết lập Lộc Xuân, quay lại màn hình chọn loại game"/>
+            </DockPanel>
+
             <!-- Title Section -->
-            <StackPanel Grid.Row="0" Margin="0,0,0,20">
+            <StackPanel Grid.Row="1" Margin="0,0,0,20">
                 <Label Content="Event Title:" FontWeight="Bold" FontSize="14"/>
                 <TextBox x:Name="txtTitle" Height="30" FontSize="14"/>
             </StackPanel>
 
             <!-- Logo Section -->
-            <StackPanel Grid.Row="1" Margin="0,0,0,20">
+            <StackPanel Grid.Row="2" Margin="0,0,0,20">
                 <Label Content="Logo:" FontWeight="Bold" FontSize="14"/>
                 <StackPanel Orientation="Horizontal">
                     <Button x:Name="btnAddLogo" Content="Select Logo" Width="100" Height="30" 
@@ -36,7 +43,7 @@
             </StackPanel>
 
             <!-- Background Image Section -->
-            <StackPanel Grid.Row="2" Margin="0,0,0,20">
+            <StackPanel Grid.Row="3" Margin="0,0,0,20">
                 <Label Content="Background Image:" FontWeight="Bold" FontSize="14"/>
                 <StackPanel Orientation="Horizontal">
                     <Button x:Name="btnAddImg" Content="Select Background" Width="120" Height="30" 
@@ -48,7 +55,7 @@
             </StackPanel>
 
             <!-- Số vòng (động) -->
-            <StackPanel Grid.Row="3" Margin="0,0,0,10" Orientation="Horizontal">
+            <StackPanel Grid.Row="4" Margin="0,0,0,10" Orientation="Horizontal">
                 <Label Content="Số vòng (giải):" FontWeight="Bold" FontSize="14" VerticalAlignment="Center" Width="150"/>
                 <Button x:Name="btnSoVongMinus" Content="-" Width="30" Height="30"/>
                 <TextBlock x:Name="txtSoVong" Text="5" FontSize="16" FontWeight="Bold"
@@ -57,13 +64,13 @@
             </StackPanel>
 
             <!-- Prize Images Section (số lượng ô sinh động theo Số vòng ở trên) -->
-            <StackPanel Grid.Row="4" Margin="0,0,0,20">
+            <StackPanel Grid.Row="5" Margin="0,0,0,20">
                 <Label Content="Prize Images:" FontWeight="Bold" FontSize="14"/>
                 <StackPanel x:Name="pnlPrizes"/>
             </StackPanel>
 
             <!-- Done Button -->
-            <Button x:Name="btnDone" Grid.Row="5" Content="Done" Width="120" Height="40" 
+            <Button x:Name="btnDone" Grid.Row="6" Content="Done" Width="120" Height="40" 
                     FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,20"/>
         </Grid>
     </Viewbox>
