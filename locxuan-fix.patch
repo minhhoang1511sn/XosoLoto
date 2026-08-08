@@ -1,0 +1,408 @@
+diff --git a/Xosoloto/InitLocXuan.xaml.cs b/Xosoloto/InitLocXuan.xaml.cs
+index 9d8fbcd..9f99b7a 100644
+--- a/Xosoloto/InitLocXuan.xaml.cs
++++ b/Xosoloto/InitLocXuan.xaml.cs
+@@ -240,8 +240,7 @@ namespace Xosoloto
+             ChangeGameRequested = true;
+             // DialogResult = true để nơi gọi (ShowLocXuan) không hiểu nhầm là "hủy" và tự
+             // Shutdown() ứng dụng - xem ChangeGameRequested để biết cần mở lại màn hình chọn game.
+-            this.DialogResult = true;
+-            this.Close();
++            CloseAsDialogResult(true);
+         }
+ 
+         private void BtnDone_Click(object sender, RoutedEventArgs e)
+@@ -289,10 +288,34 @@ namespace Xosoloto
+             // không phải bị hủy — nếu không set DialogResult, ShowDialog() ở nơi gọi
+             // sẽ trả về null (không phải true), khiến ứng dụng hiểu nhầm là "hủy" và
+             // có thể tự thoát ứng dụng ngay sau khi người dùng quay xong Lộc Xuân.
+-            this.DialogResult = true;
+-
+             // Đóng cửa sổ InitLocXuan sau khi LuckyDrawWindow đóng
+-            this.Close();
++            CloseAsDialogResult(true);
++        }
++
++        /// <summary>
++        /// Set DialogResult rồi Close() một cách AN TOÀN. WPF chỉ cho set DialogResult khi
++        /// cửa sổ đang thực sự ở trạng thái được mở bằng ShowDialog(); nếu vì lý do nào đó
++        /// (ví dụ luồng đóng lồng nhau của Lộc Xuân: InitLocXuan → LuckyDrawWindow →
++        /// PrizeDisplayWindow) cửa sổ không còn ở trạng thái đó nữa, việc set sẽ ném
++        /// InvalidOperationException ("DialogResult can only be set after Window has been
++        /// created and displayed as a dialog box"). Bọc lại để trường hợp đó chỉ đơn giản là
++        /// Close() bình thường thay vì làm crash toàn bộ ứng dụng.
++        /// </summary>
++        private void CloseAsDialogResult(bool result)
++        {
++            try
++            {
++                // Việc set DialogResult (nếu thành công) tự động Close() cửa sổ luôn.
++                this.DialogResult = result;
++                return;
++            }
++            catch (InvalidOperationException)
++            {
++                // Cửa sổ không còn ở trạng thái ShowDialog (đã đóng/đang đóng) - bỏ qua,
++                // rơi xuống Close() thường bên dưới để vẫn đảm bảo cửa sổ được dọn dẹp.
++            }
++
++            try { this.Close(); } catch (InvalidOperationException) { /* đã đóng rồi */ }
+         }
+     }
+ }
+diff --git a/Xosoloto/LocXuanShowWindow.xaml b/Xosoloto/LocXuanShowWindow.xaml
+index 2834ab7..b15acec 100644
+--- a/Xosoloto/LocXuanShowWindow.xaml
++++ b/Xosoloto/LocXuanShowWindow.xaml
+@@ -26,46 +26,126 @@
+     </Window.Resources>
+ 
+     <Grid>
+-        <Grid.Background>
+-            <ImageBrush ImageSource="Images/backgroundlocxuan.png" Stretch="Fill" />
+-        </Grid.Background>
++        <!-- ============================================================
++             OVERVIEW PANEL: màn hình TỔNG - hiển thị tất cả các giải cùng
++             lúc. Đây là chế độ mặc định, dùng khi không có giải nào đang
++             được người điều khiển mở để nhập số (PrizeDisplayWindow đóng).
++             ============================================================ -->
++        <Grid x:Name="OverviewPanel">
++            <Grid.Background>
++                <ImageBrush ImageSource="Images/backgroundlocxuan.png" Stretch="Fill" />
++            </Grid.Background>
+ 
+-        <Canvas x:Name="MainCanvas">
+-            <Image x:Name="imgLogo"
+-                   Height="110"
+-                   Width="250"
+-                   Canvas.Left="90"
+-                   Canvas.Top="180"
+-                   Stretch="Fill"/>
++            <Canvas x:Name="MainCanvas">
++                <Image x:Name="imgLogo"
++                       Height="110"
++                       Width="250"
++                       Canvas.Left="90"
++                       Canvas.Top="180"
++                       Stretch="Fill"/>
+ 
+-            <TextBlock x:Name="txtTitle"
+-                       Text="ĐẠI HỘI TẾT 2025"
+-                       FontSize="80"
+-                       FontWeight="Bold"
+-                       Foreground="#FFD700"
+-                       FontFamily="/Fonts/#HL-Thufap2-Unicode"
+-                       Canvas.Top="100"
+-                       TextAlignment="Center"
+-                       Effect="{StaticResource TextShadow}">
+-                <TextBlock.RenderTransform>
+-                    <SkewTransform AngleX="-5"/>
+-                </TextBlock.RenderTransform>
+-            </TextBlock>
++                <TextBlock x:Name="txtTitle"
++                           Text="ĐẠI HỘI TẾT 2025"
++                           FontSize="80"
++                           FontWeight="Bold"
++                           Foreground="#FFD700"
++                           FontFamily="/Fonts/#HL-Thufap2-Unicode"
++                           Canvas.Top="100"
++                           TextAlignment="Center"
++                           Effect="{StaticResource TextShadow}">
++                    <TextBlock.RenderTransform>
++                        <SkewTransform AngleX="-5"/>
++                    </TextBlock.RenderTransform>
++                </TextBlock>
+ 
+-            <Image x:Name="imgPrize"
+-                   Height="330"
+-                   Width="330"
+-                   Canvas.Left="90"
+-                   Canvas.Top="300"
+-                   Stretch="Fill"/>
++                <Image x:Name="imgPrize"
++                       Height="330"
++                       Width="330"
++                       Canvas.Left="90"
++                       Canvas.Top="300"
++                       Stretch="Fill"/>
+ 
+-            <!-- Các ô số "Lộc Xuân i" được sinh ĐỘNG trong code-behind, cùng số vòng với
+-                 LuckyDrawWindow (màn hình Chỉnh sửa), xem LocXuanShowWindow.xaml.cs. -->
+-        </Canvas>
++                <!-- Các ô số "Lộc Xuân i" được sinh ĐỘNG trong code-behind, cùng số vòng với
++                     LuckyDrawWindow (màn hình Chỉnh sửa), xem LocXuanShowWindow.xaml.cs. -->
++            </Canvas>
++        </Grid>
+ 
+-        <!-- Thanh trạng thái + nút thoát: LUÔN hiển thị để người dùng biết đang trình chiếu
+-             ở màn hình nào (1 hay 2 màn hình) và luôn có cách thoát khỏi màn hình Trình chiếu
+-             (không phụ thuộc phím ESC, phòng khi không có bàn phím trong tầm tay). -->
++        <!-- ============================================================
++             DETAIL PANEL: màn hình CHI TIẾT 1 giải - hiển thị đúng ảnh nền
++             DetailsPrize.png + tên giải + số trúng thưởng (cỡ lớn) + ảnh
++             giải, khớp 100% bố cục của PrizeDisplayWindow (màn hình Chỉnh
++             sửa dùng để nhập số). Được bật lên khi người điều khiển mở 1
++             giải cụ thể (PrizeDisplayWindow), và tắt đi (quay lại
++             OverviewPanel) khi đóng lại. Xem LuckyDrawWindow.OpenPrizeWindow
++             / ShowPrizeOnScreen / ShowOverviewOnScreen.
++             ============================================================ -->
++        <Viewbox x:Name="DetailPanel" Stretch="Uniform" Visibility="Collapsed">
++            <Grid Width="1920" Height="1080">
++                <Grid.Background>
++                    <ImageBrush x:Name="imgDetailBackground" Stretch="Fill" />
++                </Grid.Background>
++                <Grid>
++                    <Grid.RowDefinitions>
++                        <RowDefinition Height="200"/>
++                        <RowDefinition Height="*"/>
++                    </Grid.RowDefinitions>
++                    <!-- Header: Logo + Title -->
++                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="80,130,0,-180" HorizontalAlignment="Left" VerticalAlignment="Top">
++                        <Image x:Name="imgDetailLogo" Height="110" Width="250" Margin="0,0,150,0" Stretch="Uniform"/>
++                        <TextBlock x:Name="txtDetailTitle"
++                                   Text="ĐẠI HỘI TẾT"
++                                   FontSize="80"
++                                   FontWeight="Bold"
++                                   Foreground="#FFD700"
++                                   FontFamily="/Fonts/#HL-Thufap2-Unicode"
++                                   VerticalAlignment="Center">
++                            <TextBlock.RenderTransform>
++                                <SkewTransform AngleX="-5"/>
++                            </TextBlock.RenderTransform>
++                            <TextBlock.Effect>
++                                <DropShadowEffect Color="Black" BlurRadius="10" ShadowDepth="3"/>
++                            </TextBlock.Effect>
++                        </TextBlock>
++                    </StackPanel>
++                    <!-- Content: Prize Info + Image -->
++                    <Grid Grid.Row="1" Margin="180,30,0,0">
++                        <Grid.ColumnDefinitions>
++                            <ColumnDefinition Width="6*"/>
++                            <ColumnDefinition Width="4*"/>
++                        </Grid.ColumnDefinitions>
++                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="150,0,0,0">
++                            <TextBlock x:Name="txtDetailPrizeName"
++                                       Text="LỘC XUÂN"
++                                       FontSize="70"
++                                       Width="600"
++                                       FontWeight="ExtraBold"
++                                       Foreground="White"
++                                       Margin="-70,-20,0,30"
++                                       HorizontalAlignment="Left">
++                                <TextBlock.Effect>
++                                    <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="2"/>
++                                </TextBlock.Effect>
++                            </TextBlock>
++                            <TextBlock x:Name="txtDetailNumber"
++                                       Text="? ? ? ?"
++                                       FontSize="180"
++                                       FontWeight="Black"
++                                       Foreground="Black"
++                                       HorizontalAlignment="Left"
++                                       Margin="-100,0,0,0"
++                                       TextAlignment="Center"/>
++                        </StackPanel>
++                        <Viewbox Grid.Column="1" Margin="100,100,100,100" VerticalAlignment="Center" HorizontalAlignment="Center">
++                            <Image x:Name="imgDetailPrize" Stretch="Uniform" MaxHeight="350" MaxWidth="350"/>
++                        </Viewbox>
++                    </Grid>
++                </Grid>
++            </Grid>
++        </Viewbox>
++
++        <!-- Thanh trạng thái + nút thoát: LUÔN hiển thị (cả 2 chế độ) để người dùng biết đang
++             trình chiếu ở màn hình nào (1 hay 2 màn hình) và luôn có cách thoát khỏi màn hình
++             Trình chiếu (không phụ thuộc phím ESC, phòng khi không có bàn phím trong tầm tay). -->
+         <Border x:Name="StatusBadge"
+                 Background="#AA000000"
+                 CornerRadius="6"
+diff --git a/Xosoloto/LocXuanShowWindow.xaml.cs b/Xosoloto/LocXuanShowWindow.xaml.cs
+index f33619e..6d66499 100644
+--- a/Xosoloto/LocXuanShowWindow.xaml.cs
++++ b/Xosoloto/LocXuanShowWindow.xaml.cs
+@@ -23,6 +23,13 @@ namespace Xosoloto
+ 
+         private List<TextBlock> _prizeNumberBlocks = new();
+ 
++        // Lưu lại số trúng thưởng của từng giải để có thể nạp ngay khi chuyển sang
++        // DetailPanel (không cần chờ LuckyDrawWindow gọi UpdatePrizeNumber lại).
++        private List<string> _prizeNumbers = new();
++
++        // Index của giải đang được hiển thị CHI TIẾT (DetailPanel), -1 = đang ở màn hình TỔNG.
++        private int _detailPrizeIndex = -1;
++
+         public LocXuanShowWindow()
+         {
+             InitializeComponent();
+@@ -70,6 +77,9 @@ namespace Xosoloto
+         private void BuildPrizeSlots(int count)
+         {
+             _prizeNumberBlocks = new List<TextBlock>(count);
++            _prizeNumbers = new List<string>(count);
++            for (int i = 0; i < count; i++) _prizeNumbers.Add("- - - -");
++
+             // Xoá các ô số cũ (nếu Initialize được gọi lại), giữ lại logo/title/ảnh giải.
+             for (int i = MainCanvas.Children.Count - 1; i >= 0; i--)
+             {
+@@ -92,12 +102,65 @@ namespace Xosoloto
+             }
+         }
+ 
+-        /// <summary>Cập nhật số trúng thưởng cho một ô giải cụ thể (đẩy real-time từ LuckyDrawWindow).</summary>
++        /// <summary>Cập nhật số trúng thưởng cho một ô giải cụ thể (đẩy real-time từ LuckyDrawWindow).
++        /// Cập nhật CẢ ô số ở màn hình Tổng LẪN màn hình Chi tiết (nếu đang mở đúng giải đó),
++        /// để dù đang ở chế độ nào thì số hiển thị cũng luôn khớp.</summary>
+         public void UpdatePrizeNumber(int prizeIndex, string prizeNumber)
+         {
+-            if (prizeIndex < 0 || prizeIndex >= _prizeNumberBlocks.Count) return;
+-            _prizeNumberBlocks[prizeIndex].Text = prizeNumber;
+-            _prizeNumberBlocks[prizeIndex].Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
++            if (prizeIndex >= 0 && prizeIndex < _prizeNumbers.Count)
++                _prizeNumbers[prizeIndex] = prizeNumber;
++
++            if (prizeIndex >= 0 && prizeIndex < _prizeNumberBlocks.Count)
++            {
++                _prizeNumberBlocks[prizeIndex].Text = prizeNumber;
++                _prizeNumberBlocks[prizeIndex].Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
++            }
++
++            if (_detailPrizeIndex == prizeIndex)
++                txtDetailNumber.Text = prizeNumber;
++        }
++
++        /// <summary>
++        /// Chuyển màn hình Trình chiếu sang chế độ CHI TIẾT 1 giải — khớp 100% bố cục của
++        /// PrizeDisplayWindow (ảnh nền DetailsPrize.png, tên giải, số trúng thưởng cỡ lớn,
++        /// ảnh giải). Gọi khi người điều khiển mở giải đó (LuckyDrawWindow.OpenPrizeWindow)
++        /// hoặc chuyển sang giải khác bằng phím trái/phải trong PrizeDisplayWindow.
++        /// </summary>
++        public void ShowPrizeDetail(int prizeIndex, string prizeName, string prizeImagePath, string logoPath, string title)
++        {
++            _detailPrizeIndex = prizeIndex;
++
++            txtDetailTitle.Text = string.IsNullOrEmpty(title) ? "ĐẠI HỘI TẾT" : title;
++
++            try
++            {
++                if (!string.IsNullOrEmpty(logoPath) && File.Exists(logoPath))
++                    imgDetailLogo.Source = new BitmapImage(new Uri(logoPath, UriKind.Absolute));
++
++                imgDetailBackground.ImageSource = new BitmapImage(new Uri("pack://application:,,,/Images/DetailsPrize.png"));
++
++                imgDetailPrize.Source = (!string.IsNullOrEmpty(prizeImagePath) && File.Exists(prizeImagePath))
++                    ? new BitmapImage(new Uri(prizeImagePath, UriKind.Absolute))
++                    : null;
++            }
++            catch
++            {
++                imgDetailPrize.Source = null;
++            }
++
++            txtDetailPrizeName.Text = prizeName ?? string.Empty;
++            txtDetailNumber.Text = (prizeIndex >= 0 && prizeIndex < _prizeNumbers.Count) ? _prizeNumbers[prizeIndex] : "? ? ? ?";
++
++            OverviewPanel.Visibility = Visibility.Collapsed;
++            DetailPanel.Visibility = Visibility.Visible;
++        }
++
++        /// <summary>Đưa màn hình Trình chiếu quay lại chế độ TỔNG (hiển thị tất cả các giải cùng lúc).</summary>
++        public void ShowOverview()
++        {
++            _detailPrizeIndex = -1;
++            DetailPanel.Visibility = Visibility.Collapsed;
++            OverviewPanel.Visibility = Visibility.Visible;
+         }
+ 
+         private void Window_SizeChanged(object sender, SizeChangedEventArgs e) => UpdatePositions();
+diff --git a/Xosoloto/LuckyDrawControl.xaml.cs b/Xosoloto/LuckyDrawControl.xaml.cs
+index d6693ad..be17fee 100644
+--- a/Xosoloto/LuckyDrawControl.xaml.cs
++++ b/Xosoloto/LuckyDrawControl.xaml.cs
+@@ -172,6 +172,10 @@ namespace Xosoloto
+                     return;
+                 }
+ 
++                // Đẩy màn hình Trình chiếu sang chế độ CHI TIẾT đúng giải này NGAY, để khán giả
++                // thấy đúng giải đang được quay thay vì màn hình tổng.
++                ShowPrizeOnScreen(prizeIndex);
++
+                 // Tạo và mở PrizeDisplayWindow - TRUYỀN THÊM PARENT
+                 PrizeDisplayWindow prizeWindow = new PrizeDisplayWindow(
+                     title: this.Title,
+@@ -184,8 +188,17 @@ namespace Xosoloto
+                     parent: this
+                 );
+ 
+-                // Hiển thị PrizeDisplayWindow
+-                prizeWindow.ShowDialog();
++                try
++                {
++                    // Hiển thị PrizeDisplayWindow
++                    prizeWindow.ShowDialog();
++                }
++                finally
++                {
++                    // Dù đóng bằng Back, Enter hay ESC (hoặc lỗi), luôn đưa màn hình Trình chiếu
++                    // quay lại chế độ TỔNG khi không còn giải nào đang mở.
++                    ShowOverviewOnScreen();
++                }
+             }
+             catch (Exception ex)
+             {
+@@ -194,6 +207,27 @@ namespace Xosoloto
+             }
+         }
+ 
++        /// <summary>
++        /// Đẩy màn hình Trình chiếu (khán giả/máy chiếu) sang chế độ CHI TIẾT đúng giải
++        /// <paramref name="prizeIndex"/> đang được mở, khớp bố cục PrizeDisplayWindow.
++        /// Được gọi khi mở 1 giải (OpenPrizeWindow) hoặc khi chuyển giải bằng phím trái/phải
++        /// ngay trong PrizeDisplayWindow (qua parentWindow.ShowPrizeOnScreen).
++        /// </summary>
++        public void ShowPrizeOnScreen(int prizeIndex)
++        {
++            if (_showWindow == null) return;
++            if (prizeIndex < 0 || prizeIndex >= prizeNames.Count) return;
++
++            string prizeImg = (PrizePaths != null && prizeIndex < PrizePaths.Length) ? PrizePaths[prizeIndex] : null;
++            string number = prizeIndex < prizeNumbers.Count ? prizeNumbers[prizeIndex] : "? ? ? ?";
++
++            _showWindow.ShowPrizeDetail(prizeIndex, prizeNames[prizeIndex], prizeImg, this.LogoPath, this.Title);
++            _showWindow.UpdatePrizeNumber(prizeIndex, number);
++        }
++
++        /// <summary>Đưa màn hình Trình chiếu quay lại chế độ TỔNG (tất cả các giải).</summary>
++        public void ShowOverviewOnScreen() => _showWindow?.ShowOverview();
++
+         private void btnToggleShow_Click(object sender, RoutedEventArgs e)
+         {
+             if (_showWindow == null) EnsureShowWindow();
+diff --git a/Xosoloto/PrizeDisplayWindow.xaml.cs b/Xosoloto/PrizeDisplayWindow.xaml.cs
+index e4fe18f..70a6941 100644
+--- a/Xosoloto/PrizeDisplayWindow.xaml.cs
++++ b/Xosoloto/PrizeDisplayWindow.xaml.cs
+@@ -112,6 +112,13 @@ namespace Xosoloto
+             }
+             if (e.Key == Key.Enter)
+             {
++                // QUAN TRỌNG: phải Handled=true NGAY, nếu không TextBox (AcceptsReturn="True")
++                // sẽ tự chèn thêm 1 dòng mới vào Text NGAY SAU khi handler này chạy xong, kích
++                // hoạt thêm 1 lần TextChanged nữa trên một TextBox thuộc cửa sổ đang được đóng
++                // (BackToMainScreen() bên dưới) — đây chính là nguồn gốc có thể dẫn tới thao tác
++                // thừa trên 1 cửa sổ ShowDialog() đã/đang đóng.
++                e.Handled = true;
++
+                 string prizeNumber = txtPrizeNumber.Text.Trim();
+ 
+                 if (!string.IsNullOrEmpty(prizeNumber) && prizeNumber != "? ? ? ?")
+@@ -199,6 +206,10 @@ namespace Xosoloto
+             // Focus lại vào textbox sau khi chuyển giải
+             txtPrizeNumber.Focus();
+             txtPrizeNumber.SelectAll();
++
++            // Đẩy sang màn hình Trình chiếu đúng giải đang xem (kể cả khi chuyển giải
++            // bằng phím trái/phải), để khán giả luôn thấy đúng giải người điều khiển đang mở.
++            parentWindow?.ShowPrizeOnScreen(index);
+         }
+ 
+         private void MovePrize(int direction)

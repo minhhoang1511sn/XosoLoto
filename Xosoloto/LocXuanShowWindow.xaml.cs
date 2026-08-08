@@ -23,6 +23,13 @@ namespace Xosoloto
 
         private List<TextBlock> _prizeNumberBlocks = new();
 
+        // Lưu lại số trúng thưởng của từng giải để có thể nạp ngay khi chuyển sang
+        // DetailPanel (không cần chờ LuckyDrawWindow gọi UpdatePrizeNumber lại).
+        private List<string> _prizeNumbers = new();
+
+        // Index của giải đang được hiển thị CHI TIẾT (DetailPanel), -1 = đang ở màn hình TỔNG.
+        private int _detailPrizeIndex = -1;
+
         public LocXuanShowWindow()
         {
             InitializeComponent();
@@ -70,6 +77,9 @@ namespace Xosoloto
         private void BuildPrizeSlots(int count)
         {
             _prizeNumberBlocks = new List<TextBlock>(count);
+            _prizeNumbers = new List<string>(count);
+            for (int i = 0; i < count; i++) _prizeNumbers.Add("- - - -");
+
             // Xoá các ô số cũ (nếu Initialize được gọi lại), giữ lại logo/title/ảnh giải.
             for (int i = MainCanvas.Children.Count - 1; i >= 0; i--)
             {
@@ -92,12 +102,65 @@ namespace Xosoloto
             }
         }
 
-        /// <summary>Cập nhật số trúng thưởng cho một ô giải cụ thể (đẩy real-time từ LuckyDrawWindow).</summary>
+        /// <summary>Cập nhật số trúng thưởng cho một ô giải cụ thể (đẩy real-time từ LuckyDrawWindow).
+        /// Cập nhật CẢ ô số ở màn hình Tổng LẪN màn hình Chi tiết (nếu đang mở đúng giải đó),
+        /// để dù đang ở chế độ nào thì số hiển thị cũng luôn khớp.</summary>
         public void UpdatePrizeNumber(int prizeIndex, string prizeNumber)
         {
-            if (prizeIndex < 0 || prizeIndex >= _prizeNumberBlocks.Count) return;
-            _prizeNumberBlocks[prizeIndex].Text = prizeNumber;
-            _prizeNumberBlocks[prizeIndex].Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+            if (prizeIndex >= 0 && prizeIndex < _prizeNumbers.Count)
+                _prizeNumbers[prizeIndex] = prizeNumber;
+
+            if (prizeIndex >= 0 && prizeIndex < _prizeNumberBlocks.Count)
+            {
+                _prizeNumberBlocks[prizeIndex].Text = prizeNumber;
+                _prizeNumberBlocks[prizeIndex].Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+            }
+
+            if (_detailPrizeIndex == prizeIndex)
+                txtDetailNumber.Text = prizeNumber;
+        }
+
+        /// <summary>
+        /// Chuyển màn hình Trình chiếu sang chế độ CHI TIẾT 1 giải — khớp 100% bố cục của
+        /// PrizeDisplayWindow (ảnh nền DetailsPrize.png, tên giải, số trúng thưởng cỡ lớn,
+        /// ảnh giải). Gọi khi người điều khiển mở giải đó (LuckyDrawWindow.OpenPrizeWindow)
+        /// hoặc chuyển sang giải khác bằng phím trái/phải trong PrizeDisplayWindow.
+        /// </summary>
+        public void ShowPrizeDetail(int prizeIndex, string prizeName, string prizeImagePath, string logoPath, string title)
+        {
+            _detailPrizeIndex = prizeIndex;
+
+            txtDetailTitle.Text = string.IsNullOrEmpty(title) ? "ĐẠI HỘI TẾT" : title;
+
+            try
+            {
+                if (!string.IsNullOrEmpty(logoPath) && File.Exists(logoPath))
+                    imgDetailLogo.Source = new BitmapImage(new Uri(logoPath, UriKind.Absolute));
+
+                imgDetailBackground.ImageSource = new BitmapImage(new Uri("pack://application:,,,/Images/DetailsPrize.png"));
+
+                imgDetailPrize.Source = (!string.IsNullOrEmpty(prizeImagePath) && File.Exists(prizeImagePath))
+                    ? new BitmapImage(new Uri(prizeImagePath, UriKind.Absolute))
+                    : null;
+            }
+            catch
+            {
+                imgDetailPrize.Source = null;
+            }
+
+            txtDetailPrizeName.Text = prizeName ?? string.Empty;
+            txtDetailNumber.Text = (prizeIndex >= 0 && prizeIndex < _prizeNumbers.Count) ? _prizeNumbers[prizeIndex] : "? ? ? ?";
+
+            OverviewPanel.Visibility = Visibility.Collapsed;
+            DetailPanel.Visibility = Visibility.Visible;
+        }
+
+        /// <summary>Đưa màn hình Trình chiếu quay lại chế độ TỔNG (hiển thị tất cả các giải cùng lúc).</summary>
+        public void ShowOverview()
+        {
+            _detailPrizeIndex = -1;
+            DetailPanel.Visibility = Visibility.Collapsed;
+            OverviewPanel.Visibility = Visibility.Visible;
         }
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e) => UpdatePositions();

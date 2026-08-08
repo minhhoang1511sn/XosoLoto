@@ -112,6 +112,13 @@ namespace Xosoloto
             }
             if (e.Key == Key.Enter)
             {
+                // QUAN TRỌNG: phải Handled=true NGAY, nếu không TextBox (AcceptsReturn="True")
+                // sẽ tự chèn thêm 1 dòng mới vào Text NGAY SAU khi handler này chạy xong, kích
+                // hoạt thêm 1 lần TextChanged nữa trên một TextBox thuộc cửa sổ đang được đóng
+                // (BackToMainScreen() bên dưới) — đây chính là nguồn gốc có thể dẫn tới thao tác
+                // thừa trên 1 cửa sổ ShowDialog() đã/đang đóng.
+                e.Handled = true;
+
                 string prizeNumber = txtPrizeNumber.Text.Trim();
 
                 if (!string.IsNullOrEmpty(prizeNumber) && prizeNumber != "? ? ? ?")
@@ -199,6 +206,10 @@ namespace Xosoloto
             // Focus lại vào textbox sau khi chuyển giải
             txtPrizeNumber.Focus();
             txtPrizeNumber.SelectAll();
+
+            // Đẩy sang màn hình Trình chiếu đúng giải đang xem (kể cả khi chuyển giải
+            // bằng phím trái/phải), để khán giả luôn thấy đúng giải người điều khiển đang mở.
+            parentWindow?.ShowPrizeOnScreen(index);
         }
 
         private void MovePrize(int direction)

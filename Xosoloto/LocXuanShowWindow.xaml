@@ -26,46 +26,126 @@
     </Window.Resources>
 
     <Grid>
-        <Grid.Background>
-            <ImageBrush ImageSource="Images/backgroundlocxuan.png" Stretch="Fill" />
-        </Grid.Background>
+        <!-- ============================================================
+             OVERVIEW PANEL: màn hình TỔNG - hiển thị tất cả các giải cùng
+             lúc. Đây là chế độ mặc định, dùng khi không có giải nào đang
+             được người điều khiển mở để nhập số (PrizeDisplayWindow đóng).
+             ============================================================ -->
+        <Grid x:Name="OverviewPanel">
+            <Grid.Background>
+                <ImageBrush ImageSource="Images/backgroundlocxuan.png" Stretch="Fill" />
+            </Grid.Background>
 
-        <Canvas x:Name="MainCanvas">
-            <Image x:Name="imgLogo"
-                   Height="110"
-                   Width="250"
-                   Canvas.Left="90"
-                   Canvas.Top="180"
-                   Stretch="Fill"/>
+            <Canvas x:Name="MainCanvas">
+                <Image x:Name="imgLogo"
+                       Height="110"
+                       Width="250"
+                       Canvas.Left="90"
+                       Canvas.Top="180"
+                       Stretch="Fill"/>
 
-            <TextBlock x:Name="txtTitle"
-                       Text="ĐẠI HỘI TẾT 2025"
-                       FontSize="80"
-                       FontWeight="Bold"
-                       Foreground="#FFD700"
-                       FontFamily="/Fonts/#HL-Thufap2-Unicode"
-                       Canvas.Top="100"
-                       TextAlignment="Center"
-                       Effect="{StaticResource TextShadow}">
-                <TextBlock.RenderTransform>
-                    <SkewTransform AngleX="-5"/>
-                </TextBlock.RenderTransform>
-            </TextBlock>
+                <TextBlock x:Name="txtTitle"
+                           Text="ĐẠI HỘI TẾT 2025"
+                           FontSize="80"
+                           FontWeight="Bold"
+                           Foreground="#FFD700"
+                           FontFamily="/Fonts/#HL-Thufap2-Unicode"
+                           Canvas.Top="100"
+                           TextAlignment="Center"
+                           Effect="{StaticResource TextShadow}">
+                    <TextBlock.RenderTransform>
+                        <SkewTransform AngleX="-5"/>
+                    </TextBlock.RenderTransform>
+                </TextBlock>
 
-            <Image x:Name="imgPrize"
-                   Height="330"
-                   Width="330"
-                   Canvas.Left="90"
-                   Canvas.Top="300"
-                   Stretch="Fill"/>
+                <Image x:Name="imgPrize"
+                       Height="330"
+                       Width="330"
+                       Canvas.Left="90"
+                       Canvas.Top="300"
+                       Stretch="Fill"/>
 
-            <!-- Các ô số "Lộc Xuân i" được sinh ĐỘNG trong code-behind, cùng số vòng với
-                 LuckyDrawWindow (màn hình Chỉnh sửa), xem LocXuanShowWindow.xaml.cs. -->
-        </Canvas>
+                <!-- Các ô số "Lộc Xuân i" được sinh ĐỘNG trong code-behind, cùng số vòng với
+                     LuckyDrawWindow (màn hình Chỉnh sửa), xem LocXuanShowWindow.xaml.cs. -->
+            </Canvas>
+        </Grid>
 
-        <!-- Thanh trạng thái + nút thoát: LUÔN hiển thị để người dùng biết đang trình chiếu
-             ở màn hình nào (1 hay 2 màn hình) và luôn có cách thoát khỏi màn hình Trình chiếu
-             (không phụ thuộc phím ESC, phòng khi không có bàn phím trong tầm tay). -->
+        <!-- ============================================================
+             DETAIL PANEL: màn hình CHI TIẾT 1 giải - hiển thị đúng ảnh nền
+             DetailsPrize.png + tên giải + số trúng thưởng (cỡ lớn) + ảnh
+             giải, khớp 100% bố cục của PrizeDisplayWindow (màn hình Chỉnh
+             sửa dùng để nhập số). Được bật lên khi người điều khiển mở 1
+             giải cụ thể (PrizeDisplayWindow), và tắt đi (quay lại
+             OverviewPanel) khi đóng lại. Xem LuckyDrawWindow.OpenPrizeWindow
+             / ShowPrizeOnScreen / ShowOverviewOnScreen.
+             ============================================================ -->
+        <Viewbox x:Name="DetailPanel" Stretch="Uniform" Visibility="Collapsed">
+            <Grid Width="1920" Height="1080">
+                <Grid.Background>
+                    <ImageBrush x:Name="imgDetailBackground" Stretch="Fill" />
+                </Grid.Background>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="200"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <!-- Header: Logo + Title -->
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="80,130,0,-180" HorizontalAlignment="Left" VerticalAlignment="Top">
+                        <Image x:Name="imgDetailLogo" Height="110" Width="250" Margin="0,0,150,0" Stretch="Uniform"/>
+                        <TextBlock x:Name="txtDetailTitle"
+                                   Text="ĐẠI HỘI TẾT"
+                                   FontSize="80"
+                                   FontWeight="Bold"
+                                   Foreground="#FFD700"
+                                   FontFamily="/Fonts/#HL-Thufap2-Unicode"
+                                   VerticalAlignment="Center">
+                            <TextBlock.RenderTransform>
+                                <SkewTransform AngleX="-5"/>
+                            </TextBlock.RenderTransform>
+                            <TextBlock.Effect>
+                                <DropShadowEffect Color="Black" BlurRadius="10" ShadowDepth="3"/>
+                            </TextBlock.Effect>
+                        </TextBlock>
+                    </StackPanel>
+                    <!-- Content: Prize Info + Image -->
+                    <Grid Grid.Row="1" Margin="180,30,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="6*"/>
+                            <ColumnDefinition Width="4*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="150,0,0,0">
+                            <TextBlock x:Name="txtDetailPrizeName"
+                                       Text="LỘC XUÂN"
+                                       FontSize="70"
+                                       Width="600"
+                                       FontWeight="ExtraBold"
+                                       Foreground="White"
+                                       Margin="-70,-20,0,30"
+                                       HorizontalAlignment="Left">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="2"/>
+                                </TextBlock.Effect>
+                            </TextBlock>
+                            <TextBlock x:Name="txtDetailNumber"
+                                       Text="? ? ? ?"
+                                       FontSize="180"
+                                       FontWeight="Black"
+                                       Foreground="Black"
+                                       HorizontalAlignment="Left"
+                                       Margin="-100,0,0,0"
+                                       TextAlignment="Center"/>
+                        </StackPanel>
+                        <Viewbox Grid.Column="1" Margin="100,100,100,100" VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <Image x:Name="imgDetailPrize" Stretch="Uniform" MaxHeight="350" MaxWidth="350"/>
+                        </Viewbox>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Viewbox>
+
+        <!-- Thanh trạng thái + nút thoát: LUÔN hiển thị (cả 2 chế độ) để người dùng biết đang
+             trình chiếu ở màn hình nào (1 hay 2 màn hình) và luôn có cách thoát khỏi màn hình
+             Trình chiếu (không phụ thuộc phím ESC, phòng khi không có bàn phím trong tầm tay). -->
         <Border x:Name="StatusBadge"
                 Background="#AA000000"
                 CornerRadius="6"

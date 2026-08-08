@@ -240,8 +240,7 @@ namespace Xosoloto
             ChangeGameRequested = true;
             // DialogResult = true để nơi gọi (ShowLocXuan) không hiểu nhầm là "hủy" và tự
             // Shutdown() ứng dụng - xem ChangeGameRequested để biết cần mở lại màn hình chọn game.
-            this.DialogResult = true;
-            this.Close();
+            CloseAsDialogResult(true);
         }
 
         private void BtnDone_Click(object sender, RoutedEventArgs e)
@@ -289,10 +288,34 @@ namespace Xosoloto
             // không phải bị hủy — nếu không set DialogResult, ShowDialog() ở nơi gọi
             // sẽ trả về null (không phải true), khiến ứng dụng hiểu nhầm là "hủy" và
             // có thể tự thoát ứng dụng ngay sau khi người dùng quay xong Lộc Xuân.
-            this.DialogResult = true;
-
             // Đóng cửa sổ InitLocXuan sau khi LuckyDrawWindow đóng
-            this.Close();
+            CloseAsDialogResult(true);
+        }
+
+        /// <summary>
+        /// Set DialogResult rồi Close() một cách AN TOÀN. WPF chỉ cho set DialogResult khi
+        /// cửa sổ đang thực sự ở trạng thái được mở bằng ShowDialog(); nếu vì lý do nào đó
+        /// (ví dụ luồng đóng lồng nhau của Lộc Xuân: InitLocXuan → LuckyDrawWindow →
+        /// PrizeDisplayWindow) cửa sổ không còn ở trạng thái đó nữa, việc set sẽ ném
+        /// InvalidOperationException ("DialogResult can only be set after Window has been
+        /// created and displayed as a dialog box"). Bọc lại để trường hợp đó chỉ đơn giản là
+        /// Close() bình thường thay vì làm crash toàn bộ ứng dụng.
+        /// </summary>
+        private void CloseAsDialogResult(bool result)
+        {
+            try
+            {
+                // Việc set DialogResult (nếu thành công) tự động Close() cửa sổ luôn.
+                this.DialogResult = result;
+                return;
+            }
+            catch (InvalidOperationException)
+            {
+                // Cửa sổ không còn ở trạng thái ShowDialog (đã đóng/đang đóng) - bỏ qua,
+                // rơi xuống Close() thường bên dưới để vẫn đảm bảo cửa sổ được dọn dẹp.
+            }
+
+            try { this.Close(); } catch (InvalidOperationException) { /* đã đóng rồi */ }
         }
     }
 }

@@ -172,6 +172,10 @@ namespace Xosoloto
                     return;
                 }
 
+                // Đẩy màn hình Trình chiếu sang chế độ CHI TIẾT đúng giải này NGAY, để khán giả
+                // thấy đúng giải đang được quay thay vì màn hình tổng.
+                ShowPrizeOnScreen(prizeIndex);
+
                 // Tạo và mở PrizeDisplayWindow - TRUYỀN THÊM PARENT
                 PrizeDisplayWindow prizeWindow = new PrizeDisplayWindow(
                     title: this.Title,
@@ -184,8 +188,17 @@ namespace Xosoloto
                     parent: this
                 );
 
-                // Hiển thị PrizeDisplayWindow
-                prizeWindow.ShowDialog();
+                try
+                {
+                    // Hiển thị PrizeDisplayWindow
+                    prizeWindow.ShowDialog();
+                }
+                finally
+                {
+                    // Dù đóng bằng Back, Enter hay ESC (hoặc lỗi), luôn đưa màn hình Trình chiếu
+                    // quay lại chế độ TỔNG khi không còn giải nào đang mở.
+                    ShowOverviewOnScreen();
+                }
             }
             catch (Exception ex)
             {
@@ -193,6 +206,27 @@ namespace Xosoloto
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        /// <summary>
+        /// Đẩy màn hình Trình chiếu (khán giả/máy chiếu) sang chế độ CHI TIẾT đúng giải
+        /// <paramref name="prizeIndex"/> đang được mở, khớp bố cục PrizeDisplayWindow.
+        /// Được gọi khi mở 1 giải (OpenPrizeWindow) hoặc khi chuyển giải bằng phím trái/phải
+        /// ngay trong PrizeDisplayWindow (qua parentWindow.ShowPrizeOnScreen).
+        /// </summary>
+        public void ShowPrizeOnScreen(int prizeIndex)
+        {
+            if (_showWindow == null) return;
+            if (prizeIndex < 0 || prizeIndex >= prizeNames.Count) return;
+
+            string prizeImg = (PrizePaths != null && prizeIndex < PrizePaths.Length) ? PrizePaths[prizeIndex] : null;
+            string number = prizeIndex < prizeNumbers.Count ? prizeNumbers[prizeIndex] : "? ? ? ?";
+
+            _showWindow.ShowPrizeDetail(prizeIndex, prizeNames[prizeIndex], prizeImg, this.LogoPath, this.Title);
+            _showWindow.UpdatePrizeNumber(prizeIndex, number);
+        }
+
+        /// <summary>Đưa màn hình Trình chiếu quay lại chế độ TỔNG (tất cả các giải).</summary>
+        public void ShowOverviewOnScreen() => _showWindow?.ShowOverview();
 
         private void btnToggleShow_Click(object sender, RoutedEventArgs e)
         {
