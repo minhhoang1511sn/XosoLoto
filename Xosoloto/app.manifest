@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  App manifest cho ứng dụng WPF Xosoloto.
+
+  QUAN TRỌNG - PerMonitorV2 DPI awareness:
+  Mặc định, ứng dụng WPF chỉ "System DPI-aware" (theo tài liệu Microsoft:
+  https://learn.microsoft.com/windows/win32/hidpi/declaring-managed-apps-dpi-aware).
+  Điều đó có nghĩa là khi cửa sổ Trình chiếu (LotoShowWindow / LocXuanShowWindow /
+  PrizeDisplayWindow) bị đẩy sang một màn hình phụ / máy chiếu có tỉ lệ DPI (Windows
+  Display Scale) KHÁC với màn hình chính (rất phổ biến: laptop đặt 125%-150%, máy
+  chiếu/TV đặt 100%), thì chính Windows (không phải ứng dụng) sẽ tự "kéo giãn" cả
+  cửa sổ bằng bitmap-stretch để bù DPI - kết quả là nội dung bị MỜ, LỆCH TỈ LỆ, các
+  Viewbox không còn khớp đúng khung hình như thiết kế.
+
+  Khai báo dpiAwareness = PerMonitorV2 dưới đây khiến ứng dụng tự nhận biết và tự vẽ
+  lại chính xác theo DPI thật của TỪNG màn hình (thông qua sự kiện DpiChanged của
+  WPF) thay vì bị Windows scale hộ bằng bitmap - đây là khuyến nghị chính thức của
+  Microsoft cho các ứng dụng nhiều màn hình có DPI khác nhau.
+-->
+<assembly manifestVersion="1.0" xmlns="urn:schemas-microsoft-com:asm.v1">
+  <assemblyIdentity version="1.0.0.0" name="Xosoloto.LotoFun"/>
+
+  <application xmlns="urn:schemas-microsoft-com:asm.v3">
+    <windowsSettings>
+      <!-- Per-Monitor V2 (Windows 10 Creators Update trở lên) - ưu tiên dùng. -->
+      <dpiAwareness xmlns="http://schemas.microsoft.com/SMI/2016/WindowsSettings">PerMonitorV2, PerMonitor</dpiAwareness>
+      <!-- Fallback cho các bản Windows cũ hơn không hỗ trợ PerMonitorV2. -->
+      <dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true/PM</dpiAware>
+      <!-- Không để Windows tự động scale phần non-client / GDI khi ứng dụng đã tự lo DPI. -->
+      <gdiScaling xmlns="http://schemas.microsoft.com/SMI/2017/WindowsSettings">true</gdiScaling>
+    </windowsSettings>
+  </application>
+
+  <!-- Khai báo tương thích Windows 8.1 / 10 để bảo đảm PerMonitorV2 được Windows nhận diện đúng. -->
+  <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
+    <application>
+      <supportedOS Id="{e2011457-1546-43c5-a5fe-008deee3d3f0}" /> <!-- Windows Vista -->
+      <supportedOS Id="{35138b9a-5d96-4fbd-8e2d-a2440225f93a}" /> <!-- Windows 7 -->
+      <supportedOS Id="{4a2f28e3-53b9-4441-ba9c-d69d4a4a6e38}" /> <!-- Windows 8 -->
+      <supportedOS Id="{1f676c76-80e1-4239-95bb-83d0f6d0da78}" /> <!-- Windows 8.1 -->
+      <supportedOS Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}" /> <!-- Windows 10 -->
+    </application>
+  </compatibility>
+</assembly>

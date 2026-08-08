@@ -193,7 +193,12 @@ namespace Xosoloto
         {
             txtTitle.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
             Canvas.SetLeft(txtTitle, (BASE_WIDTH - txtTitle.DesiredSize.Width) / 2);
-            Canvas.SetTop(txtTitle, 130);
+            // 130 -> 175: font thư pháp (HL-Thufap2-Unicode) có nét móc chữ hoa (G, S...) vươn
+            // khá cao so với baseline, ở Top=130 phần nét đó bị dải ruy băng nền
+            // "Lộc Xuân May Mắn" (backgroundlocxuan.png) đè lên một chút. Đẩy xuống thêm để
+            // chừa khoảng trống rõ ràng dưới dải ruy băng, không phụ thuộc vào việc đo chính
+            // xác ascent của font (vốn khác nhau giữa các glyph trong font thư pháp).
+            Canvas.SetTop(txtTitle, 175);
         }
 
         // Vị trí các ô số - xem giải thích chi tiết trong LuckyDrawControl.xaml.cs (phải giữ

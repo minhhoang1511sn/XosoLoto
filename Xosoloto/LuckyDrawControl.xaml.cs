@@ -320,7 +320,10 @@ namespace Xosoloto
         {
             txtTitle.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
             Canvas.SetLeft(txtTitle, (BASE_WIDTH - txtTitle.DesiredSize.Width) / 2);
-            Canvas.SetTop(txtTitle, 130);
+            // Giữ ĐÚNG giá trị 175 giống LocXuanShowWindow.xaml.cs.CenterTitle() để màn hình
+            // Chỉnh sửa và Trình chiếu hiển thị khớp nhau 100% (xem giải thích ở đó: font thư
+            // pháp có nét móc chữ hoa vươn cao, Top=130 bị dải ruy băng nền đè lên một chút).
+            Canvas.SetTop(txtTitle, 155);
         }
 
         // Vị trí các ô số được đo TRỰC TIẾP từ ảnh nền Images/backgroundlocxuan.png (tâm

@@ -17,6 +17,13 @@
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>Gemini_Generated_Image_j8e92tj8e92tj8e9.ico</ApplicationIcon>
+    <!--
+      Khai báo PerMonitorV2 DPI awareness (xem giải thích chi tiết trong app.manifest).
+      Không có dòng này, SDK sẽ tự sinh 1 manifest mặc định KHÔNG khai báo per-monitor DPI,
+      khiến Windows tự bitmap-stretch cửa sổ Trình chiếu khi nó nằm trên màn hình/máy chiếu
+      có tỉ lệ DPI khác màn hình Chỉnh sửa -> nội dung bị mờ/lệch tỉ lệ.
+    -->
+    <ApplicationManifest>app.manifest</ApplicationManifest>
     <AssemblyName>LotoFun</AssemblyName>
     <RootNamespace>Xosoloto</RootNamespace>
     <StartupObject>Xosoloto.App</StartupObject>

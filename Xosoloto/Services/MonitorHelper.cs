@@ -49,10 +49,22 @@ namespace Xosoloto.Services
             window.WindowStyle = WindowStyle.None;
             window.ResizeMode = ResizeMode.NoResize;
             window.Topmost = true;
-            window.WindowState = WindowState.Normal;
             window.WindowStartupLocation = WindowStartupLocation.Manual;
 
-            // Dùng toạ độ "device-independent pixel" bằng cách quy đổi qua DPI của chính window đó.
+            // QUAN TRỌNG - vì sao KHÔNG tự tính Width/Height bằng cách chia bounds cho DPI:
+            // Ngay tại thời điểm này, "source" (PresentationSource của window) vẫn đang phản
+            // ánh DPI của màn hình MÀ WINDOW ĐANG ĐỨNG (thường là màn hình chính, nơi Editor
+            // mở lên), KHÔNG PHẢI DPI của "target" (màn hình đích ta sắp chuyển cửa sổ sang).
+            // Nếu 2 màn hình có tỉ lệ Windows Display Scale khác nhau (rất phổ biến khi dùng
+            // máy chiếu/TV), việc chia bounds vật lý của màn hình đích cho DPI của màn hình
+            // NGUỒN sẽ ra sai số -> nội dung bị lệch tỉ lệ so với khung Viewbox.
+            //
+            // Cách làm ĐÚNG (và cũng là khuyến nghị chuẩn của Windows cho app PerMonitorV2 -
+            // xem app.manifest): chỉ cần đặt (Left, Top) của cửa sổ SAO CHO PHẦN LỚN diện tích
+            // cửa sổ rơi vào bên trong màn hình đích, sau đó để chính Windows tự Maximize().
+            // Khi Maximize, HĐH tự tính lại đúng Width/Height theo DPI THẬT của màn hình đích -
+            // ứng dụng không cần tự làm phép tính DPI thủ công nữa, và vì đã khai báo
+            // PerMonitorV2 nên WPF sẽ tự vẽ lại (DpiChanged) đúng nét, không bị bitmap-stretch.
             var source = System.Windows.PresentationSource.FromVisual(window);
             double dpiX = 1.0, dpiY = 1.0;
             if (source?.CompositionTarget != null)
@@ -61,10 +73,18 @@ namespace Xosoloto.Services
                 dpiY = source.CompositionTarget.TransformToDevice.M22;
             }
 
-            window.Left = bounds.Left / dpiX;
-            window.Top = bounds.Top / dpiY;
-            window.Width = bounds.Width / dpiX;
-            window.Height = bounds.Height / dpiY;
+            // Bước 1: đưa cửa sổ về trạng thái Normal, kích thước nhỏ, neo vào GÓC TRÊN-TRÁI
+            // của màn hình đích (sai số quy đổi DPI ở bước này không quan trọng - chỉ cần điểm
+            // neo rơi đúng vào màn hình đích để bước Maximize bên dưới chọn đúng màn hình).
+            window.WindowState = WindowState.Normal;
+            window.Left = (bounds.Left / dpiX) + 10;
+            window.Top = (bounds.Top / dpiY) + 10;
+            window.Width = 200;
+            window.Height = 200;
+
+            // Bước 2: Maximize - Windows tự nhận diện màn hình chứa phần lớn cửa sổ hiện tại
+            // (vừa neo ở bước 1) và tự tính đúng kích thước full-screen theo DPI thật của
+            // CHÍNH màn hình đó, không lệ thuộc vào phép chia DPI thủ công ở trên nữa.
             window.WindowState = WindowState.Maximized;
         }
     }
