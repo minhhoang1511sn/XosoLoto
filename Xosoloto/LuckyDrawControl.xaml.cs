@@ -131,6 +131,7 @@ namespace Xosoloto
                 };
                 prizeNumberBlocks.Add(block);
                 MainCanvas.Children.Add(block);
+                PositionPrizeBlock(block, i, isLastSlot);
 
                 int capturedIndex = i;
                 var btn = new Button
@@ -257,7 +258,11 @@ namespace Xosoloto
             if (prizeIndex < 0 || prizeIndex >= prizeNumberBlocks.Count) return;
 
             prizeNumbers[prizeIndex] = prizeNumber;
-            prizeNumberBlocks[prizeIndex].Text = prizeNumber;
+            var block = prizeNumberBlocks[prizeIndex];
+            block.Text = prizeNumber;
+            // Nội dung đổi độ dài làm DesiredSize đổi theo, tính lại vị trí để ô số vẫn
+            // canh giữa đúng khung, không bị lệch.
+            PositionPrizeBlock(block, prizeIndex, prizeIndex == prizeNumberBlocks.Count - 1);
 
             // Đẩy real-time sang màn hình Trình chiếu (khán giả/máy chiếu).
             _showWindow?.UpdatePrizeNumber(prizeIndex, prizeNumber);
@@ -288,73 +293,64 @@ namespace Xosoloto
         {
             this.Dispatcher.InvokeAsync(() =>
             {
-                UpdatePositions();
+                CenterTitle();
             }, System.Windows.Threading.DispatcherPriority.Loaded);
         }
 
-        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        // Cửa sổ giờ được vẽ trên 1 canvas ẢO kích thước cố định BASE_WIDTH x BASE_HEIGHT
+        // (xem LuckyDrawControl.xaml: <Viewbox><Grid Width="1600" Height="900">...), và
+        // Viewbox tự co giãn ĐỀU toàn bộ khối đó theo kích thước cửa sổ thực tế. Vì vậy
+        // KHÔNG còn cần lắng nghe SizeChanged / tính lại scaleX,scaleY thủ công cho từng
+        // phần tử nữa - mọi vị trí bên dưới đều là toạ độ cố định trên canvas 1600x900,
+        // Viewbox lo phần co giãn cho khớp màn hình lớn/nhỏ.
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e) { }
+
+        /// <summary>Canh giữa tiêu đề theo chiều rộng canvas cố định (BASE_WIDTH). Gọi lại
+        /// mỗi khi nội dung Title thay đổi vì độ rộng chữ phụ thuộc vào nội dung.</summary>
+        private void CenterTitle()
         {
-            UpdatePositions();
+            txtTitle.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+            Canvas.SetLeft(txtTitle, (BASE_WIDTH - txtTitle.DesiredSize.Width) / 2);
+            Canvas.SetTop(txtTitle, 130);
         }
 
-        private void UpdatePositions()
+        // Vị trí các ô số được đo TRỰC TIẾP từ ảnh nền Images/backgroundlocxuan.png (tâm
+        // của từng khung trắng bên dưới mỗi banner "LỘC XUÂN i"/"9 GIẢI KHUYẾN KHÍCH"),
+        // biểu diễn bằng TỶ LỆ (%) theo chiều rộng/cao canvas GỐC (1600x900) - canvas gốc
+        // luôn giữ đúng tỉ lệ này, còn việc co giãn cho khớp màn hình thực tế do Viewbox
+        // đảm nhiệm. Cột trái/phải và hàng 1/2 ứng với 4 giải "Lộc Xuân 1-4" (đúng bố cục
+        // 2x2 trong ảnh nền); các hàng > 1 (nếu số vòng > 4) được ngoại suy thêm xuống dưới
+        // bằng đúng khoảng cách giữa hàng 1 và hàng 2, do ảnh nền chỉ vẽ sẵn 2 hàng khung.
+        private const double COL0_X_FRAC = 0.4453;
+        private const double COL1_X_FRAC = 0.7688;
+        private const double ROW0_Y_FRAC = 0.4583;
+        private const double ROW_GAP_FRAC = 0.2174; // = ROW1_Y_FRAC (0.6758) - ROW0_Y_FRAC
+        private const double KK_X_FRAC = 0.5768;
+        private const double KK_Y_FRAC = 0.8815;
+
+        /// <summary>Đặt vị trí cố định (trên canvas gốc 1600x900) cho 1 ô số giải, ngay khi
+        /// nó được tạo ra - không cần chờ SizeChanged vì canvas không đổi kích thước, chỉ có
+        /// Viewbox bao ngoài co giãn hình ảnh của toàn khối.</summary>
+        private void PositionPrizeBlock(TextBlock block, int index, bool isLastSlot)
         {
-            double actualWidth = MainCanvas.ActualWidth;
-            double actualHeight = MainCanvas.ActualHeight;
+            block.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
 
-            if (actualWidth == 0) actualWidth = this.ActualWidth;
-            if (actualHeight == 0) actualHeight = this.ActualHeight;
-
-            double scaleX = actualWidth / BASE_WIDTH;
-            double scaleY = actualHeight / BASE_HEIGHT;
-
-            // Title
-            txtTitle.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-            Canvas.SetLeft(txtTitle, (actualWidth - txtTitle.DesiredSize.Width) / 2);
-            Canvas.SetTop(txtTitle, 130 * scaleY);
-
-            // Vị trí các ô số được đo TRỰC TIẾP từ ảnh nền Images/backgroundlocxuan.png (tâm
-            // của từng khung trắng bên dưới mỗi banner "LỘC XUÂN i"/"9 GIẢI KHUYẾN KHÍCH"),
-            // biểu diễn bằng TỶ LỆ (%) theo chiều rộng/cao cửa sổ - vì ImageBrush dùng
-            // Stretch="Fill" nên toạ độ tỷ lệ này luôn khớp đúng khung dù cửa sổ đổi kích
-            // thước/độ phân giải nào. Cột trái/phải và hàng 1/2 ứng với 4 giải "Lộc Xuân 1-4"
-            // (đúng bố cục 2x2 trong ảnh nền); các hàng > 1 (nếu số vòng > 4) được ngoại suy
-            // thêm xuống dưới bằng đúng khoảng cách giữa hàng 1 và hàng 2, do ảnh nền chỉ vẽ
-            // sẵn 2 hàng khung.
-            const double COL0_X_FRAC = 0.4453;
-            const double COL1_X_FRAC = 0.7688;
-            const double ROW0_Y_FRAC = 0.4583;
-            const double ROW_GAP_FRAC = 0.2174; // = ROW1_Y_FRAC (0.6758) - ROW0_Y_FRAC
-
-            int mainCount = Math.Max(0, prizeNumberBlocks.Count - 1);
-            for (int i = 0; i < mainCount; i++)
+            double x, y;
+            if (isLastSlot)
             {
-                var block = prizeNumberBlocks[i];
-                int row = i / 2;
-                int col = i % 2;
-
-                block.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-                double x = actualWidth * (col == 0 ? COL0_X_FRAC : COL1_X_FRAC);
-                double y = actualHeight * (ROW0_Y_FRAC + row * ROW_GAP_FRAC);
-                Canvas.SetLeft(block, x - block.DesiredSize.Width / 2);
-                Canvas.SetTop(block, y - block.DesiredSize.Height / 2);
+                x = BASE_WIDTH * KK_X_FRAC;
+                y = BASE_HEIGHT * KK_Y_FRAC;
+            }
+            else
+            {
+                int row = index / 2;
+                int col = index % 2;
+                x = BASE_WIDTH * (col == 0 ? COL0_X_FRAC : COL1_X_FRAC);
+                y = BASE_HEIGHT * (ROW0_Y_FRAC + row * ROW_GAP_FRAC);
             }
 
-            // Buttons
-            spButtons.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-            Canvas.SetLeft(spButtons, 100 * scaleX);
-            Canvas.SetTop(spButtons, actualHeight - 120 * scaleY);
-
-            // Ô số cuối cùng = giải Khuyến khích, canh giữa khung "9 GIẢI KHUYẾN KHÍCH" trong ảnh nền.
-            const double KK_X_FRAC = 0.5768;
-            const double KK_Y_FRAC = 0.8815;
-            if (prizeNumberBlocks.Count > 0)
-            {
-                var kk = prizeNumberBlocks[prizeNumberBlocks.Count - 1];
-                kk.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-                Canvas.SetLeft(kk, actualWidth * KK_X_FRAC - kk.DesiredSize.Width / 2);
-                Canvas.SetTop(kk, actualHeight * KK_Y_FRAC - kk.DesiredSize.Height / 2);
-            }
+            Canvas.SetLeft(block, x - block.DesiredSize.Width / 2);
+            Canvas.SetTop(block, y - block.DesiredSize.Height / 2);
         }
 
         private void LoadData()
@@ -370,6 +366,7 @@ namespace Xosoloto
                 {
                     txtTitle.Text = Title;
                 }
+                CenterTitle();
 
                 if (!string.IsNullOrEmpty(LogoPath))
                 {

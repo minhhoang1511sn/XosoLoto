@@ -32,42 +32,57 @@
              được người điều khiển mở để nhập số (PrizeDisplayWindow đóng).
              ============================================================ -->
         <Grid x:Name="OverviewPanel">
-            <Grid.Background>
-                <ImageBrush ImageSource="Images/backgroundlocxuan.png" Stretch="Fill" />
-            </Grid.Background>
+            <!-- ============================================================
+                 RESPONSIVE LAYOUT: giống hệt LuckyDrawControl.xaml (màn hình
+                 Chỉnh sửa) - toàn bộ nội dung vẽ trên 1 canvas ẢO cố định
+                 1600x900 (BASE_WIDTH/BASE_HEIGHT), Viewbox co giãn ĐỀU khối
+                 này để vừa khít mọi kích thước màn hình/máy chiếu mà KHÔNG
+                 làm lệch vị trí tương đối giữa các phần tử (logo, tiêu đề,
+                 ảnh giải, ô số...). Phải giữ ĐÚNG các toạ độ này khớp 100%
+                 với LuckyDrawControl.xaml để 2 màn hình luôn hiển thị giống
+                 nhau. -->
+            <Viewbox Stretch="Uniform">
+                <Grid Width="1600" Height="900">
+                    <Grid.Background>
+                        <ImageBrush ImageSource="Images/backgroundlocxuan.png" Stretch="Fill" />
+                    </Grid.Background>
 
-            <Canvas x:Name="MainCanvas">
-                <Image x:Name="imgLogo"
-                       Height="110"
-                       Width="250"
-                       Canvas.Left="90"
-                       Canvas.Top="180"
-                       Stretch="Fill"/>
+                    <Canvas x:Name="MainCanvas" Width="1600" Height="900">
+                        <Image x:Name="imgLogo"
+                               Height="110"
+                               Width="250"
+                               Canvas.Left="90"
+                               Canvas.Top="180"
+                               Stretch="Fill"/>
 
-                <TextBlock x:Name="txtTitle"
-                           Text="ĐẠI HỘI TẾT 2025"
-                           FontSize="80"
-                           FontWeight="Bold"
-                           Foreground="#FFD700"
-                           FontFamily="/Fonts/#HL-Thufap2-Unicode"
-                           Canvas.Top="100"
-                           TextAlignment="Center"
-                           Effect="{StaticResource TextShadow}">
-                    <TextBlock.RenderTransform>
-                        <SkewTransform AngleX="-5"/>
-                    </TextBlock.RenderTransform>
-                </TextBlock>
+                        <TextBlock x:Name="txtTitle"
+                                   Text="ĐẠI HỘI TẾT 2025"
+                                   FontSize="80"
+                                   FontWeight="Bold"
+                                   Foreground="#FFD700"
+                                   FontFamily="/Fonts/#HL-Thufap2-Unicode"
+                                   Canvas.Top="100"
+                                   TextAlignment="Center"
+                                   Effect="{StaticResource TextShadow}">
+                            <TextBlock.RenderTransform>
+                                <SkewTransform AngleX="-5"/>
+                            </TextBlock.RenderTransform>
+                        </TextBlock>
 
-                <Image x:Name="imgPrize"
-                       Height="330"
-                       Width="330"
-                       Canvas.Left="90"
-                       Canvas.Top="300"
-                       Stretch="Fill"/>
+                        <Image x:Name="imgPrize"
+                               Height="330"
+                               Width="330"
+                               Canvas.Left="90"
+                               Canvas.Top="300"
+                               Stretch="Fill"/>
 
-                <!-- Các ô số "Lộc Xuân i" được sinh ĐỘNG trong code-behind, cùng số vòng với
-                     LuckyDrawWindow (màn hình Chỉnh sửa), xem LocXuanShowWindow.xaml.cs. -->
-            </Canvas>
+                        <!-- Các ô số "Lộc Xuân i" được sinh ĐỘNG trong code-behind, cùng số vòng với
+                             LuckyDrawWindow (màn hình Chỉnh sửa), xem LocXuanShowWindow.xaml.cs.
+                             Vị trí cũng là toạ độ CỐ ĐỊNH trên canvas 1600x900 (không phụ thuộc
+                             ActualWidth/ActualHeight cửa sổ), Viewbox bên ngoài lo co giãn. -->
+                    </Canvas>
+                </Grid>
+            </Viewbox>
         </Grid>
 
         <!-- ============================================================
@@ -78,68 +93,74 @@
              giải cụ thể (PrizeDisplayWindow), và tắt đi (quay lại
              OverviewPanel) khi đóng lại. Xem LuckyDrawWindow.OpenPrizeWindow
              / ShowPrizeOnScreen / ShowOverviewOnScreen.
+
+             Toạ độ dưới đây được ĐO TRỰC TIẾP từ ảnh nền Images/DetailsPrize.png,
+             PHẢI giữ giống hệt PrizeDisplayWindow.xaml để 2 màn hình luôn khớp
+             nhau (xem giải thích chi tiết ở đó).
              ============================================================ -->
         <Viewbox x:Name="DetailPanel" Stretch="Uniform" Visibility="Collapsed">
             <Grid Width="1920" Height="1080">
                 <Grid.Background>
                     <ImageBrush x:Name="imgDetailBackground" Stretch="Fill" />
                 </Grid.Background>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="200"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
+                <Canvas Width="1920" Height="1080">
                     <!-- Header: Logo + Title -->
-                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="80,130,0,-180" HorizontalAlignment="Left" VerticalAlignment="Top">
-                        <Image x:Name="imgDetailLogo" Height="110" Width="250" Margin="0,0,150,0" Stretch="Uniform"/>
-                        <TextBlock x:Name="txtDetailTitle"
-                                   Text="ĐẠI HỘI TẾT"
-                                   FontSize="80"
-                                   FontWeight="Bold"
-                                   Foreground="#FFD700"
-                                   FontFamily="/Fonts/#HL-Thufap2-Unicode"
-                                   VerticalAlignment="Center">
-                            <TextBlock.RenderTransform>
-                                <SkewTransform AngleX="-5"/>
-                            </TextBlock.RenderTransform>
-                            <TextBlock.Effect>
-                                <DropShadowEffect Color="Black" BlurRadius="10" ShadowDepth="3"/>
-                            </TextBlock.Effect>
-                        </TextBlock>
-                    </StackPanel>
-                    <!-- Content: Prize Info + Image -->
-                    <Grid Grid.Row="1" Margin="180,30,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="6*"/>
-                            <ColumnDefinition Width="4*"/>
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="150,0,0,0">
-                            <TextBlock x:Name="txtDetailPrizeName"
-                                       Text="LỘC XUÂN"
-                                       FontSize="70"
-                                       Width="600"
-                                       FontWeight="ExtraBold"
-                                       Foreground="White"
-                                       Margin="-70,-20,0,30"
-                                       HorizontalAlignment="Left">
-                                <TextBlock.Effect>
-                                    <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="2"/>
-                                </TextBlock.Effect>
-                            </TextBlock>
-                            <TextBlock x:Name="txtDetailNumber"
-                                       Text="? ? ? ?"
-                                       FontSize="180"
-                                       FontWeight="Black"
-                                       Foreground="Black"
-                                       HorizontalAlignment="Left"
-                                       Margin="-100,0,0,0"
-                                       TextAlignment="Center"/>
-                        </StackPanel>
-                        <Viewbox Grid.Column="1" Margin="100,100,100,100" VerticalAlignment="Center" HorizontalAlignment="Center">
-                            <Image x:Name="imgDetailPrize" Stretch="Uniform" MaxHeight="350" MaxWidth="350"/>
-                        </Viewbox>
-                    </Grid>
-                </Grid>
+                    <Image x:Name="imgDetailLogo" Height="110" Width="250"
+                           Canvas.Left="100" Canvas.Top="200" Stretch="Uniform"/>
+                    <TextBlock x:Name="txtDetailTitle"
+                               Text="ĐẠI HỘI TẾT"
+                               FontSize="80"
+                               FontWeight="Bold"
+                               Foreground="#FFD700"
+                               FontFamily="/Fonts/#HL-Thufap2-Unicode"
+                               Canvas.Left="390"
+                               Canvas.Top="200"
+                               Height="110"
+                               MaxWidth="1430"
+                               TextTrimming="CharacterEllipsis">
+                        <TextBlock.RenderTransform>
+                            <SkewTransform AngleX="-5"/>
+                        </TextBlock.RenderTransform>
+                        <TextBlock.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="10" ShadowDepth="3"/>
+                        </TextBlock.Effect>
+                    </TextBlock>
+
+                    <!-- Nhãn tên giải -->
+                    <TextBlock x:Name="txtDetailPrizeName"
+                               Text="LỘC XUÂN"
+                               FontSize="70"
+                               FontWeight="ExtraBold"
+                               Foreground="White"
+                               Canvas.Left="180"
+                               Canvas.Top="422"
+                               Width="900"
+                               Height="126"
+                               TextAlignment="Left"
+                               VerticalAlignment="Center">
+                        <TextBlock.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="2"/>
+                        </TextBlock.Effect>
+                    </TextBlock>
+
+                    <!-- Số trúng thưởng -->
+                    <TextBlock x:Name="txtDetailNumber"
+                               Text="? ? ? ?"
+                               FontSize="180"
+                               FontWeight="Black"
+                               Foreground="Black"
+                               Canvas.Left="180"
+                               Canvas.Top="548"
+                               Width="1030"
+                               Height="380"
+                               TextAlignment="Left"
+                               VerticalAlignment="Center"/>
+
+                    <!-- Ảnh giải thưởng -->
+                    <Viewbox Canvas.Left="1330" Canvas.Top="440" Width="480" Height="480">
+                        <Image x:Name="imgDetailPrize" Stretch="Uniform" MaxHeight="350" MaxWidth="350"/>
+                    </Viewbox>
+                </Canvas>
             </Grid>
         </Viewbox>
 

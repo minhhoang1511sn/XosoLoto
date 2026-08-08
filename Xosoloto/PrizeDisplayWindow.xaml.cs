@@ -67,6 +67,25 @@ namespace Xosoloto
             // =================================================
             isUpdating = true;
 
+            // Vị trí con trỏ NGAY SAU khi người dùng vừa gõ/xoá (tính trên "raw" - text
+            // trước khi format lại) - dùng để giữ đúng chỗ con trỏ sau khi format, thay vì
+            // luôn nhảy về cuối như trước.
+            int caretPos = txtPrizeNumber.CaretIndex;
+            if (caretPos < 0) caretPos = 0;
+            if (caretPos > raw.Length) caretPos = raw.Length;
+
+            // Đếm số ký tự "số/dấu -" thực sự nằm TRƯỚC con trỏ trong raw text, để biết sau
+            // khi format lại (chèn dấu cách giữa các số) thì con trỏ nên đứng sau ký tự số
+            // thứ mấy - đây là điều quyết định con trỏ ở ĐÚNG vị trí vừa nhập, không bị đẩy
+            // về cuối chuỗi.
+            int digitsBeforeCaret = 0;
+            for (int i = 0; i < caretPos; i++)
+            {
+                char c = raw[i];
+                if (char.IsDigit(c) || c == '-')
+                    digitsBeforeCaret++;
+            }
+
             string text = raw.Replace(" ", "")
                              .Replace("\r", "")
                              .Replace("\n", "");
@@ -82,10 +101,20 @@ namespace Xosoloto
                     break;
             }
 
+            // Không để digitsBeforeCaret vượt quá số ký tự số thực có (trường hợp bị cắt bớt
+            // vì đã đủ 4 số).
+            if (digitsBeforeCaret > numbers.Length) digitsBeforeCaret = numbers.Length;
+
             string result = string.Join(" ", numbers.ToCharArray());
 
+            // Chuyển digitsBeforeCaret (số lượng chữ số đứng trước con trỏ) thành vị trí
+            // tương ứng trong chuỗi ĐÃ format "d d d d": mỗi số cách nhau 1 dấu cách, nên con
+            // trỏ đứng ngay sau chữ số thứ k sẽ ở index (k-1)*2 + 1 (0 nếu chưa có số nào).
+            int newCaretIndex = digitsBeforeCaret == 0 ? 0 : (digitsBeforeCaret - 1) * 2 + 1;
+            if (newCaretIndex > result.Length) newCaretIndex = result.Length;
+
             txtPrizeNumber.Text = result;
-            txtPrizeNumber.CaretIndex = result.Length;
+            txtPrizeNumber.CaretIndex = newCaretIndex;
 
             isUpdating = false;
 
@@ -171,14 +200,15 @@ namespace Xosoloto
             if (index < 0 || index >= prizePaths.Length) return;
             prizeIndex = index;
             txtPrizeName.Text = !IsKhuyenKhichSlot(index) ? $"LỘC XUÂN {index + 1}" : "9 GIẢI KHUYẾN KHÍCH";
-            if (IsKhuyenKhichSlot(index)) // Giải cuối cùng (khuyến khích)
-            {
-                
-                txtPrizeNumber.FontSize = 35;
-                txtPrizeNumber.Padding = new Thickness(-100, 0, 0, 0);
-                txtPrizeName.Margin = new Thickness(-150, -70, 0, 30);
+            if (IsKhuyenKhichSlot(index)) // Giải cuối cùng (khuyến khích) - nội dung dài hơn (9 số),
+            {                             // giảm cỡ chữ để vẫn nằm gọn trong khung, không cần dịch
+                txtPrizeNumber.FontSize = 60; // vị trí bằng margin âm như trước nữa.
                 txtPrizeName.FontSize = 50;
-                txtPrizeNumber.Height = 180;
+            }
+            else
+            {
+                txtPrizeNumber.FontSize = 180;
+                txtPrizeName.FontSize = 70;
             }
             // Lấy số giải hiện tại từ parent window nếu có
             if (parentWindow != null)

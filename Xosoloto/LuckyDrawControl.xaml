@@ -22,66 +22,84 @@
                           Opacity="0.8"/>
     </Window.Resources>
 
-    <Grid>
-        <Grid.Background>
-            <ImageBrush ImageSource="Images/backgroundlocxuan.png" Stretch="Fill" />
-        </Grid.Background>
+    <!-- ============================================================
+         RESPONSIVE LAYOUT: toàn bộ nội dung được vẽ trên 1 "canvas ảo"
+         kích thước CỐ ĐỊNH 1600x900 (đúng bằng BASE_WIDTH/BASE_HEIGHT
+         trong code-behind), sau đó Viewbox co giãn ĐỀU (Stretch="Uniform")
+         khối này để vừa khít với kích thước cửa sổ/màn hình THỰC TẾ, dù
+         lớn hay nhỏ, tỉ lệ nào. Nhờ vậy MỌI phần tử bên trong (logo, tiêu
+         đề, ảnh giải, các ô số, nút bấm...) luôn giữ đúng vị trí tương đối
+         với nhau và với ảnh nền — không còn tình trạng lệch vị trí do có
+         phần tử "fix cứng" pixel còn phần khác lại tính theo tỉ lệ cửa sổ
+         như trước đây. Không cần code-behind tự tính lại vị trí khi resize
+         nữa (đã bỏ Window_SizeChanged/UpdatePositions kiểu cũ).
+         ============================================================ -->
+    <Viewbox Stretch="Uniform">
+        <Grid Width="1600" Height="900">
+            <Grid.Background>
+                <ImageBrush ImageSource="Images/backgroundlocxuan.png" Stretch="Fill" />
+            </Grid.Background>
 
-        <Canvas x:Name="MainCanvas">
-            <!-- Logo - Góc trên trái (khung xanh 1) -->
-            <Image x:Name="imgLogo" 
-                   Height="110" 
-                   Width="250"
-                   Canvas.Left="90"
-                   Canvas.Top="180"
-                   Stretch="Fill"/>
+            <Canvas x:Name="MainCanvas" Width="1600" Height="900">
+                <!-- Logo - Góc trên trái (khung xanh 1) -->
+                <Image x:Name="imgLogo" 
+                       Height="110" 
+                       Width="250"
+                       Canvas.Left="90"
+                       Canvas.Top="180"
+                       Stretch="Fill"/>
 
-            <!-- Title - Giữa trên cùng -->
-            <TextBlock x:Name="txtTitle" 
-                       Text="ĐẠI HỘI TẾT 2025"
-                       FontSize="80"
-                       FontWeight="Bold"
-                       Foreground="#FFD700"
-                       
-                               FontFamily="/Fonts/#HL-Thufap2-Unicode"
-                       Canvas.Top="100"
-                       TextAlignment="Center"
-                       Effect="{StaticResource TextShadow}">
-                <TextBlock.RenderTransform>
-                    <SkewTransform AngleX="-5"/>
-                </TextBlock.RenderTransform>
-            </TextBlock>
+                <!-- Title - Giữa trên cùng. Canvas.Left được set động trong code-behind
+                     (CenterTitle) để luôn canh giữa theo chiều rộng canvas 1600, vì độ
+                     rộng thực tế của chữ phụ thuộc vào nội dung Title người dùng nhập. -->
+                <TextBlock x:Name="txtTitle" 
+                           Text="ĐẠI HỘI TẾT 2025"
+                           FontSize="80"
+                           FontWeight="Bold"
+                           Foreground="#FFD700"
+                           FontFamily="/Fonts/#HL-Thufap2-Unicode"
+                           Canvas.Top="100"
+                           TextAlignment="Center"
+                           Effect="{StaticResource TextShadow}">
+                    <TextBlock.RenderTransform>
+                        <SkewTransform AngleX="-5"/>
+                    </TextBlock.RenderTransform>
+                </TextBlock>
 
-            <!-- Prize Image - Bên trái giữa (khung xanh 2) -->
-            <Image x:Name="imgPrize" 
-                   Height="330" 
-                   Width="330"
-                   Canvas.Left="90"
-                   Canvas.Top="300"
-                   Stretch="Fill"/>
+                <!-- Prize Image - Bên trái giữa (khung xanh 2) -->
+                <Image x:Name="imgPrize" 
+                       Height="330" 
+                       Width="330"
+                       Canvas.Left="90"
+                       Canvas.Top="300"
+                       Stretch="Fill"/>
 
-            <!-- Các ô số "Lộc Xuân i" và nút bấm được sinh ĐỘNG trong code-behind
-                 theo đúng số vòng (số giải) đã cấu hình ở màn hình InitLocXuan,
-                 xem LuckyDrawControl.xaml.cs -> BuildDynamicPrizeSlots(). -->
-            <StackPanel x:Name="spButtons" Orientation="Horizontal"/>
+                <!-- Các ô số "Lộc Xuân i" và nút bấm được sinh ĐỘNG trong code-behind
+                     theo đúng số vòng (số giải) đã cấu hình ở màn hình InitLocXuan,
+                     xem LuckyDrawControl.xaml.cs -> BuildDynamicPrizeSlots(). Vị trí của
+                     chúng cũng được tính theo toạ độ CỐ ĐỊNH trên canvas 1600x900 (không
+                     còn phụ thuộc ActualWidth/ActualHeight của cửa sổ). -->
+                <StackPanel x:Name="spButtons" Orientation="Horizontal"
+                            Canvas.Left="100" Canvas.Top="780"/>
 
-            <Button x:Name="btnToggleShow"
-                    Content="🖥️ Trình chiếu"
-                    Canvas.Right="160"
-                    Canvas.Top="20"
-                    Padding="10,5"
-                    FontSize="14"
-                    Click="btnToggleShow_Click"/>
+                <Button x:Name="btnToggleShow"
+                        Content="🖥️ Trình chiếu"
+                        Canvas.Right="160"
+                        Canvas.Top="20"
+                        Padding="10,5"
+                        FontSize="14"
+                        Click="btnToggleShow_Click"/>
 
-            <Button x:Name="btnChangeGame"
-                    Content="🔁 Đổi loại game"
-                    Canvas.Right="20"
-                    Canvas.Top="20"
-                    Padding="10,5"
-                    FontSize="14"
-                    ToolTip="Thoát khỏi Lộc Xuân Đầu Năm, quay lại màn hình chọn loại game"
-                    Click="btnChangeGame_Click"/>
+                <Button x:Name="btnChangeGame"
+                        Content="🔁 Đổi loại game"
+                        Canvas.Right="20"
+                        Canvas.Top="20"
+                        Padding="10,5"
+                        FontSize="14"
+                        ToolTip="Thoát khỏi Lộc Xuân Đầu Năm, quay lại màn hình chọn loại game"
+                        Click="btnChangeGame_Click"/>
 
-        </Canvas>
-    </Grid>
+            </Canvas>
+        </Grid>
+    </Viewbox>
 </Window>

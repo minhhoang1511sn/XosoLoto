@@ -71,7 +71,7 @@ namespace Xosoloto
                 imgPrize.Source = new BitmapImage(new Uri(imagePath, UriKind.Absolute));
 
             BuildPrizeSlots(prizeCount);
-            UpdatePositions();
+            CenterTitle();
         }
 
         private void BuildPrizeSlots(int count)
@@ -99,6 +99,7 @@ namespace Xosoloto
                 };
                 _prizeNumberBlocks.Add(block);
                 MainCanvas.Children.Add(block);
+                PositionPrizeBlock(block, i, isLastSlot);
             }
         }
 
@@ -112,8 +113,12 @@ namespace Xosoloto
 
             if (prizeIndex >= 0 && prizeIndex < _prizeNumberBlocks.Count)
             {
-                _prizeNumberBlocks[prizeIndex].Text = prizeNumber;
-                _prizeNumberBlocks[prizeIndex].Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                var block = _prizeNumberBlocks[prizeIndex];
+                block.Text = prizeNumber;
+                // Nội dung đổi độ dài (vd "- - - -" -> "1 2 3 4") làm DesiredSize đổi theo,
+                // nên phải tính lại vị trí để ô số vẫn canh giữa đúng khung, không bị lệch.
+                bool isLastSlot = prizeIndex == _prizeNumberBlocks.Count - 1;
+                PositionPrizeBlock(block, prizeIndex, isLastSlot);
             }
 
             if (_detailPrizeIndex == prizeIndex)
@@ -151,6 +156,21 @@ namespace Xosoloto
             txtDetailPrizeName.Text = prizeName ?? string.Empty;
             txtDetailNumber.Text = (prizeIndex >= 0 && prizeIndex < _prizeNumbers.Count) ? _prizeNumbers[prizeIndex] : "? ? ? ?";
 
+            // Giải Khuyến khích có nội dung dài hơn (thường 8-9 số, không format cách nhau) -
+            // giảm cỡ chữ để vẫn nằm gọn trong khung số, không bị tràn ra ngoài. Phải khớp
+            // đúng logic bên PrizeDisplayWindow.xaml.cs (DisplayPrize) để 2 màn hình giống nhau.
+            bool isKhuyenKhich = prizeIndex >= 0 && prizeIndex == _prizeNumberBlocks.Count - 1;
+            if (isKhuyenKhich)
+            {
+                txtDetailNumber.FontSize = 60;
+                txtDetailPrizeName.FontSize = 50;
+            }
+            else
+            {
+                txtDetailNumber.FontSize = 180;
+                txtDetailPrizeName.FontSize = 70;
+            }
+
             OverviewPanel.Visibility = Visibility.Collapsed;
             DetailPanel.Visibility = Visibility.Visible;
         }
@@ -163,51 +183,49 @@ namespace Xosoloto
             OverviewPanel.Visibility = Visibility.Visible;
         }
 
-        private void Window_SizeChanged(object sender, SizeChangedEventArgs e) => UpdatePositions();
+        // Cửa sổ giờ vẽ trên 1 canvas ẢO cố định BASE_WIDTH x BASE_HEIGHT, được Viewbox bên
+        // ngoài co giãn ĐỀU cho khớp màn hình/máy chiếu thực tế (xem LocXuanShowWindow.xaml).
+        // Không còn cần tính lại vị trí thủ công theo ActualWidth/ActualHeight khi resize nữa.
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e) { }
 
-        private void UpdatePositions()
+        /// <summary>Canh giữa tiêu đề theo chiều rộng canvas cố định (BASE_WIDTH).</summary>
+        private void CenterTitle()
         {
-            double actualWidth = MainCanvas.ActualWidth > 0 ? MainCanvas.ActualWidth : this.ActualWidth;
-            double actualHeight = MainCanvas.ActualHeight > 0 ? MainCanvas.ActualHeight : this.ActualHeight;
-            if (actualWidth == 0 || actualHeight == 0) return;
-
-            double scaleY = actualHeight / BASE_HEIGHT;
-
             txtTitle.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-            Canvas.SetLeft(txtTitle, (actualWidth - txtTitle.DesiredSize.Width) / 2);
-            Canvas.SetTop(txtTitle, 130 * scaleY);
+            Canvas.SetLeft(txtTitle, (BASE_WIDTH - txtTitle.DesiredSize.Width) / 2);
+            Canvas.SetTop(txtTitle, 130);
+        }
 
-            // Vị trí các ô số - xem giải thích chi tiết trong LuckyDrawControl.xaml.cs.UpdatePositions()
-            // (phải giữ ĐÚNG các hằng số này ở cả 2 nơi để màn hình Trình chiếu khớp 100% với
-            // màn hình Chỉnh sửa).
-            const double COL0_X_FRAC = 0.4453;
-            const double COL1_X_FRAC = 0.7688;
-            const double ROW0_Y_FRAC = 0.4583;
-            const double ROW_GAP_FRAC = 0.2174;
+        // Vị trí các ô số - xem giải thích chi tiết trong LuckyDrawControl.xaml.cs (phải giữ
+        // ĐÚNG các hằng số này ở cả 2 nơi để màn hình Trình chiếu khớp 100% với màn hình Chỉnh sửa).
+        private const double COL0_X_FRAC = 0.4453;
+        private const double COL1_X_FRAC = 0.7688;
+        private const double ROW0_Y_FRAC = 0.4583;
+        private const double ROW_GAP_FRAC = 0.2174;
+        private const double KK_X_FRAC = 0.5768;
+        private const double KK_Y_FRAC = 0.8815;
 
-            int mainCount = Math.Max(0, _prizeNumberBlocks.Count - 1);
-            for (int i = 0; i < mainCount; i++)
+        /// <summary>Đặt vị trí cố định (trên canvas gốc BASE_WIDTH x BASE_HEIGHT) cho 1 ô số giải.</summary>
+        private void PositionPrizeBlock(TextBlock block, int index, bool isLastSlot)
+        {
+            block.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+
+            double x, y;
+            if (isLastSlot)
             {
-                var block = _prizeNumberBlocks[i];
-                int row = i / 2;
-                int col = i % 2;
-
-                block.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-                double x = actualWidth * (col == 0 ? COL0_X_FRAC : COL1_X_FRAC);
-                double y = actualHeight * (ROW0_Y_FRAC + row * ROW_GAP_FRAC);
-                Canvas.SetLeft(block, x - block.DesiredSize.Width / 2);
-                Canvas.SetTop(block, y - block.DesiredSize.Height / 2);
+                x = BASE_WIDTH * KK_X_FRAC;
+                y = BASE_HEIGHT * KK_Y_FRAC;
+            }
+            else
+            {
+                int row = index / 2;
+                int col = index % 2;
+                x = BASE_WIDTH * (col == 0 ? COL0_X_FRAC : COL1_X_FRAC);
+                y = BASE_HEIGHT * (ROW0_Y_FRAC + row * ROW_GAP_FRAC);
             }
 
-            const double KK_X_FRAC = 0.5768;
-            const double KK_Y_FRAC = 0.8815;
-            if (_prizeNumberBlocks.Count > 0)
-            {
-                var kk = _prizeNumberBlocks[_prizeNumberBlocks.Count - 1];
-                kk.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-                Canvas.SetLeft(kk, actualWidth * KK_X_FRAC - kk.DesiredSize.Width / 2);
-                Canvas.SetTop(kk, actualHeight * KK_Y_FRAC - kk.DesiredSize.Height / 2);
-            }
+            Canvas.SetLeft(block, x - block.DesiredSize.Width / 2);
+            Canvas.SetTop(block, y - block.DesiredSize.Height / 2);
         }
     }
 }
