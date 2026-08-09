@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Lộc Xuân Đầu Năm - Màn hình Trình chiếu"
         Height="900" Width="1600"
-        Background="Black"
+        Background="#B21E1C"
         WindowStyle="None"
         ResizeMode="NoResize"
         ShowInTaskbar="False"
@@ -42,33 +42,35 @@
                  ảnh giải, ô số...). Phải giữ ĐÚNG các toạ độ này khớp 100%
                  với LuckyDrawControl.xaml để 2 màn hình luôn hiển thị giống
                  nhau. -->
-            <!-- Stretch="UniformToFill" thay vì "Uniform": màn hình phụ (máy chiếu/TV) có thể
-                 KHÔNG cùng tỉ lệ khung hình 16:9 với canvas gốc (1600x900) - "Uniform" giữ
-                 nguyên tỉ lệ nên chừa viền đen 2 cạnh khi lệch tỉ lệ; "UniformToFill" phóng to
-                 lấp đầu TRÀN kín màn hình (chấp nhận cắt bớt một chút rìa ngoài, phần nội dung
-                 chính giữa vẫn còn nguyên) - đúng kiểu "full screen" cho máy chiếu trình chiếu. -->
-            <Viewbox Stretch="UniformToFill">
+            <!-- FIX (v4): "Uniform" - GIỮ NGUYÊN TỈ LỆ ảnh gốc (1344x768), hiện đủ 100% ảnh,
+                 KHÔNG CẮT dù chỉ 1 pixel. Nếu máy chiếu không đúng tỉ lệ này, phần dư ra 2 bên
+                 (hoặc trên/dưới) sẽ là màu Window.Background phía dưới - đã đổi màu này thành
+                 đúng màu đỏ viền ảnh (#B21E1C, đo trực tiếp từ backgroundlocxuan.png) để liền
+                 mạch với viền, không lộ đen. -->
+            <Viewbox Stretch="Uniform">
                 <Grid Width="1600" Height="900">
                     <Grid.Background>
                         <ImageBrush ImageSource="Images/backgroundlocxuan.png" Stretch="Fill" />
                     </Grid.Background>
 
                     <Canvas x:Name="MainCanvas" Width="1600" Height="900">
+                        <!-- Logo được PHÓNG TO theo yêu cầu (250x110 -> 320x145), giữ neo góc
+                             trên-trái gần như cũ (chỉ nhích lên 1 chút để không đụng tiêu đề). -->
                         <Image x:Name="imgLogo"
-                               Height="110"
-                               Width="250"
+                               Height="145"
+                               Width="320"
                                Canvas.Left="90"
-                               Canvas.Top="180"
-                               Stretch="Fill"/>
+                               Canvas.Top="170"
+                               Stretch="Uniform"/>
 
                         <!-- Viewbox kích thước cố định (khớp lề 90px với logo 2 bên), tự canh
                              giữa VÀ tự thu nhỏ cỡ chữ nếu tiêu đề dài, luôn vừa khít trên mọi
                              màn hình (giống hệt LuckyDrawControl.xaml để 2 màn hình khớp nhau). -->
-                        <Viewbox Canvas.Left="90" Canvas.Top="135" Width="1420" Height="120"
+                        <Viewbox Canvas.Left="90" Canvas.Top="125" Width="1420" Height="140"
                                  Stretch="Uniform" StretchDirection="DownOnly">
                             <TextBlock x:Name="txtTitle"
                                        Text="ĐẠI HỘI TẾT 2025"
-                                       FontSize="80"
+                                       FontSize="115"
                                        FontWeight="Bold"
                                        Foreground="#FFD700"
                                        FontFamily="/Fonts/#HL-Thufap2-Unicode"
@@ -86,7 +88,7 @@
                                Height="330"
                                Width="330"
                                Canvas.Left="90"
-                               Canvas.Top="300"
+                               Canvas.Top="320"
                                Stretch="Fill"/>
 
                         <!-- Các ô số "Lộc Xuân i" được sinh ĐỘNG trong code-behind, cùng số vòng với
@@ -119,44 +121,46 @@
              của Canvas sẽ KHÔNG có tác dụng (Canvas không tự dàn theo
              alignment), đó là lý do bản cũ bị dính chữ vào góc trên-trái.
              ============================================================ -->
-        <Viewbox x:Name="DetailPanel" Stretch="UniformToFill" Visibility="Collapsed">
-            <Grid Width="1920" Height="1080">
-                <Grid.Background>
-                    <ImageBrush x:Name="imgDetailBackground" Stretch="Fill" />
-                </Grid.Background>
-                <Canvas Width="1920" Height="1080">
-                    <!-- Header: Logo + Title -->
-                    <Image x:Name="imgDetailLogo" Height="110" Width="250"
-                           Canvas.Left="100" Canvas.Top="200" Stretch="Uniform"/>
-                    <!-- Viewbox kích thước cố định thay cho TextTrimming="CharacterEllipsis":
+        <!-- FIX (v4): "Uniform" - giữ nguyên tỉ lệ ảnh DetailsPrize.png gốc, không cắt. -->
+        <Grid x:Name="DetailPanel" Visibility="Collapsed">
+            <Viewbox Stretch="Uniform">
+                <Grid Width="1920" Height="1080">
+                    <Grid.Background>
+                        <ImageBrush x:Name="imgDetailBackground" Stretch="Fill" />
+                    </Grid.Background>
+                    <Canvas Width="1920" Height="1080">
+                        <!-- Header: Logo + Title. Logo PHÓNG TO theo yêu cầu (250x110 -> 320x145). -->
+                        <Image x:Name="imgDetailLogo" Height="145" Width="320"
+                           Canvas.Left="100" Canvas.Top="185" Stretch="Uniform"/>
+                        <!-- Viewbox kích thước cố định thay cho TextTrimming="CharacterEllipsis":
                          tiêu đề dài giờ tự THU NHỎ cỡ chữ để hiện đủ chữ (không bị cắt "..."
                          nữa) và luôn canh giữa đúng khung, vừa khít trên mọi màn hình. -->
-                    <Viewbox Canvas.Left="390" Canvas.Top="190" Width="1430" Height="170"
+                        <Viewbox Canvas.Left="390" Canvas.Top="180" Width="1430" Height="190"
                              Stretch="Uniform" StretchDirection="DownOnly">
-                        <TextBlock x:Name="txtDetailTitle"
+                            <TextBlock x:Name="txtDetailTitle"
                                    Text="ĐẠI HỘI TẾT"
-                                   FontSize="110"
+                                   FontSize="145"
                                    FontWeight="Bold"
                                    Foreground="#FFD700"
                                    FontFamily="/Fonts/#HL-Thufap2-Unicode"
                                    TextAlignment="Center"
                                    HorizontalAlignment="Center"
                                    VerticalAlignment="Center">
-                            <TextBlock.RenderTransform>
-                                <SkewTransform AngleX="-5"/>
-                            </TextBlock.RenderTransform>
-                            <TextBlock.Effect>
-                                <DropShadowEffect Color="Black" BlurRadius="10" ShadowDepth="3"/>
-                            </TextBlock.Effect>
-                        </TextBlock>
-                    </Viewbox>
+                                <TextBlock.RenderTransform>
+                                    <SkewTransform AngleX="-5"/>
+                                </TextBlock.RenderTransform>
+                                <TextBlock.Effect>
+                                    <DropShadowEffect Color="Black" BlurRadius="10" ShadowDepth="3"/>
+                                </TextBlock.Effect>
+                            </TextBlock>
+                        </Viewbox>
 
-                    <!-- Nhãn tên giải - khớp dải ruy băng đỏ phía trên khung số. -->
-                    <Border Canvas.Left="170"
+                        <!-- Nhãn tên giải - khớp dải ruy băng đỏ phía trên khung số. -->
+                        <Border Canvas.Left="170"
                             Canvas.Top="425"
                             Width="1000"
                             Height="170">
-                        <TextBlock x:Name="txtDetailPrizeName"
+                            <TextBlock x:Name="txtDetailPrizeName"
                                    Text="LỘC XUÂN"
                                    FontSize="70"
                                    FontWeight="ExtraBold"
@@ -164,20 +168,20 @@
                                    TextAlignment="Center"
                                    HorizontalAlignment="Center"
                                    VerticalAlignment="Center">
-                            <TextBlock.Effect>
-                                <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="2"/>
-                            </TextBlock.Effect>
-                        </TextBlock>
-                    </Border>
+                                <TextBlock.Effect>
+                                    <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="2"/>
+                                </TextBlock.Effect>
+                            </TextBlock>
+                        </Border>
 
-                    <!-- Số trúng thưởng - khớp khung bo góc màu kem. TextWrapping="Wrap" để
+                        <!-- Số trúng thưởng - khớp khung bo góc màu kem. TextWrapping="Wrap" để
                          giải Khuyến khích (nhiều số, cỡ chữ nhỏ hơn) tự xuống dòng và vẫn
                          canh giữa đúng cả khối theo chiều dọc lẫn ngang. -->
-                    <Border Canvas.Left="150"
+                        <Border Canvas.Left="150"
                             Canvas.Top="615"
                             Width="1055"
                             Height="350">
-                        <TextBlock x:Name="txtDetailNumber"
+                            <TextBlock x:Name="txtDetailNumber"
                                    Text="? ? ? ?"
                                    FontSize="180"
                                    FontWeight="Black"
@@ -186,15 +190,16 @@
                                    TextWrapping="Wrap"
                                    HorizontalAlignment="Center"
                                    VerticalAlignment="Center"/>
-                    </Border>
+                        </Border>
 
-                    <!-- Ảnh giải thưởng -->
-                    <Viewbox Canvas.Left="1330" Canvas.Top="440" Width="480" Height="480">
-                        <Image x:Name="imgDetailPrize" Stretch="Uniform" MaxHeight="350" MaxWidth="350"/>
-                    </Viewbox>
-                </Canvas>
-            </Grid>
-        </Viewbox>
+                        <!-- Ảnh giải thưởng -->
+                        <Viewbox Canvas.Left="1330" Canvas.Top="440" Width="480" Height="480">
+                            <Image x:Name="imgDetailPrize" Stretch="Uniform" MaxHeight="350" MaxWidth="350"/>
+                        </Viewbox>
+                    </Canvas>
+                </Grid>
+            </Viewbox>
+        </Grid>
 
         <!-- Thanh trạng thái + nút thoát: LUÔN hiển thị (cả 2 chế độ) để người dùng biết đang
              trình chiếu ở màn hình nào (1 hay 2 màn hình) và luôn có cách thoát khỏi màn hình
