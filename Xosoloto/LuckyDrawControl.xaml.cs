@@ -352,7 +352,7 @@ namespace Xosoloto
             // Giữ ĐÚNG giá trị 175 giống LocXuanShowWindow.xaml.cs.CenterTitle() để màn hình
             // Chỉnh sửa và Trình chiếu hiển thị khớp nhau 100% (xem giải thích ở đó: font thư
             // pháp có nét móc chữ hoa vươn cao, Top=130 bị dải ruy băng nền đè lên một chút).
-            Canvas.SetTop(txtTitle, 155);
+            Canvas.SetTop(txtTitle, 145);
         }
 
         // Vị trí các ô số được đo TRỰC TIẾP từ ảnh nền Images/backgroundlocxuan.png (tâm

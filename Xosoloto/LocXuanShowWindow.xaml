@@ -61,7 +61,7 @@
                                    FontWeight="Bold"
                                    Foreground="#FFD700"
                                    FontFamily="/Fonts/#HL-Thufap2-Unicode"
-                                   Canvas.Top="175"
+                                   Canvas.Top="145"
                                    TextAlignment="Center"
                                    Effect="{StaticResource TextShadow}">
                             <TextBlock.RenderTransform>
