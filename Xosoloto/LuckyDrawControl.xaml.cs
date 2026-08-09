@@ -343,16 +343,13 @@ namespace Xosoloto
         // Viewbox lo phần co giãn cho khớp màn hình lớn/nhỏ.
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e) { }
 
-        /// <summary>Canh giữa tiêu đề theo chiều rộng canvas cố định (BASE_WIDTH). Gọi lại
-        /// mỗi khi nội dung Title thay đổi vì độ rộng chữ phụ thuộc vào nội dung.</summary>
+        /// <summary>Không còn cần tự đo/canh giữa tiêu đề bằng tay nữa: txtTitle giờ được bọc
+        /// trong 1 Viewbox kích thước cố định (xem LuckyDrawControl.xaml) tự canh giữa
+        /// (HorizontalAlignment/VerticalAlignment="Center") VÀ tự thu nhỏ cỡ chữ nếu tiêu đề
+        /// quá dài để luôn vừa khít khung, không bị tràn ra ngoài hay lệch trên bất kỳ màn
+        /// hình nào. Giữ lại hàm rỗng này để không phải sửa các nơi đang gọi CenterTitle().</summary>
         private void CenterTitle()
         {
-            txtTitle.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-            Canvas.SetLeft(txtTitle, (BASE_WIDTH - txtTitle.DesiredSize.Width) / 2);
-            // Giữ ĐÚNG giá trị 175 giống LocXuanShowWindow.xaml.cs.CenterTitle() để màn hình
-            // Chỉnh sửa và Trình chiếu hiển thị khớp nhau 100% (xem giải thích ở đó: font thư
-            // pháp có nét móc chữ hoa vươn cao, Top=130 bị dải ruy băng nền đè lên một chút).
-            Canvas.SetTop(txtTitle, 145);
         }
 
         // Vị trí các ô số được đo TRỰC TIẾP từ ảnh nền Images/backgroundlocxuan.png (tâm

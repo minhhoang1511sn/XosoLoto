@@ -188,17 +188,12 @@ namespace Xosoloto
         // Không còn cần tính lại vị trí thủ công theo ActualWidth/ActualHeight khi resize nữa.
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e) { }
 
-        /// <summary>Canh giữa tiêu đề theo chiều rộng canvas cố định (BASE_WIDTH).</summary>
+        /// <summary>Không còn cần tự đo/canh giữa tiêu đề bằng tay nữa: txtTitle giờ được bọc
+        /// trong 1 Viewbox kích thước cố định (xem LocXuanShowWindow.xaml) tự canh giữa và tự
+        /// thu nhỏ cỡ chữ nếu tiêu đề quá dài, luôn vừa khít khung trên mọi màn hình. Giữ lại
+        /// hàm rỗng này để không phải sửa nơi đang gọi CenterTitle().</summary>
         private void CenterTitle()
         {
-            txtTitle.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-            Canvas.SetLeft(txtTitle, (BASE_WIDTH - txtTitle.DesiredSize.Width) / 2);
-            // 130 -> 175: font thư pháp (HL-Thufap2-Unicode) có nét móc chữ hoa (G, S...) vươn
-            // khá cao so với baseline, ở Top=130 phần nét đó bị dải ruy băng nền
-            // "Lộc Xuân May Mắn" (backgroundlocxuan.png) đè lên một chút. Đẩy xuống thêm để
-            // chừa khoảng trống rõ ràng dưới dải ruy băng, không phụ thuộc vào việc đo chính
-            // xác ascent của font (vốn khác nhau giữa các glyph trong font thư pháp).
-            Canvas.SetTop(txtTitle, 175);
         }
 
         // Vị trí các ô số - xem giải thích chi tiết trong LuckyDrawControl.xaml.cs (phải giữ

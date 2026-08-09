@@ -49,22 +49,29 @@
                        Canvas.Top="180"
                        Stretch="Fill"/>
 
-                <!-- Title - Giữa trên cùng. Canvas.Left được set động trong code-behind
-                     (CenterTitle) để luôn canh giữa theo chiều rộng canvas 1600, vì độ
-                     rộng thực tế của chữ phụ thuộc vào nội dung Title người dùng nhập. -->
-                <TextBlock x:Name="txtTitle" 
-                           Text="ĐẠI HỘI TẾT 2025"
-                           FontSize="80"
-                           FontWeight="Bold"
-                           Foreground="#FFD700"
-                           FontFamily="/Fonts/#HL-Thufap2-Unicode"
-                           Canvas.Top="175"
-                           TextAlignment="Center"
-                           Effect="{StaticResource TextShadow}">
-                    <TextBlock.RenderTransform>
-                        <SkewTransform AngleX="-5"/>
-                    </TextBlock.RenderTransform>
-                </TextBlock>
+                <!-- Title - Giữa trên cùng. Bọc trong Viewbox kích thước CỐ ĐỊNH (khớp lề
+                     90px với logo 2 bên), Stretch="Uniform" + StretchDirection="DownOnly":
+                     tiêu đề ngắn giữ nguyên cỡ chữ 80, tiêu đề dài tự THU NHỎ vừa khung
+                     (không còn bị tràn/lệch hay phải đo-canh-giữa thủ công bằng code-behind),
+                     luôn canh giữa đúng và vừa khít trên MỌI kích thước màn hình vì Viewbox
+                     ngoài cùng (bọc cả Grid 1600x900) đã co giãn đều toàn bộ khối này rồi. -->
+                <Viewbox Canvas.Left="90" Canvas.Top="135" Width="1420" Height="120"
+                         Stretch="Uniform" StretchDirection="DownOnly">
+                    <TextBlock x:Name="txtTitle" 
+                               Text="ĐẠI HỘI TẾT 2025"
+                               FontSize="80"
+                               FontWeight="Bold"
+                               Foreground="#FFD700"
+                               FontFamily="/Fonts/#HL-Thufap2-Unicode"
+                               TextAlignment="Center"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Effect="{StaticResource TextShadow}">
+                        <TextBlock.RenderTransform>
+                            <SkewTransform AngleX="-5"/>
+                        </TextBlock.RenderTransform>
+                    </TextBlock>
+                </Viewbox>
 
                 <!-- Prize Image - Bên trái giữa (khung xanh 2) -->
                 <Image x:Name="imgPrize" 

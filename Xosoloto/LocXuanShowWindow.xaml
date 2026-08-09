@@ -7,6 +7,7 @@
         mc:Ignorable="d"
         Title="Lộc Xuân Đầu Năm - Màn hình Trình chiếu"
         Height="900" Width="1600"
+        Background="Black"
         WindowStyle="None"
         ResizeMode="NoResize"
         ShowInTaskbar="False"
@@ -41,7 +42,12 @@
                  ảnh giải, ô số...). Phải giữ ĐÚNG các toạ độ này khớp 100%
                  với LuckyDrawControl.xaml để 2 màn hình luôn hiển thị giống
                  nhau. -->
-            <Viewbox Stretch="Uniform">
+            <!-- Stretch="UniformToFill" thay vì "Uniform": màn hình phụ (máy chiếu/TV) có thể
+                 KHÔNG cùng tỉ lệ khung hình 16:9 với canvas gốc (1600x900) - "Uniform" giữ
+                 nguyên tỉ lệ nên chừa viền đen 2 cạnh khi lệch tỉ lệ; "UniformToFill" phóng to
+                 lấp đầu TRÀN kín màn hình (chấp nhận cắt bớt một chút rìa ngoài, phần nội dung
+                 chính giữa vẫn còn nguyên) - đúng kiểu "full screen" cho máy chiếu trình chiếu. -->
+            <Viewbox Stretch="UniformToFill">
                 <Grid Width="1600" Height="900">
                     <Grid.Background>
                         <ImageBrush ImageSource="Images/backgroundlocxuan.png" Stretch="Fill" />
@@ -55,19 +61,26 @@
                                Canvas.Top="180"
                                Stretch="Fill"/>
 
-                        <TextBlock x:Name="txtTitle"
-                                   Text="ĐẠI HỘI TẾT 2025"
-                                   FontSize="80"
-                                   FontWeight="Bold"
-                                   Foreground="#FFD700"
-                                   FontFamily="/Fonts/#HL-Thufap2-Unicode"
-                                   Canvas.Top="145"
-                                   TextAlignment="Center"
-                                   Effect="{StaticResource TextShadow}">
-                            <TextBlock.RenderTransform>
-                                <SkewTransform AngleX="-5"/>
-                            </TextBlock.RenderTransform>
-                        </TextBlock>
+                        <!-- Viewbox kích thước cố định (khớp lề 90px với logo 2 bên), tự canh
+                             giữa VÀ tự thu nhỏ cỡ chữ nếu tiêu đề dài, luôn vừa khít trên mọi
+                             màn hình (giống hệt LuckyDrawControl.xaml để 2 màn hình khớp nhau). -->
+                        <Viewbox Canvas.Left="90" Canvas.Top="135" Width="1420" Height="120"
+                                 Stretch="Uniform" StretchDirection="DownOnly">
+                            <TextBlock x:Name="txtTitle"
+                                       Text="ĐẠI HỘI TẾT 2025"
+                                       FontSize="80"
+                                       FontWeight="Bold"
+                                       Foreground="#FFD700"
+                                       FontFamily="/Fonts/#HL-Thufap2-Unicode"
+                                       TextAlignment="Center"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Effect="{StaticResource TextShadow}">
+                                <TextBlock.RenderTransform>
+                                    <SkewTransform AngleX="-5"/>
+                                </TextBlock.RenderTransform>
+                            </TextBlock>
+                        </Viewbox>
 
                         <Image x:Name="imgPrize"
                                Height="330"
@@ -106,7 +119,7 @@
              của Canvas sẽ KHÔNG có tác dụng (Canvas không tự dàn theo
              alignment), đó là lý do bản cũ bị dính chữ vào góc trên-trái.
              ============================================================ -->
-        <Viewbox x:Name="DetailPanel" Stretch="Uniform" Visibility="Collapsed">
+        <Viewbox x:Name="DetailPanel" Stretch="UniformToFill" Visibility="Collapsed">
             <Grid Width="1920" Height="1080">
                 <Grid.Background>
                     <ImageBrush x:Name="imgDetailBackground" Stretch="Fill" />
@@ -115,24 +128,28 @@
                     <!-- Header: Logo + Title -->
                     <Image x:Name="imgDetailLogo" Height="110" Width="250"
                            Canvas.Left="100" Canvas.Top="200" Stretch="Uniform"/>
-                    <TextBlock x:Name="txtDetailTitle"
-                               Text="ĐẠI HỘI TẾT"
-                               FontSize="70"
-                               FontWeight="Bold"
-                               Foreground="#FFD700"
-                               FontFamily="/Fonts/#HL-Thufap2-Unicode"
-                               Canvas.Left="390"
-                               Canvas.Top="200"
-                               Height="110"
-                               MaxWidth="1430"
-                               TextTrimming="CharacterEllipsis">
-                        <TextBlock.RenderTransform>
-                            <SkewTransform AngleX="-5"/>
-                        </TextBlock.RenderTransform>
-                        <TextBlock.Effect>
-                            <DropShadowEffect Color="Black" BlurRadius="10" ShadowDepth="3"/>
-                        </TextBlock.Effect>
-                    </TextBlock>
+                    <!-- Viewbox kích thước cố định thay cho TextTrimming="CharacterEllipsis":
+                         tiêu đề dài giờ tự THU NHỎ cỡ chữ để hiện đủ chữ (không bị cắt "..."
+                         nữa) và luôn canh giữa đúng khung, vừa khít trên mọi màn hình. -->
+                    <Viewbox Canvas.Left="390" Canvas.Top="190" Width="1430" Height="170"
+                             Stretch="Uniform" StretchDirection="DownOnly">
+                        <TextBlock x:Name="txtDetailTitle"
+                                   Text="ĐẠI HỘI TẾT"
+                                   FontSize="110"
+                                   FontWeight="Bold"
+                                   Foreground="#FFD700"
+                                   FontFamily="/Fonts/#HL-Thufap2-Unicode"
+                                   TextAlignment="Center"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center">
+                            <TextBlock.RenderTransform>
+                                <SkewTransform AngleX="-5"/>
+                            </TextBlock.RenderTransform>
+                            <TextBlock.Effect>
+                                <DropShadowEffect Color="Black" BlurRadius="10" ShadowDepth="3"/>
+                            </TextBlock.Effect>
+                        </TextBlock>
+                    </Viewbox>
 
                     <!-- Nhãn tên giải - khớp dải ruy băng đỏ phía trên khung số. -->
                     <Border Canvas.Left="170"

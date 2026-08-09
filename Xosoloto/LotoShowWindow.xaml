@@ -8,6 +8,7 @@
         mc:Ignorable="d"
         Title="Xổ Số Loto - Màn hình Trình chiếu"
         Height="450" Width="800"
+        Background="Black"
         WindowStyle="None"
         ResizeMode="NoResize"
         ShowInTaskbar="False"
@@ -25,7 +26,9 @@
                  IsMuted="True"
                  MediaEnded="MediaElement_MediaEnded"/>
 
-        <Viewbox Stretch="Uniform">
+        <!-- Stretch="UniformToFill" thay vì "Uniform": lấp đầy kín màn hình phụ dù tỉ lệ khung
+             hình khác 16:9, chấp nhận cắt bớt rìa ngoài thay vì để lộ viền đen 2 cạnh. -->
+        <Viewbox Stretch="UniformToFill">
             <Grid Width="1920" Height="1080">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="0.5*" />

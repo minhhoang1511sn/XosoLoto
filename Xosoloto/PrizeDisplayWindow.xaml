@@ -27,25 +27,28 @@
                      chữ trên ruy băng. -->
                 <Image x:Name="imgLogo" Height="110" Width="250"
                        Canvas.Left="100" Canvas.Top="200" Stretch="Uniform"/>
-                <TextBlock x:Name="txtTitle"
-                      Text="ĐẠI HỘI TẾT 2025"
-                      FontSize="70"
-                      FontWeight="Bold"
-                      Foreground="#FFD700"
-                      FontFamily="/Fonts/#HL-Thufap2-Unicode"
-                      Canvas.Left="390"
-                      Canvas.Top="200"
-                      Height="110"
-                      MaxWidth="1430"
-                           TextAlignment="Center"
-                      TextTrimming="CharacterEllipsis">
-                    <TextBlock.RenderTransform>
-                        <SkewTransform AngleX="-5"/>
-                    </TextBlock.RenderTransform>
-                    <TextBlock.Effect>
-                        <DropShadowEffect Color="Black" BlurRadius="10" ShadowDepth="3"/>
-                    </TextBlock.Effect>
-                </TextBlock>
+                <!-- Viewbox kích thước cố định thay cho TextTrimming="CharacterEllipsis":
+                     tiêu đề dài giờ tự THU NHỎ cỡ chữ để hiện đủ chữ (không bị cắt "..."
+                     nữa) và luôn canh giữa đúng khung, vừa khít trên mọi màn hình. -->
+                <Viewbox Canvas.Left="390" Canvas.Top="190" Width="1430" Height="170"
+                         Stretch="Uniform" StretchDirection="DownOnly">
+                    <TextBlock x:Name="txtTitle"
+                          Text="ĐẠI HỘI TẾT 2025"
+                          FontSize="110"
+                          FontWeight="Bold"
+                          Foreground="#FFD700"
+                          FontFamily="/Fonts/#HL-Thufap2-Unicode"
+                          TextAlignment="Center"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center">
+                        <TextBlock.RenderTransform>
+                            <SkewTransform AngleX="-5"/>
+                        </TextBlock.RenderTransform>
+                        <TextBlock.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="10" ShadowDepth="3"/>
+                        </TextBlock.Effect>
+                    </TextBlock>
+                </Viewbox>
 
                 <!-- Nhãn tên giải ("LỘC XUÂN i" / "9 GIẢI KHUYẾN KHÍCH") - khớp đúng
                      dải ruy băng đỏ (brush stroke) phía trên khung số trong ảnh nền.
