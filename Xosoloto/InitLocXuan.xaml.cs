@@ -296,27 +296,35 @@ namespace Xosoloto
         /// </summary>
         private void BtnChangeGame_Click(object sender, RoutedEventArgs e)
         {
-            var confirm = MessageBox.Show(
-                "Bạn có muốn thoát khỏi thiết lập Lộc Xuân Đầu Năm và chọn lại loại game khác không?\n" +
-                "Các trường đang nhập sẽ được lưu lại và tự động điền lại nếu bạn quay lại Lộc Xuân Đầu Năm.",
-                "Đổi loại game", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (confirm != MessageBoxResult.Yes) return;
-
-            // Lưu lại các trường đang nhập dở (dù chưa bấm "Done") vào bộ nhớ đệm trong phiên
-            // làm việc, để tự động điền lại nếu người dùng quay lại Lộc Xuân Đầu Năm sau đó.
-            GameSessionCache.LocXuanSession = new LocXuanDauNamSession
+            try
             {
-                Title = txtTitle.Text ?? string.Empty,
-                ImagePath = imagePath,
-                LogoPath = logoPath,
-                PrizePaths = new List<string>(prizePaths),
-                HasDrawStarted = false
-            };
+                var confirm = MessageBox.Show(
+                    "Bạn có muốn thoát khỏi thiết lập Lộc Xuân Đầu Năm và chọn lại loại game khác không?\n" +
+                    "Các trường đang nhập sẽ được lưu lại và tự động điền lại nếu bạn quay lại Lộc Xuân Đầu Năm.",
+                    "Đổi loại game", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (confirm != MessageBoxResult.Yes) return;
 
-            ChangeGameRequested = true;
-            // DialogResult = true để nơi gọi (ShowLocXuan) không hiểu nhầm là "hủy" và tự
-            // Shutdown() ứng dụng - xem ChangeGameRequested để biết cần mở lại màn hình chọn game.
-            CloseAsDialogResult(true);
+                // Lưu lại các trường đang nhập dở (dù chưa bấm "Done") vào bộ nhớ đệm trong phiên
+                // làm việc, để tự động điền lại nếu người dùng quay lại Lộc Xuân Đầu Năm sau đó.
+                GameSessionCache.LocXuanSession = new LocXuanDauNamSession
+                {
+                    Title = txtTitle.Text ?? string.Empty,
+                    ImagePath = imagePath,
+                    LogoPath = logoPath,
+                    PrizePaths = new List<string>(prizePaths),
+                    HasDrawStarted = false
+                };
+
+                ChangeGameRequested = true;
+                // DialogResult = true để nơi gọi (ShowLocXuan) không hiểu nhầm là "hủy" và tự
+                // Shutdown() ứng dụng - xem ChangeGameRequested để biết cần mở lại màn hình chọn game.
+                CloseAsDialogResult(true);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi đổi loại game: {ex.Message}", "Lỗi",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void BtnDone_Click(object sender, RoutedEventArgs e)

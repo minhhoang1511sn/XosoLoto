@@ -47,17 +47,38 @@ namespace Xosoloto
         }
 
         /// <summary>Cho phép thoát màn hình Trình chiếu bằng phím ESC, tránh bị "kẹt" không có
-        /// nút thoát khi cửa sổ này che kín màn hình Chỉnh sửa (đặc biệt khi máy chỉ có 1 màn hình).</summary>
+        /// nút thoát khi cửa sổ này che kín màn hình Chỉnh sửa (đặc biệt khi máy chỉ có 1 màn hình).
+        /// DÙNG Hide() THAY VÌ Close(): đóng hẳn (Close) cửa sổ Topmost/borderless này có rủi ro
+        /// bị WPF hiểu nhầm là "không còn cửa sổ nào đang mở" tại một số thời điểm trong luồng
+        /// khởi tạo lồng nhau (InitLocXuan -> LuckyDrawWindow -> LocXuanShowWindow), khiến
+        /// ShutdownMode=OnLastWindowClose tự động thoát LUÔN CẢ ỨNG DỤNG một cách ngoài ý muốn.
+        /// Hide() vẫn giữ cửa sổ trong danh sách Application.Windows nên không bao giờ gây ra
+        /// tình huống đó, trong khi vẫn đạt đúng mục đích: cửa sổ biến mất khỏi màn hình chiếu.</summary>
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
             {
                 e.Handled = true;
-                this.Close();
+                SafeHide();
             }
         }
 
-        private void BtnCloseShow_Click(object sender, RoutedEventArgs e) => this.Close();
+        private void BtnCloseShow_Click(object sender, RoutedEventArgs e) => SafeHide();
+
+        /// <summary>Ẩn cửa sổ Trình chiếu một cách an toàn, bọc try/catch để nếu có lỗi bất ngờ
+        /// xảy ra, người dùng thấy thông báo lỗi thay vì ứng dụng tự đóng/thoát mà không rõ lý do.</summary>
+        private void SafeHide()
+        {
+            try
+            {
+                this.Hide();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi đóng màn hình Trình chiếu: {ex.Message}", "Lỗi",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
 
         /// <summary>Nạp dữ liệu ban đầu: tiêu đề, logo, ảnh nền/giải và số lượng ô giải (bằng đúng số vòng đã cấu hình).</summary>
         public void Initialize(string title, string logoPath, string imagePath, int prizeCount)

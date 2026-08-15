@@ -84,10 +84,12 @@ namespace Xosoloto
             if (_showWindow == null)
             {
                 _showWindow = new LocXuanShowWindow();
-                // Nếu người dùng tự đóng màn hình Trình chiếu (bấm ESC hoặc nút "✕ Đóng"),
-                // phải xoá tham chiếu ở đây để lần bấm "Trình chiếu" tiếp theo tạo cửa sổ mới
-                // thay vì lỗi do dùng lại một Window đã Close().
-                _showWindow.Closed += (s, e) => _showWindow = null;
+                _showWindow.Show();
+            }
+            else if (!_showWindow.IsVisible)
+            {
+                // Cửa sổ đã bị người dùng ẩn đi (bấm ESC/"✕ Đóng" -> giờ Hide() thay vì Close(),
+                // xem LocXuanShowWindow.xaml.cs) - hiện lại thay vì tạo mới.
                 _showWindow.Show();
             }
             MonitorHelper.PlaceOnShowMonitor(_showWindow);
@@ -238,40 +240,44 @@ namespace Xosoloto
         /// <summary>Đưa màn hình Trình chiếu quay lại chế độ TỔNG (tất cả các giải).</summary>
         public void ShowOverviewOnScreen() => _showWindow?.ShowOverview();
 
-        private void btnToggleShow_Click(object sender, RoutedEventArgs e)
-        {
-            if (_showWindow == null) EnsureShowWindow();
-            else CloseShowWindow();
-        }
-
         /// <summary>
         /// Thoát khỏi màn hình quay giải Lộc Xuân hiện tại và quay lại màn hình chọn loại
-        /// game, thay vì phải đóng hẳn ứng dụng. Đóng luôn màn hình Trình chiếu (nếu đang
-        /// mở) trước khi thoát.
+        /// game (menu chính), thay vì phải đóng hẳn ứng dụng. Đóng luôn màn hình Trình chiếu
+        /// (nếu đang mở) trước khi thoát. Bọc trong try/catch để nếu có lỗi bất ngờ, người
+        /// dùng thấy thông báo lỗi thay vì ứng dụng tự đóng/thoát mà không rõ lý do.
         /// </summary>
         private void btnChangeGame_Click(object sender, RoutedEventArgs e)
         {
-            var confirm = MessageBox.Show(
-                "Bạn có muốn thoát khỏi Lộc Xuân Đầu Năm và chọn lại loại game khác không?\n" +
-                "Kết quả quay giải hiện tại sẽ được lưu lại và tự động khôi phục nếu bạn quay lại chơi Lộc Xuân Đầu Năm.",
-                "Đổi loại game", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (confirm != MessageBoxResult.Yes) return;
-
-            // Lưu lại toàn bộ kết quả quay dở (số đã quay được của từng giải) vào bộ nhớ đệm
-            // trong phiên làm việc, để tự động khôi phục đúng chỗ đang dở nếu người dùng quay
-            // lại chơi Lộc Xuân Đầu Năm sau đó, thay vì phải quay lại từ đầu.
-            GameSessionCache.LocXuanSession = new LocXuanDauNamSession
+            try
             {
-                Title = this.Title,
-                ImagePath = this.ImagePath,
-                LogoPath = this.LogoPath,
-                PrizePaths = new List<string>(this.PrizePaths ?? Array.Empty<string>()),
-                HasDrawStarted = true,
-                PrizeNumbers = new List<string>(prizeNumbers)
-            };
+                var confirm = MessageBox.Show(
+                    "Bạn có muốn thoát khỏi Lộc Xuân Đầu Năm và chọn lại loại game khác không?\n" +
+                    "Kết quả quay giải hiện tại sẽ được lưu lại và tự động khôi phục nếu bạn quay lại chơi Lộc Xuân Đầu Năm.",
+                    "Đổi loại game", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (confirm != MessageBoxResult.Yes) return;
 
-            ChangeGameRequested = true;
-            this.Close();
+                // Lưu lại toàn bộ kết quả quay dở (số đã quay được của từng giải) vào bộ nhớ đệm
+                // trong phiên làm việc, để tự động khôi phục đúng chỗ đang dở nếu người dùng quay
+                // lại chơi Lộc Xuân Đầu Năm sau đó, thay vì phải quay lại từ đầu.
+                GameSessionCache.LocXuanSession = new LocXuanDauNamSession
+                {
+                    Title = this.Title,
+                    ImagePath = this.ImagePath,
+                    LogoPath = this.LogoPath,
+                    PrizePaths = new List<string>(this.PrizePaths ?? Array.Empty<string>()),
+                    HasDrawStarted = true,
+                    PrizeNumbers = new List<string>(prizeNumbers)
+                };
+
+                ChangeGameRequested = true;
+                CloseShowWindow();
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi đổi loại game: {ex.Message}", "Lỗi",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         /// <summary>

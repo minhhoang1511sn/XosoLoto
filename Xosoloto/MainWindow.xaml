@@ -28,81 +28,81 @@
                   MediaFailed="MediaElement_MediaFailed"/>
 
         <Viewbox Stretch="Uniform">
-        <Grid Width="1920" Height="1080">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="0.5*" />
-                <RowDefinition Height="2*" />
-            </Grid.RowDefinitions>
-            <Grid.Background>
-                <ImageBrush ImageSource="Images/nen-01.png" Stretch="Fill" />
-            </Grid.Background>
-            <Grid Grid.Row="0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="0.6*" />
-                    <ColumnDefinition Width="4*" />
-                    <ColumnDefinition Width="0.6*" />
-                </Grid.ColumnDefinitions>
+            <Grid Width="1920" Height="1080">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="0.5*" />
+                    <RowDefinition Height="2*" />
+                </Grid.RowDefinitions>
+                <Grid.Background>
+                    <ImageBrush ImageSource="Images/nen-01.png" Stretch="Fill" />
+                </Grid.Background>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.6*" />
+                        <ColumnDefinition Width="4*" />
+                        <ColumnDefinition Width="0.6*" />
+                    </Grid.ColumnDefinitions>
 
-                <Image Grid.Column="0"
+                    <Image Grid.Column="0"
                        gif:ImageBehavior.AnimatedSource="Images/image5.gif"
                        Stretch="UniformToFill"
                        HorizontalAlignment="Stretch"
                        VerticalAlignment="Stretch"
                        Grid.ZIndex="-1"/>
 
-                <Grid Grid.Column="1">
-                    <Image Source="/Images/HieuNguyenPhoto.png"
+                    <Grid Grid.Column="1">
+                        <Image Source="/Images/HieuNguyenPhoto.png"
                            Stretch="Uniform"
                            Grid.ZIndex="-1" Margin="0,0,0,-7"/>
-                </Grid>
+                    </Grid>
 
-                <Image Grid.Column="2"
+                    <Image Grid.Column="2"
                        gif:ImageBehavior.AnimatedSource="Images/image6.gif"
                        Stretch="UniformToFill"
                        HorizontalAlignment="Stretch"
                        VerticalAlignment="Stretch"
                        Grid.ZIndex="-1"/>
-            </Grid>
+                </Grid>
 
-            <Border Grid.Row="1">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="0.1*" />
-                        <RowDefinition Height="0.8*" />
-                        <RowDefinition Height="0.1*" />
-                    </Grid.RowDefinitions>
+                <Border Grid.Row="1">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="0.1*" />
+                            <RowDefinition Height="0.8*" />
+                            <RowDefinition Height="0.1*" />
+                        </Grid.RowDefinitions>
 
-                    <Grid Grid.Row="0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
 
-                        <Viewbox Grid.Column="0" Margin="110,0,0,-5" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Top">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="VÒNG LOẠI: "
+                            <Viewbox Grid.Column="0" Margin="110,0,0,-5" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Top">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="VÒNG LOẠI: "
                                            FontWeight="Bold"
                                            FontStyle="Italic"
                                            FontSize="48"
                                            FontFamily="/Fonts/#Faustina"
                                            Foreground="Black" />
-                                <TextBlock FontSize="48" FontFamily="/Fonts/#Faustina"
+                                    <TextBlock FontSize="48" FontFamily="/Fonts/#Faustina"
                                            x:Name="VongLoaiTextBlock" Text="--" FontWeight="Bold" Foreground="Black" />
-                            </StackPanel>
-                        </Viewbox>
+                                </StackPanel>
+                            </Viewbox>
 
-                        <!-- StackPanel MÀU VÉ -->
-                        <Viewbox Grid.Column="1" Margin="0,0,0,-8"
+                            <!-- StackPanel MÀU VÉ -->
+                            <Viewbox Grid.Column="1" Margin="0,0,0,-8"
                                  Stretch="Uniform"
                                  HorizontalAlignment="Center"
                                  VerticalAlignment="Center">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
 
-                                <TextBlock Grid.Column="0"
+                                    <TextBlock Grid.Column="0"
                                            Text="MÀU VÉ:"
                                            FontWeight="Bold"
                                            Foreground="Black"
@@ -110,7 +110,7 @@
                                            FontSize="100"
                                            FontFamily="/Fonts/#Faustina"
                                            VerticalAlignment="Center"/>
-                                <Border x:Name="MauVeBorder"
+                                    <Border x:Name="MauVeBorder"
                                         Grid.Column="1"
                                         Width="350"
                                         Height="120"
@@ -120,28 +120,28 @@
                                         BorderThickness="2"
                                         CornerRadius="5"
                                         VerticalAlignment="Center"/>
-                            </Grid>
-                        </Viewbox>
-                    </Grid>
+                                </Grid>
+                            </Viewbox>
+                        </Grid>
 
-                    <Grid Grid.Row="1">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
 
-                        <Viewbox Grid.Column="0" Stretch="Uniform" Margin="10, 0, 10, 10">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="28*"/>
-                                    <ColumnDefinition Width="47*"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
+                            <Viewbox Grid.Column="0" Stretch="Uniform" Margin="10, 0, 10, 10">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="28*"/>
+                                        <ColumnDefinition Width="47*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
 
-                                <TextBlock Grid.Row="0"
+                                    <TextBlock Grid.Row="0"
                                            Text="Số Vừa Gọi"
                                            FontFamily="/Fonts/#HL-Thufap2-Unicode"
                                            FontWeight="Normal"
@@ -149,9 +149,9 @@
                                            HorizontalAlignment="Left"
                                            Margin="47,5,0,5" Grid.ColumnSpan="2"/>
 
-                                <Viewbox Grid.Row="1" Margin="0, 5, 0, -10" Height="100" Width="150" Grid.ColumnSpan="2">
-                                    <Grid Width="20" Margin="0, -3, 0, 0" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                        <TextBlock x:Name="CurrentNumberTextBlock"
+                                    <Viewbox Grid.Row="1" Margin="0, 5, 0, -10" Height="100" Width="150" Grid.ColumnSpan="2">
+                                        <Grid Width="20" Margin="0, -3, 0, 0" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <TextBlock x:Name="CurrentNumberTextBlock"
                                                    FontWeight="Normal"
                                                    FontSize="20"
                                                    FontFamily="/Fonts/#Alumni Sans Collegiate One"
@@ -159,29 +159,29 @@
                                                    HorizontalAlignment="Center"
                                                    VerticalAlignment="Center"
                                                    Visibility="Collapsed"/>
-                                        <Path x:Name="NumberPath"
+                                            <Path x:Name="NumberPath"
                                               Stroke="White"
                                               StrokeThickness="0.2"
                                               Fill="Red"
                                               HorizontalAlignment="Center"
                                               VerticalAlignment="Center">
-                                            <Path.RenderTransform>
-                                                <TranslateTransform Y="0"/>
-                                            </Path.RenderTransform>
-                                        </Path>
-                                    </Grid>
-                                </Viewbox>
-                            </Grid>
-                        </Viewbox>
+                                                <Path.RenderTransform>
+                                                    <TranslateTransform Y="0"/>
+                                                </Path.RenderTransform>
+                                            </Path>
+                                        </Grid>
+                                    </Viewbox>
+                                </Grid>
+                            </Viewbox>
 
-                        <Viewbox Grid.Column="1" Stretch="Uniform" Margin="10, 0, 10, 10">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
+                            <Viewbox Grid.Column="1" Stretch="Uniform" Margin="10, 0, 10, 10">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
 
-                                <TextBlock Grid.Row="0"
+                                    <TextBlock Grid.Row="0"
                                            Text="Các Số Đã Gọi"
                                            FontFamily="/Fonts/#HL-Thufap2-Unicode"
                                            FontWeight="Normal"
@@ -189,36 +189,36 @@
                                            HorizontalAlignment="Center"
                                            Margin="0,5,0,-5"/>
 
-                                <Viewbox Grid.Row="1" Height="100" Stretch="Uniform" Margin="0,0,8.5,0">
-                                    <ScrollViewer VerticalScrollBarVisibility="Auto" Width="258" Height="150">
-                                        <Grid x:Name="HistoryNumberContainer"/>
-                                    </ScrollViewer>
-                                </Viewbox>
-                            </Grid>
-                        </Viewbox>
-                    </Grid>
+                                    <Viewbox Grid.Row="1" Height="100" Stretch="Uniform" Margin="0,0,8.5,0">
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto" Width="258" Height="150">
+                                            <Grid x:Name="HistoryNumberContainer"/>
+                                        </ScrollViewer>
+                                    </Viewbox>
+                                </Grid>
+                            </Viewbox>
+                        </Grid>
 
-                    <!-- ROW 3: Controls + Button Bảng Giá -->
-                    <Grid Grid.Row="2">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-
-                        <!-- Controls chính -->
-                        <Grid Grid.Column="0" Margin="40,0,5,10">
+                        <!-- ROW 3: Controls + Button Bảng Giá -->
+                        <Grid Grid.Row="2">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="1*"/>
-                                <ColumnDefinition Width="1.8*"/>
-                                <ColumnDefinition Width="1.8*"/>
-                                <ColumnDefinition Width="1.8*"/>
-                                <ColumnDefinition Width="1.8*"/>
-                                <ColumnDefinition Width="1.8*"/>
-                                <ColumnDefinition Width="1*"/>
-                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
-                            <Button Grid.Column="0"
+                            <!-- Controls chính -->
+                            <Grid Grid.Column="0" Margin="40,0,5,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1.8*"/>
+                                    <ColumnDefinition Width="1.8*"/>
+                                    <ColumnDefinition Width="1.8*"/>
+                                    <ColumnDefinition Width="1.8*"/>
+                                    <ColumnDefinition Width="1.8*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Button Grid.Column="0"
                                     x:Name="ToggleNumberColorButton"
                                     Content="Đổi màu số"
                                     Margin="5,5,5,5"
@@ -227,12 +227,12 @@
                                     VerticalAlignment="Stretch"
                                     Click="ToggleNumberColorButton_Click"/>
 
-                            <Grid Grid.Column="1" Margin="5,5,5,5">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="Vòng Loại"
+                                <Grid Grid.Column="1" Margin="5,5,5,5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Vòng Loại"
                                            FontWeight="Bold"
                                            FontSize="17"
                                            TextWrapping="Wrap"
@@ -240,32 +240,32 @@
                                            TextAlignment="Center"
                                            FontFamily="/Fonts/#Faustina"
                                            Margin="0,-4,5,0"/>
-                                <ComboBox Grid.Column="1"
+                                    <ComboBox Grid.Column="1"
                                           x:Name="VongLoaiComboBox"
                                           FontSize="20"
                                           FontWeight="Bold"
                                           VerticalAlignment="Stretch"
                                           Margin="0,0,5,5"
                                           SelectionChanged="VongLoaiComboBox_SelectionChanged">
-                                    <ComboBoxItem Content="1"/>
-                                    <ComboBoxItem Content="2"/>
-                                    <ComboBoxItem Content="3"/>
-                                    <ComboBoxItem Content="4"/>
-                                    <ComboBoxItem Content="5"/>
-                                    <ComboBoxItem Content="6"/>
-                                    <ComboBoxItem Content="7"/>
-                                    <ComboBoxItem Content="8"/>
-                                    <ComboBoxItem Content="9"/>
-                                    <ComboBoxItem Content="10"/>
-                                </ComboBox>
-                            </Grid>
+                                        <ComboBoxItem Content="1"/>
+                                        <ComboBoxItem Content="2"/>
+                                        <ComboBoxItem Content="3"/>
+                                        <ComboBoxItem Content="4"/>
+                                        <ComboBoxItem Content="5"/>
+                                        <ComboBoxItem Content="6"/>
+                                        <ComboBoxItem Content="7"/>
+                                        <ComboBoxItem Content="8"/>
+                                        <ComboBoxItem Content="9"/>
+                                        <ComboBoxItem Content="10"/>
+                                    </ComboBox>
+                                </Grid>
 
-                            <Grid Grid.Column="2" Margin="5,5,5,5">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="Màu Vé"
+                                <Grid Grid.Column="2" Margin="5,5,5,5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Màu Vé"
                                            FontWeight="Bold"
                                            FontSize="18"
                                            TextWrapping="Wrap"
@@ -274,33 +274,33 @@
                                            VerticalAlignment="Stretch"
                                            TextAlignment="Center"
                                            Margin="0,-4,5,0"/>
-                                <ComboBox Grid.Column="1"
+                                    <ComboBox Grid.Column="1"
                                           x:Name="MauVeComboBox"
                                           FontSize="20"
                                           FontWeight="Bold"
                                           Margin="0,0,5,5"
                                           SelectionChanged="MauVeComboBox_SelectionChanged">
-                                    <ComboBox.ItemTemplate>
-                                        <DataTemplate>
-                                            <Border Background="{Binding Background}" Padding="8" CornerRadius="5">
-                                                <TextBlock Text="{Binding Content}" Foreground="{Binding Foreground}" HorizontalAlignment="Center"/>
-                                            </Border>
-                                        </DataTemplate>
-                                    </ComboBox.ItemTemplate>
-                                    <ComboBoxItem Content="Xanh" Background="#1E90FF" Foreground="White"/>
-                                    <ComboBoxItem Content="Hồng đậm" Background="#C7157F" Foreground="White"/>
-                                    <ComboBoxItem Content="Vàng" Background="Yellow" Foreground="Black"/>
-                                    <ComboBoxItem Content="Xanh lá" Background="Green" Foreground="White"/>
-                                </ComboBox>
-                            </Grid>
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Background="{Binding Background}" Padding="8" CornerRadius="5">
+                                                    <TextBlock Text="{Binding Content}" Foreground="{Binding Foreground}" HorizontalAlignment="Center"/>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                        <ComboBoxItem Content="Xanh" Background="#1E90FF" Foreground="White"/>
+                                        <ComboBoxItem Content="Hồng đậm" Background="#C7157F" Foreground="White"/>
+                                        <ComboBoxItem Content="Vàng" Background="Yellow" Foreground="Black"/>
+                                        <ComboBoxItem Content="Xanh lá" Background="Green" Foreground="White"/>
+                                    </ComboBox>
+                                </Grid>
 
-                            <Grid Grid.Column="3" Margin="5,5,5,5">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="Số"
+                                <Grid Grid.Column="3" Margin="5,5,5,5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Số"
                                            FontWeight="Bold"
                                            FontSize="26"
                                            MaxWidth="40"
@@ -309,7 +309,7 @@
                                            VerticalAlignment="Center"
                                            TextAlignment="Center"
                                            Margin="0,-7,5,0"/>
-                                <TextBox Grid.Column="1"
+                                    <TextBox Grid.Column="1"
                                          x:Name="NumberInputTextBox"
                                          FontSize="30"
                                          Tag="Add"
@@ -317,20 +317,20 @@
                                          VerticalAlignment="Stretch"
                                          Margin="0,0,5,5"
                                          PreviewKeyDown="NumberInput_PreviewKeyDown"/>
-                                <Button Grid.Column="2"
+                                    <Button Grid.Column="2"
                                         Content="OK"
                                         FontSize="14"
                                         Padding="15,4,15,8"
                                         VerticalAlignment="Stretch"
                                         Click="SoButton_Click"/>
-                            </Grid>
+                                </Grid>
 
-                            <Grid Grid.Column="4" Margin="5,5,5,5">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBox Grid.Column="0"
+                                <Grid Grid.Column="4" Margin="5,5,5,5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Grid.Column="0"
                                          x:Name="RemoveNumberInput"
                                          FontSize="20"
                                          Tag="Delete"
@@ -339,21 +339,21 @@
                                          VerticalAlignment="Stretch"
                                          Margin="0,0,5,0"
                                          PreviewKeyDown="NumberInput_PreviewKeyDown"/>
-                                <Button Grid.Column="1"
+                                    <Button Grid.Column="1"
                                         Content="Xóa số bất kỳ"
                                         FontSize="14"
                                         Padding="15,4"
                                         VerticalAlignment="Stretch"
                                         Click="RemoveSpecificNumberButton_Click"/>
-                            </Grid>
+                                </Grid>
 
-                            <Grid Grid.Column="5" Margin="5,5,5,5">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="Số Trúng"
+                                <Grid Grid.Column="5" Margin="5,5,5,5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Số Trúng"
                                            FontWeight="Bold"
                                            FontSize="14"
                                            MaxWidth="40"
@@ -362,7 +362,7 @@
                                            VerticalAlignment="Stretch"
                                            TextAlignment="Center"
                                            Margin="0,0,5,0"/>
-                                <TextBox Grid.Column="1"
+                                    <TextBox Grid.Column="1"
                                          x:Name="BingoInputTextBox"
                                          FontSize="30"
                                          Tag="Color"
@@ -370,15 +370,15 @@
                                          VerticalAlignment="Stretch"
                                          Margin="0,0,5,5"
                                          PreviewKeyDown="NumberInput_PreviewKeyDown"/>
-                                <Button Grid.Column="2"
+                                    <Button Grid.Column="2"
                                         Content="OK"
                                         FontSize="20"
                                         Padding="15,4,15,8"
                                         VerticalAlignment="Stretch"
                                         Click="BingoInputButton_Click"/>
-                            </Grid>
+                                </Grid>
 
-                            <Button Grid.Column="6"
+                                <Button Grid.Column="6"
                                     Content="Xóa số trúng"
                                     Margin="5,5,5,5"
                                     FontSize="14"
@@ -386,50 +386,44 @@
                                     VerticalAlignment="Stretch"
                                     Click="ClearBingoButton_Click"/>
 
-                            <Button Grid.Column="7"
+                                <Button Grid.Column="7"
                                     Content="Xóa tất cả"
                                     Margin="5,5,5,5"
                                     FontSize="14"
                                     Padding="15,4,15,8"
                                     VerticalAlignment="Stretch"
                                     Click="ClearAllButton_Click"/>
-                        </Grid>
+                            </Grid>
 
-                        <!-- Buttons góc dưới phải: Bảng Giá + Đăng xuất -->
-                        <StackPanel Grid.Column="1"
+                            <!-- Buttons góc dưới phải: Bảng Giá + Đăng xuất -->
+                            <StackPanel Grid.Column="1"
                                     Orientation="Horizontal"
                                     Margin="0,5,8,10"
                                     VerticalAlignment="Bottom"
                                     HorizontalAlignment="Right">
-                            <Button Content="🖥️"
-                                    Width="32" Height="32"
-                                    Margin="0,0,6,0"
-                                    FontSize="16"
-                                    ToolTip="Mở/tắt màn hình Trình chiếu (cho khán giả/máy chiếu)"
-                                    Click="ToggleShowWindowButton_Click"/>
-                            <Button Content="🎮"
+                                <Button Content="🎮"
                                     Width="32" Height="32"
                                     Margin="0,0,6,0"
                                     FontSize="16"
                                     ToolTip="Đổi loại game"
                                     Click="ChangeGameButton_Click"/>
-                            <Button Content="🚪"
+                                <Button Content="🚪"
                                     Width="32" Height="32"
                                     Margin="0,0,6,0"
                                     FontSize="16"
                                     ToolTip="Đăng xuất"
                                     Click="LogoutButton_Click"/>
-                            <Button Content="📊"
+                                <Button Content="📊"
                                     Width="32" Height="32"
                                     FontSize="16"
                                     ToolTip="Bảng Giá Vé"
                                     Click="BangGiaButton_Click"/>
-                        </StackPanel>
-                    </Grid>
+                            </StackPanel>
+                        </Grid>
 
-                </Grid>
-            </Border>
-        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
         </Viewbox>
     </Grid>
 </Window>

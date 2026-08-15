@@ -131,78 +131,75 @@ namespace Xosoloto
         }
 
         /// <summary>
-        /// Bật/tắt màn hình Trình chiếu theo yêu cầu người dùng (ví dụ khi chưa cắm máy chiếu,
-        /// hoặc muốn tạm ẩn khỏi khán giả). Chỉ áp dụng cho Loto Vui Xuân - game này hiển thị
-        /// số quay trực tiếp; Lộc Xuân Đầu Năm có màn hình Trình chiếu riêng gắn với
-        /// LuckyDrawWindow (mở khi vào màn hình quay giải).
-        /// </summary>
-        private void ToggleShowWindowButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (CurrentGameType != GameType.LotoVuiXuan)
-            {
-                MessageBox.Show("Màn hình Trình chiếu cho Lộc Xuân Đầu Năm sẽ tự mở khi bạn vào màn hình quay giải.",
-                    "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
-            }
-
-            if (_showWindow == null) EnsureShowWindow();
-            else CloseShowWindow();
-        }
-
-        /// <summary>
         /// Cho phép người dùng thoát ra chọn lại loại game khác bất cứ lúc nào, kể cả khi
         /// đang ở màn hình được nạp tự động từ "cấu hình đã lưu" (trường hợp này trước đây
-        /// không có đường quay lại màn hình chọn game).
+        /// không có đường quay lại màn hình chọn game). Bọc trong try/catch để nếu có lỗi
+        /// bất ngờ xảy ra, người dùng thấy thông báo lỗi thay vì ứng dụng tự đóng/thoát mà
+        /// không rõ lý do.
         /// </summary>
         private void ChangeGameButton_Click(object sender, RoutedEventArgs e)
         {
-            var confirm = MessageBox.Show(
-                "Bạn có muốn đổi sang loại game khác không?\n" +
-                "Cấu hình hiện tại vẫn được lưu lại cho tài khoản này.",
-                "Đổi loại game", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (confirm != MessageBoxResult.Yes) return;
+            try
+            {
+                var confirm = MessageBox.Show(
+                    "Bạn có muốn đổi sang loại game khác không?\n" +
+                    "Trạng thái đang chơi dở của game hiện tại sẽ được lưu lại.",
+                    "Đổi loại game", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (confirm != MessageBoxResult.Yes) return;
 
-            // Lưu lại trạng thái ĐANG CHƠI DỞ của game hiện tại (nếu là Loto Vui Xuân) vào bộ
-            // nhớ đệm trong phiên làm việc, để nếu người dùng quay lại game này sau (chuyển qua
-            // chuyển lại), trạng thái sẽ được nạp lại đúng chỗ đang dở thay vì mất hết.
-            if (CurrentGameType == GameType.LotoVuiXuan)
-                SaveLotoSessionToCache();
-
-            // Dừng video/nội dung của game hiện tại và ẩn màn hình chính đi TRƯỚC khi mở
-            // màn hình chọn game mới. Nếu không, MainWindow (với nội dung/video của game cũ)
-            // vẫn còn hiển thị phía sau các cửa sổ chọn game / thiết lập game mới.
-            mediaElement.Stop();
-            this.Hide();
-            CloseShowWindow();
-
-            SelectAndSetupGameLoop(
-                exitAppOnCancel: false,
-                onSelectionCancelled: () =>
+                // Lưu lại trạng thái ĐANG CHƠI DỞ của game hiện tại (nếu là Loto Vui Xuân) vào bộ
+                // nhớ đệm trong phiên làm việc VÀ xuống đĩa, để nếu người dùng quay lại game này
+                // sau (chuyển qua chuyển lại, hoặc mở lại ứng dụng), trạng thái sẽ được nạp lại
+                // đúng chỗ đang dở thay vì mất hết.
+                if (CurrentGameType == GameType.LotoVuiXuan)
                 {
-                    // Người dùng hủy chọn game mới -> hiện lại màn hình game hiện tại như cũ.
-                    this.Show();
-                    if (CurrentGameType == GameType.LotoVuiXuan)
+                    SaveLotoSessionToCache();
+                    SaveCurrentSettings();
+                }
+
+                // Dừng video/nội dung của game hiện tại và ẩn màn hình chính đi TRƯỚC khi mở
+                // màn hình chọn game mới (menu chính). Nếu không, MainWindow (với nội dung/video
+                // của game cũ) vẫn còn hiển thị phía sau các cửa sổ chọn game / thiết lập game mới.
+                mediaElement.Stop();
+                this.Hide();
+                CloseShowWindow();
+
+                SelectAndSetupGameLoop(
+                    exitAppOnCancel: false,
+                    onSelectionCancelled: () =>
                     {
-                        mediaElement.Play();
-                        EnsureShowWindow();
-                        SyncShowWindowFull();
-                    }
-                },
-                onGameReady: () =>
-                {
-                    this.Show();
-                    if (CurrentGameType == GameType.LotoVuiXuan)
+                        // Người dùng hủy chọn game mới -> hiện lại màn hình game hiện tại như cũ.
+                        this.Show();
+                        if (CurrentGameType == GameType.LotoVuiXuan)
+                        {
+                            mediaElement.Play();
+                            EnsureShowWindow();
+                            SyncShowWindowFull();
+                        }
+                    },
+                    onGameReady: () =>
                     {
-                        mediaElement.Play();
-                        EnsureShowWindow();
-                        // Đẩy toàn bộ trạng thái hiện tại (dù là vừa thiết lập mới, hay vừa
-                        // được khôi phục từ bộ nhớ đệm) sang màn hình Trình chiếu, thay vì luôn
-                        // SetNumber("") - nếu không sẽ xoá mất số vừa được khôi phục.
-                        SyncShowWindowFull();
-                    }
-                    // LocXuanDauNam: MainWindow chỉ hiện lại làm nền, InitLocXuan/LuckyDrawWindow
-                    // đã tự lo xong toàn bộ giao diện của chúng.
-                });
+                        this.Show();
+                        if (CurrentGameType == GameType.LotoVuiXuan)
+                        {
+                            mediaElement.Play();
+                            EnsureShowWindow();
+                            // Đẩy toàn bộ trạng thái hiện tại (dù là vừa thiết lập mới, hay vừa
+                            // được khôi phục từ bộ nhớ đệm) sang màn hình Trình chiếu, thay vì luôn
+                            // SetNumber("") - nếu không sẽ xoá mất số vừa được khôi phục.
+                            SyncShowWindowFull();
+                        }
+                        // LocXuanDauNam: MainWindow chỉ hiện lại làm nền, InitLocXuan/LuckyDrawWindow
+                        // đã tự lo xong toàn bộ giao diện của chúng.
+                    });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi đổi loại game: {ex.Message}", "Lỗi",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+                // Đảm bảo MainWindow vẫn hiện lại cho người dùng thay vì bị kẹt ở màn hình ẩn.
+                if (!this.IsVisible) this.Show();
+            }
         }
 
         /// <summary>
@@ -346,10 +343,12 @@ namespace Xosoloto
             if (_showWindow == null)
             {
                 _showWindow = new LotoShowWindow();
-                // Nếu người dùng tự đóng màn hình Trình chiếu (bấm ESC hoặc nút "✕ Đóng"),
-                // phải xoá tham chiếu ở đây để lần bấm "Trình chiếu" tiếp theo tạo cửa sổ mới
-                // thay vì lỗi do dùng lại một Window đã Close().
-                _showWindow.Closed += (s, e) => _showWindow = null;
+                _showWindow.Show();
+            }
+            else if (!_showWindow.IsVisible)
+            {
+                // Cửa sổ đã bị người dùng ẩn đi (bấm ESC/"✕ Đóng" -> giờ Hide() thay vì Close(),
+                // xem LotoShowWindow.xaml.cs) - hiện lại thay vì tạo mới.
                 _showWindow.Show();
             }
             MonitorHelper.PlaceOnShowMonitor(_showWindow);
@@ -536,11 +535,27 @@ namespace Xosoloto
         private bool ShowLocXuan(bool exitAppOnCancel = true)
         {
             InitLocXuan setupWindow = new InitLocXuan(_currentUsername);
-            if (setupWindow.ShowDialog() == true)
+            bool? dialogResult = setupWindow.ShowDialog();
+
+            // QUAN TRỌNG: kiểm tra cờ ChangeGameRequested TRƯỚC, không phụ thuộc vào việc
+            // dialogResult có đúng bằng "true" hay không. Cờ này được set trực tiếp ngay khi
+            // người dùng bấm "Đổi loại game" (kể cả bấm từ bên trong LuckyDrawWindow, lồng 2
+            // cấp cửa sổ bên trong InitLocXuan), nên đáng tin cậy hơn giá trị trả về của
+            // ShowDialog() - giá trị này có thể không phải "true" tuỳ theo cách cửa sổ con được
+            // đóng lại qua nhiều tầng lồng nhau. Trước đây code chỉ tin vào "dialogResult ==
+            // true" nên có trường hợp bấm "Đổi loại game" nhưng bị hiểu nhầm thành "người dùng
+            // hủy" và gọi Shutdown() thoát hẳn ứng dụng thay vì quay lại màn hình chọn game.
+            if (setupWindow.ChangeGameRequested)
             {
-                return setupWindow.ChangeGameRequested;
+                return true;
             }
-            else if (exitAppOnCancel)
+
+            if (dialogResult == true)
+            {
+                return false; // hoàn tất thiết lập/chơi Lộc Xuân bình thường, không đổi game
+            }
+
+            if (exitAppOnCancel)
             {
                 IsShuttingDown = true;
                 Application.Current.Shutdown();
